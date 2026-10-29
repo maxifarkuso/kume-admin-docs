@@ -7,7 +7,7 @@ Este documento permite retomar el proyecto en otra sesión con Maxi. Hasta ahora
 
 ## 1. Objetivo
 
-Centralizar los gastos ya pagados del centro educativo KUME para conocer cuánto se gastó por mes y rubro y consultar cada comprobante.
+Centralizar los gastos ya pagados del centro educativo KUME para conocer cuánto se gastó por mes y rubro y consultar cada comprobante. Digitalizar también las fichas del personal, sus asignaciones a cursos y talleres y sus documentos.
 
 Actualmente los comprobantes se comparten por WhatsApp, habitualmente con la información necesaria, pero no existe un registro consolidado.
 
@@ -106,7 +106,7 @@ Se deben implementar **scripts manuales de respaldo y restauración**, con instr
 
 No habrá copias automáticas ni se requiere una pantalla de restauración.
 
-Antes de finalizar el prototipo se deberá **generar una copia y restaurarla en una instalación vacía**, verificando gastos, rubros y comprobantes.
+Antes de finalizar el prototipo se deberá **generar una copia y restaurarla en una instalación vacía**, verificando gastos, rubros, comprobantes, fichas de personal, cursos, talleres, asignaciones y documentos del personal.
 
 ## 9. Tecnología
 
@@ -124,7 +124,7 @@ Antes de finalizar el prototipo se deberá **generar una copia y restaurarla en 
 - Vite para el frontend.
 - Node.js con Fastify para el backend.
 - Prisma para acceso a datos y migraciones.
-- Almacenamiento local persistente para comprobantes.
+- Almacenamiento local persistente para comprobantes y documentos del personal.
 
 Next.js se mencionó como alternativa, pero **no fue seleccionado**.
 
@@ -147,22 +147,116 @@ Next.js se mencionó como alternativa, pero **no fue seleccionado**.
 - Despliegue en la nube.
 - Copias de seguridad automáticas.
 
-## 11. Personal y CLOCK — TBD
+## 11. Registro de personal
 
-Este módulo queda postergado. La idea original incluía:
+### Objetivo
 
-- Ficha del personal con datos básicos.
-- Rol de maestra, auxiliar o tallerista y curso a cargo.
-- Documentos y formularios, por ejemplo manipulación de alimentos.
-- Registro de marcas y eventual integración con CLOCK.
+Digitalizar la información del personal, hoy conservada en documentos físicos, centralizando datos personales, rol, asignaciones y archivos en una ficha.
 
-Todavía no se conoce cómo integrar CLOCK. **No forma parte del prototipo de gastos.**
+### Ficha y datos personales
+
+Se podrán registrar, consultar y editar fichas de personal.
+
+| Campo | Regla |
+|---|---|
+| Nombre | Obligatorio |
+| Apellido | Obligatorio |
+| Cédula | Obligatoria y única |
+| Teléfono | Obligatorio |
+| Fecha de nacimiento | Opcional |
+| Correo electrónico | Opcional |
+| Domicilio | Opcional |
+| Fecha de ingreso | Opcional |
+| Rol | Un único rol: maestra, auxiliar o tallerista |
+| Estado | Activo o inactivo |
+| Fecha de egreso | Obligatoria al marcar a la persona como inactiva |
+
+La baja será lógica: se conserva la ficha y sus documentos. Al inactivar a una persona se liberan sus asignaciones actuales para permitir asignar a otra.
+
+### Listado y búsqueda
+
+- Búsqueda por nombre, apellido o cédula.
+- Personal activo visible por defecto y posibilidad de consultar personal inactivo.
+- No se requieren otros filtros de búsqueda en esta versión.
+
+### Asignaciones
+
+- Una persona puede registrarse sin asignaciones y recibirlas más adelante.
+- Puede tener varias asignaciones a cursos o talleres.
+- Cada combinación de curso o taller y turno admite una sola persona activa a cargo.
+- Se mantiene únicamente la asignación actual, sin historial de responsables.
+- Se puede retirar o cambiar una asignación.
+
+### Cursos
+
+Catálogo administrable con esta carga inicial:
+
+| Curso | Nivel | Días | Turnos |
+|---|---|---|---|
+| Maternal | 0 | Lunes a viernes | Matutino y vespertino |
+| Kiru | 1 | Lunes a viernes | Matutino y vespertino |
+| Cururu | 2 | Lunes a viernes | Matutino y vespertino |
+| Capibara | 3 | Lunes a viernes | Matutino y vespertino |
+| Ñurumi | 4 | Lunes a viernes | Matutino y vespertino |
+| Mamboreta | 5 | Lunes a viernes | Matutino y vespertino |
+| Pangui | Escolares | Lunes a viernes | Matutino y vespertino |
+
+Turnos de referencia:
+
+- **Matutino:** de 8:00 a 12:00.
+- **Vespertino:** de 13:00 a 17:00.
+
+Cada asignación selecciona curso y turno.
+
+### Talleres
+
+Catálogo administrable con esta carga inicial:
+
+| Taller | Días iniciales | Turnos |
+|---|---|---|
+| Música | Lunes | Matutino y vespertino |
+| Arte | Martes | Matutino y vespertino |
+| Gimnasia | Miércoles | Matutino y vespertino |
+
+- Cada taller puede tener varios días de la semana, modificables desde su administración.
+- Para simplificar el prototipo, solo se registran días y turno; no se modela el horario exacto de cada taller.
+- La persona asignada cubre todos los días configurados para el taller en el turno seleccionado; no elige un subconjunto de días.
+
+### Baja de cursos y talleres
+
+- Se desactivan mediante un flag, sin borrado físico.
+- **No se permite desactivar un curso o taller mientras tenga una persona a cargo en cualquiera de sus turnos.**
+- Primero deberán retirarse o cambiarse las asignaciones.
+- Los cursos y talleres inactivos no estarán disponibles para nuevas asignaciones.
+
+### Documentos del personal
+
+Cada ficha tendrá una pestaña de documentos:
+
+- Varios archivos por persona.
+- Cada archivo tendrá un nombre asignado libremente.
+- Formatos admitidos: **PDF, JPG y PNG**, hasta **10 MB por archivo**.
+- Posibilidad de subir, consultar y descargar archivos.
+- Sin catálogo fijo de tipos de documento.
+- Sin fechas de vencimiento, alertas ni control de documentación faltante.
+
+Los respaldos y la restauración deberán incluir estos documentos, además de los comprobantes de gastos y todos los datos del sistema.
+
+### Fuera del alcance de personal
+
+- Registro de marcas e integración con CLOCK.
+- Horarios exactos de talleres.
+- Historial de asignaciones.
+- Múltiples roles por persona.
+- Vencimientos y alertas de documentos.
+
+CLOCK continúa pendiente para una versión futura; todavía no se conoce su mecanismo de integración.
 
 ## 12. Próximos pasos con Maxi
 
 1. Revisar ambos repositorios de código y confirmar las herramientas complementarias.
 2. Diseñar la base de datos, la API y el almacenamiento de comprobantes.
-3. Resolver detalles técnicos: validaciones, columnas del CSV, consulta de anulados y edición de gastos con rubros desactivados.
+3. Resolver detalles técnicos: validaciones, columnas del CSV, consulta de anulados, edición de gastos con rubros desactivados y reglas de fichas y asignaciones del personal.
 4. Diseñar las pantallas y convertir el alcance en tareas.
 5. Implementar y verificar los flujos acordados.
 6. Documentar instalación, uso, respaldo y restauración.
