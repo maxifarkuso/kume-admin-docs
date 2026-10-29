@@ -1,9 +1,9 @@
 # KUME — Alcance del prototipo administrativo
 
 **Fecha:** 29 de octubre de 2026  
-**Estado:** alcance funcional acordado; pendiente de diseño técnico e implementación.
+**Estado:** alcance funcional y stack tecnológico aprobados; paso 1 completado; pendiente de diseño técnico e implementación.
 
-Este documento permite retomar el proyecto en otra sesión con Maxi. Hasta ahora no se revisaron los repositorios de frontend y backend ni se escribió código.
+Este documento permite retomar el proyecto en otra sesión con Maxi. Según confirmación del responsable del proyecto, los repositorios de frontend y backend están vacíos y no imponen limitaciones al stack aprobado. Todavía no se escribió código.
 
 ## 1. Objetivo
 
@@ -110,23 +110,16 @@ Antes de finalizar el prototipo se deberá **generar una copia y restaurarla en 
 
 ## 9. Tecnología
 
-**Decisiones confirmadas:**
+El stack tecnológico está **aprobado** y se documenta en [Stack tecnológico](stack-tecnologico.md).
 
-| Componente | Tecnología |
+| Componente | Tecnología aprobada |
 |---|---|
-| Frontend | React y TypeScript |
-| Backend | TypeScript |
+| Frontend | React + TypeScript + Vite |
+| Backend | Node.js + TypeScript + Fastify |
 | Base de datos | PostgreSQL |
+| Acceso a datos y migraciones | Prisma |
+| Archivos | Almacenamiento local persistente para comprobantes y documentos del personal |
 | Ejecución | Docker Compose |
-
-**Recomendaciones pendientes de validar con Maxi:**
-
-- Vite para el frontend.
-- Node.js con Fastify para el backend.
-- Prisma para acceso a datos y migraciones.
-- Almacenamiento local persistente para comprobantes y documentos del personal.
-
-Next.js se mencionó como alternativa, pero **no fue seleccionado**.
 
 **Repositorios:**
 
@@ -254,7 +247,7 @@ CLOCK continúa pendiente para una versión futura; todavía no se conoce su mec
 
 ## 12. Próximos pasos con Maxi
 
-1. Revisar ambos repositorios de código y confirmar las herramientas complementarias.
+1. [x] **DONE — 29 de octubre de 2026:** Revisar ambos repositorios de código y confirmar las herramientas complementarias. El responsable confirmó que ambos repositorios están vacíos, sin limitaciones previas, y aprobó el [stack tecnológico](stack-tecnologico.md).
 2. Diseñar la base de datos, la API y el almacenamiento de comprobantes.
 3. Resolver detalles técnicos: validaciones, columnas del CSV, consulta de anulados, edición de gastos con rubros desactivados y reglas de fichas y asignaciones del personal.
 4. Diseñar las pantallas y convertir el alcance en tareas.
