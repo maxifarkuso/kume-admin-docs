@@ -1,16 +1,17 @@
-# KUME — Database design
+# KUME — Diseño de base de datos
 
-This document defines the PostgreSQL data model for the KUME administrative prototype. Technical names use English, singular table names, and `snake_case` columns. User-managed values remain in Spanish.
+Este documento define el modelo PostgreSQL del prototipo administrativo. Los nombres técnicos están en inglés, las tablas usan singular y las columnas usan `snake_case`. Los textos administrables y visibles para la usuaria permanecen en español.
 
-## Entity-relationship diagram
+## Diagrama entidad-relación
 
 ```mermaid
 erDiagram
     CATEGORY ||--o{ EXPENSE : classifies
     EXPENSE ||--o| RECEIPT : has
-    COURSE o|--o{ TEACHER : assigns
-    TEACHER ||--o{ TEACHER_DOCUMENT : owns
-    DOCUMENT_TYPE ||--o{ TEACHER_DOCUMENT : classifies
+    STAFF_MEMBER ||--o{ ASSIGNMENT : receives
+    COURSE o|--o{ ASSIGNMENT : targets
+    WORKSHOP o|--o{ ASSIGNMENT : targets
+    STAFF_MEMBER ||--o{ STAFF_DOCUMENT : owns
 
     CATEGORY {
         UUID id PK
@@ -45,45 +46,59 @@ erDiagram
         TIMESTAMPTZ updated_at
     }
 
-    COURSE {
+    STAFF_MEMBER {
         UUID id PK
-        VARCHAR name UK
-        BOOLEAN is_active
-        TIMESTAMPTZ created_at
-        TIMESTAMPTZ updated_at
-    }
-
-    TEACHER {
-        UUID id PK
-        UUID course_id FK
         VARCHAR first_name
         VARCHAR last_name
         VARCHAR nic UK
         VARCHAR phone
+        DATE birth_date
         VARCHAR email
+        VARCHAR address
         DATE start_date
-        VARCHAR shift
+        VARCHAR role
         BOOLEAN is_active
+        DATE end_date
         TIMESTAMPTZ created_at
         TIMESTAMPTZ updated_at
     }
 
-    DOCUMENT_TYPE {
+    COURSE {
         UUID id PK
         VARCHAR name UK
-        BOOLEAN has_expiration
+        VARCHAR level
+        VARCHAR internal_name UK
+        TEXT_ARRAY days
+        TEXT_ARRAY shifts
         BOOLEAN is_active
         TIMESTAMPTZ created_at
         TIMESTAMPTZ updated_at
     }
 
-    TEACHER_DOCUMENT {
+    WORKSHOP {
         UUID id PK
-        UUID teacher_id FK
-        UUID document_type_id FK
-        DATE issued_on
-        DATE expires_on
-        BOOLEAN is_current
+        VARCHAR name UK
+        TEXT_ARRAY days
+        TEXT_ARRAY shifts
+        BOOLEAN is_active
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    ASSIGNMENT {
+        UUID id PK
+        UUID staff_member_id FK
+        UUID course_id FK
+        UUID workshop_id FK
+        VARCHAR shift
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ updated_at
+    }
+
+    STAFF_DOCUMENT {
+        UUID id PK
+        UUID staff_member_id FK
+        VARCHAR name
         VARCHAR original_filename
         VARCHAR storage_key UK
         VARCHAR mime_type
@@ -94,144 +109,178 @@ erDiagram
     }
 ```
 
-## Column definitions
+## Tablas
 
 ### `category`
 
-| Column | PostgreSQL type | Null | Default | Rules |
+| Columna | Tipo | Nulo | Valor inicial | Regla |
 |---|---|---:|---|---|
-| `id` | `UUID` | No | Generated UUID | Primary key |
-| `name` | `VARCHAR(100)` | No | — | Non-empty after trimming; case-insensitive unique value across active and inactive rows |
-| `is_active` | `BOOLEAN` | No | `true` | Inactive categories remain available to historical expenses |
+| `id` | `UUID` | No | UUID generado | Clave primaria |
+| `name` | `VARCHAR(100)` | No | — | Texto no vacío; único sin distinguir mayúsculas ni espacios exteriores |
+| `is_active` | `BOOLEAN` | No | `true` | La baja es lógica |
 | `created_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | — |
-| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Maintained by a database trigger |
+| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Actualizado por trigger |
 
 ### `expense`
 
-| Column | PostgreSQL type | Null | Default | Rules |
+| Columna | Tipo | Nulo | Valor inicial | Regla |
 |---|---|---:|---|---|
-| `id` | `UUID` | No | Generated UUID | Primary key |
-| `category_id` | `UUID` | No | — | Foreign key to `category.id`; `ON DELETE RESTRICT` |
-| `payment_date` | `DATE` | No | — | Determines the accounting period |
-| `amount` | `NUMERIC(12,2)` | No | — | Must be greater than zero |
-| `currency` | `CHAR(3)` | No | `'UYU'` | Three uppercase letters; the prototype API accepts only `UYU` |
-| `payee` | `VARCHAR(200)` | No | — | Non-empty after trimming |
-| `description` | `VARCHAR(500)` | No | — | Non-empty after trimming |
-| `is_cancelled` | `BOOLEAN` | No | `false` | Cancelled expenses remain stored and do not contribute to totals |
+| `id` | `UUID` | No | UUID generado | Clave primaria |
+| `category_id` | `UUID` | No | — | FK a `category.id`; `ON DELETE RESTRICT` |
+| `payment_date` | `DATE` | No | — | Determina el período contable |
+| `amount` | `NUMERIC(12,2)` | No | — | Mayor que cero |
+| `currency` | `CHAR(3)` | No | `'UYU'` | Tres letras mayúsculas; la API acepta solo `UYU` en esta versión |
+| `payee` | `VARCHAR(200)` | No | — | Texto no vacío |
+| `description` | `VARCHAR(500)` | No | — | Texto no vacío |
+| `is_cancelled` | `BOOLEAN` | No | `false` | Los anulados se conservan y no suman en totales |
 | `created_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | — |
-| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Maintained by a database trigger |
+| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Actualizado por trigger |
 
 ### `receipt`
 
-| Column | PostgreSQL type | Null | Default | Rules |
+| Columna | Tipo | Nulo | Valor inicial | Regla |
 |---|---|---:|---|---|
-| `id` | `UUID` | No | Generated UUID | Primary key |
-| `expense_id` | `UUID` | No | — | Unique foreign key to `expense.id`; `ON DELETE RESTRICT` |
-| `original_filename` | `VARCHAR(255)` | No | — | Display value only; never used as a filesystem path |
-| `storage_key` | `VARCHAR(255)` | No | — | Unique opaque key relative to the configured storage root |
-| `mime_type` | `VARCHAR(50)` | No | — | `application/pdf`, `image/jpeg`, or `image/png` |
-| `size_bytes` | `BIGINT` | No | — | Between 1 and 10,485,760 bytes |
-| `sha256` | `CHAR(64)` | No | — | Lowercase hexadecimal digest; intentionally not unique |
+| `id` | `UUID` | No | UUID generado | Clave primaria |
+| `expense_id` | `UUID` | No | — | FK única a `expense.id`; `ON DELETE RESTRICT` |
+| `original_filename` | `VARCHAR(255)` | No | — | Solo para mostrar o descargar |
+| `storage_key` | `VARCHAR(255)` | No | — | Clave relativa, opaca y única |
+| `mime_type` | `VARCHAR(50)` | No | — | PDF, JPEG o PNG |
+| `size_bytes` | `BIGINT` | No | — | Entre 1 y 10.485.760 bytes |
+| `sha256` | `CHAR(64)` | No | — | Hash hexadecimal; no es único |
 | `created_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | — |
-| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Maintained by a database trigger |
+| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Actualizado por trigger |
 
-The database permits an `expense` without a `receipt`; the API must require one when creating a valid expense. Replacing a receipt updates the same row rather than creating a version history.
+La base permite un gasto sin comprobante para no imponer la regla desde persistencia. La API exige el archivo al crear el gasto. Reemplazarlo actualiza la misma fila, sin historial de versiones.
+
+### `staff_member`
+
+| Columna | Tipo | Nulo | Valor inicial | Regla |
+|---|---|---:|---|---|
+| `id` | `UUID` | No | UUID generado | Clave primaria |
+| `first_name` | `VARCHAR(100)` | No | — | Texto no vacío |
+| `last_name` | `VARCHAR(100)` | No | — | Texto no vacío |
+| `nic` | `VARCHAR(20)` | No | — | Cédula normalizada y única |
+| `phone` | `VARCHAR(30)` | No | — | Texto no vacío |
+| `birth_date` | `DATE` | Sí | — | — |
+| `email` | `VARCHAR(254)` | Sí | — | — |
+| `address` | `VARCHAR(500)` | Sí | — | — |
+| `start_date` | `DATE` | Sí | — | — |
+| `role` | `VARCHAR(30)` | No | — | `teacher`, `assistant` o `workshopInstructor` según la API |
+| `is_active` | `BOOLEAN` | No | `true` | La baja es lógica |
+| `end_date` | `DATE` | Sí | — | Obligatoria cuando `is_active` es `false` |
+| `created_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | — |
+| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Actualizado por trigger |
 
 ### `course`
 
-| Column | PostgreSQL type | Null | Default | Rules |
+| Columna | Tipo | Nulo | Valor inicial | Regla |
 |---|---|---:|---|---|
-| `id` | `UUID` | No | Generated UUID | Primary key |
-| `name` | `VARCHAR(100)` | No | — | Non-empty after trimming; case-insensitive unique value across active and inactive rows |
-| `is_active` | `BOOLEAN` | No | `true` | Inactive courses cannot receive new assignments |
+| `id` | `UUID` | No | UUID generado | Clave primaria |
+| `name` | `VARCHAR(100)` | No | — | Nombre formal único y no vacío |
+| `level` | `VARCHAR(100)` | No | — | Admite valores como `0`, `1` o `Escolares` |
+| `internal_name` | `VARCHAR(100)` | Sí | — | Nombre animal; único si existe |
+| `days` | `TEXT[]` | No | — | Uno o más días validados por la API |
+| `shifts` | `TEXT[]` | No | — | Uno o más turnos validados por la API |
+| `is_active` | `BOOLEAN` | No | `true` | La baja es lógica |
 | `created_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | — |
-| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Maintained by a database trigger |
+| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Actualizado por trigger |
 
-### `teacher`
+Datos iniciales:
 
-| Column | PostgreSQL type | Null | Default | Rules |
+| `name` | `level` | `internal_name` |
+|---|---|---|
+| Maternal | `0` | `NULL` |
+| Nivel 1 | `1` | Kiru |
+| Nivel 2 | `2` | Cururu |
+| Nivel 3 | `3` | Capibara |
+| Nivel 4 | `4` | Ñurumi |
+| Nivel 5 | `5` | Mamboreta |
+| Escolares | `Escolares` | Pangui |
+
+Todos comienzan con `days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']` y `shifts = ['morning', 'afternoon']`.
+
+### `workshop`
+
+| Columna | Tipo | Nulo | Valor inicial | Regla |
 |---|---|---:|---|---|
-| `id` | `UUID` | No | Generated UUID | Primary key |
-| `course_id` | `UUID` | Yes | — | Foreign key to `course.id`; `ON DELETE RESTRICT` |
-| `first_name` | `VARCHAR(100)` | No | — | Non-empty after trimming |
-| `last_name` | `VARCHAR(100)` | No | — | Non-empty after trimming |
-| `nic` | `VARCHAR(20)` | No | — | Unique normalized identity value without dots, hyphens, or spaces |
-| `phone` | `VARCHAR(30)` | Yes | — | — |
-| `email` | `VARCHAR(254)` | Yes | — | — |
-| `start_date` | `DATE` | Yes | — | — |
-| `shift` | `VARCHAR(20)` | Yes | — | The API accepts only `morning` or `afternoon`; the database does not constrain its values |
-| `is_active` | `BOOLEAN` | No | `true` | Teachers are deactivated, not deleted |
+| `id` | `UUID` | No | UUID generado | Clave primaria |
+| `name` | `VARCHAR(100)` | No | — | Único y no vacío |
+| `days` | `TEXT[]` | No | — | Uno o más días validados por la API |
+| `shifts` | `TEXT[]` | No | — | Uno o más turnos validados por la API |
+| `is_active` | `BOOLEAN` | No | `true` | La baja es lógica |
 | `created_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | — |
-| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Maintained by a database trigger |
+| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Actualizado por trigger |
 
-`course_id` and `shift` must either both be present or both be null. A unique constraint on `(course_id, shift)` prevents two teachers from occupying the same course and shift. No assignment history is retained.
+Datos iniciales: Música los lunes, Arte los martes y Gimnasia los miércoles; todos con turnos `morning` y `afternoon`.
 
-### `document_type`
+### `assignment`
 
-| Column | PostgreSQL type | Null | Default | Rules |
+| Columna | Tipo | Nulo | Valor inicial | Regla |
 |---|---|---:|---|---|
-| `id` | `UUID` | No | Generated UUID | Primary key |
-| `name` | `VARCHAR(100)` | No | — | Non-empty after trimming; case-insensitive unique value across active and inactive rows |
-| `has_expiration` | `BOOLEAN` | No | `false` | Controls API validation for `expires_on` |
-| `is_active` | `BOOLEAN` | No | `true` | Inactive types remain attached to existing documents |
+| `id` | `UUID` | No | UUID generado | Clave primaria |
+| `staff_member_id` | `UUID` | No | — | FK a `staff_member.id`; `ON DELETE RESTRICT` |
+| `course_id` | `UUID` | Sí | — | FK a `course.id`; `ON DELETE RESTRICT` |
+| `workshop_id` | `UUID` | Sí | — | FK a `workshop.id`; `ON DELETE RESTRICT` |
+| `shift` | `VARCHAR(20)` | No | — | `morning` o `afternoon` según la API |
 | `created_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | — |
-| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Maintained by a database trigger |
+| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Actualizado por trigger |
 
-The initial row is named **“Certificado de manipulación de alimentos”**. Document type names are user-facing data and remain in Spanish.
+Exactamente uno entre `course_id` y `workshop_id` debe estar informado. Los índices únicos parciales `(course_id, shift)` y `(workshop_id, shift)` garantizan una sola persona por destino y turno. Retirar una asignación elimina la fila; no se conserva historial.
 
-### `teacher_document`
+### `staff_document`
 
-| Column | PostgreSQL type | Null | Default | Rules |
+| Columna | Tipo | Nulo | Valor inicial | Regla |
 |---|---|---:|---|---|
-| `id` | `UUID` | No | Generated UUID | Primary key |
-| `teacher_id` | `UUID` | No | — | Foreign key to `teacher.id`; `ON DELETE RESTRICT` |
-| `document_type_id` | `UUID` | No | — | Foreign key to `document_type.id`; `ON DELETE RESTRICT` |
-| `issued_on` | `DATE` | Yes | — | — |
-| `expires_on` | `DATE` | Yes | — | Required by the API when the selected type has expiration |
-| `is_current` | `BOOLEAN` | No | `true` | At most one current document per teacher and document type |
-| `original_filename` | `VARCHAR(255)` | No | — | Display value only; never used as a filesystem path |
-| `storage_key` | `VARCHAR(255)` | No | — | Unique opaque key relative to the configured storage root |
-| `mime_type` | `VARCHAR(50)` | No | — | `application/pdf`, `image/jpeg`, or `image/png` |
-| `size_bytes` | `BIGINT` | No | — | Between 1 and 10,485,760 bytes |
-| `sha256` | `CHAR(64)` | No | — | Lowercase hexadecimal digest; intentionally not unique |
+| `id` | `UUID` | No | UUID generado | Clave primaria |
+| `staff_member_id` | `UUID` | No | — | FK a `staff_member.id`; `ON DELETE RESTRICT` |
+| `name` | `VARCHAR(200)` | No | — | Nombre libre y no vacío |
+| `original_filename` | `VARCHAR(255)` | No | — | Solo para mostrar o descargar |
+| `storage_key` | `VARCHAR(255)` | No | — | Clave relativa, opaca y única |
+| `mime_type` | `VARCHAR(50)` | No | — | PDF, JPEG o PNG |
+| `size_bytes` | `BIGINT` | No | — | Entre 1 y 10.485.760 bytes |
+| `sha256` | `CHAR(64)` | No | — | Hash hexadecimal; no es único |
 | `created_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | — |
-| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Maintained by a database trigger |
+| `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Actualizado por trigger |
 
-A partial unique index on `(teacher_id, document_type_id) WHERE is_current` enforces a single current document. Renewing documentation creates a row and marks the previous row as not current. Correcting a mistaken upload updates the same row. A document uploaded by mistake may be physically deleted, including its stored file.
+Los documentos no tienen catálogo de tipos, vencimiento ni estado de vigencia. Una carga errónea puede eliminarse físicamente junto con su archivo.
 
-## Database constraints and indexes
+## Restricciones e índices
 
-The migration must implement constraints that Mermaid cannot express fully:
+Las migraciones deberán incluir:
 
-- Case-insensitive unique indexes on `lower(trim(name))` for `category`, `course`, and `document_type`.
-- Non-empty checks after trimming for names, `expense.payee`, `expense.description`, and teacher names.
-- `expense.amount > 0` and a three-uppercase-letter format for `expense.currency`.
-- Allowed MIME types, byte-size range, and lowercase 64-character hexadecimal format for both file tables.
-- A paired-nullability check for `teacher.course_id` and `teacher.shift`.
-- Unique `(teacher.course_id, teacher.shift)` and the partial unique current-document index described above.
-- `ON DELETE RESTRICT` for every foreign key; no cascading deletes.
-- A shared trigger function that refreshes `updated_at` on every update.
+- Índices únicos sobre `lower(trim(name))` para `category`, `course` y `workshop`.
+- Índice único parcial sobre `lower(trim(internal_name))` cuando `course.internal_name` no sea nulo.
+- Controles de texto no vacío para nombres, datos obligatorios y descripciones.
+- `expense.amount > 0` y formato de tres letras mayúsculas para `expense.currency`.
+- Coherencia entre `staff_member.is_active` y `end_date`.
+- Exclusión lógica entre `assignment.course_id` y `assignment.workshop_id`.
+- Índices únicos parciales por destino y turno en `assignment`.
+- Arrays `days` y `shifts` con al menos un elemento y sin valores repetidos; la API valida sus valores.
+- MIME permitido, rango de tamaño y hash SHA-256 para ambas tablas de archivos.
+- `ON DELETE RESTRICT` en todas las claves foráneas; no hay borrados en cascada.
+- Una función trigger compartida que actualice `updated_at`.
 
-## API-owned rules
+## Reglas delegadas a la API
 
-The API, rather than the database, owns these rules:
+- Exigir comprobante al crear un gasto, impedir fechas futuras y aceptar solo UYU.
+- Impedir editar un gasto anulado hasta restaurarlo.
+- Conservar el rubro inactivo de un gasto existente, pero no asignarlo a gastos nuevos.
+- Validar firma real, extensión, MIME y tamaño de cada archivo.
+- Validar cédula uruguaya, correo, fechas, roles, días y turnos.
+- Impedir cualquier escritura sobre personal inactivo, salvo su reactivación.
+- Eliminar asignaciones al inactivar personal.
+- Impedir asignaciones a personas o destinos inactivos y validar que el turno esté disponible.
+- Impedir desactivar cursos o talleres con asignaciones.
+- Impedir quitar de un curso o taller un turno que todavía tenga una asignación.
+- Mantener CLOCK fuera de esta versión.
 
-- Require a receipt when creating a valid expense.
-- Reject future `payment_date` values and currencies other than `UYU` in this version.
-- Allow inactive categories on their existing expenses, but not on new expenses or as a replacement category.
-- Validate the actual file signature as well as its declared MIME type and extension.
-- Accept only `morning` and `afternoon` for `teacher.shift`.
-- Clear `course_id` and `shift` when a teacher is deactivated.
-- Prevent deactivating a course while it is assigned to an active teacher.
-- Require `teacher_document.expires_on` when its `document_type.has_expiration` is true.
-- Normalize `teacher.nic` before checking uniqueness.
-- Keep CLOCK integration outside this version.
+## Almacenamiento de archivos
 
-## File storage
-
-- Store file contents outside PostgreSQL in a persistent Docker volume.
-- Store only an opaque relative `storage_key`; never persist host-specific absolute paths.
-- Preserve `original_filename` only for display and downloads.
-- On replacement, write and validate the new file first, update the database transaction, and delete the previous file only after the transaction commits.
-- If the database operation fails, remove the newly staged file. If post-commit cleanup fails, report it and leave the old unreferenced file available for later cleanup rather than risking the current file.
-- Backups and restorations must treat the PostgreSQL data and the file volume as one versioned unit.
+- Los contenidos viven fuera de PostgreSQL, en un volumen persistente de Docker.
+- La base conserva una `storage_key` relativa; nunca una ruta absoluta de Windows o Linux.
+- `original_filename` se usa solamente para mostrar y descargar.
+- Cada archivo nuevo se valida en un área temporal antes de moverse a su clave definitiva.
+- Si falla la transacción de base, el archivo nuevo se elimina como compensación.
+- En un reemplazo, el archivo anterior se elimina únicamente después del commit.
+- Al eliminar un documento del personal, primero se confirma el borrado de la fila y después se elimina el archivo; un fallo final deja un archivo huérfano recuperable, nunca una referencia rota.
+- Respaldo y restauración tratan base y volumen de archivos como una sola unidad versionada.
