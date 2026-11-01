@@ -1,7 +1,7 @@
 # KUME — Alcance del prototipo administrativo
 
 **Fecha:** 29 de octubre de 2026  
-**Estado:** alcance funcional, stack tecnológico y diseño técnico aprobados; pasos 1 a 3 completados; pendiente de diseño de pantallas e implementación.
+**Estado:** alcance funcional, stack tecnológico y diseño técnico aprobados; pasos 1 a 3 completados; diseño de pantallas en curso (paso 4); implementación pendiente.
 
 Este documento permite retomar el proyecto en otra sesión con Maxi. Según confirmación del responsable del proyecto, los repositorios de frontend y backend están vacíos y no imponen limitaciones al stack aprobado. Todavía no se escribió código.
 
@@ -250,7 +250,7 @@ CLOCK continúa pendiente para una versión futura; todavía no se conoce su mec
 1. [x] **DONE — 29 de octubre de 2026:** Revisar ambos repositorios de código y confirmar las herramientas complementarias. El responsable confirmó que ambos repositorios están vacíos, sin limitaciones previas, y aprobó el [stack tecnológico](stack-tecnologico.md).
 2. [x] **DONE — 30 de octubre de 2026:** Diseñar la base de datos, la API y el almacenamiento de comprobantes y documentos. Ver [diseño de base de datos](database-design.md), [diseño de API](api-design.md) y [contrato OpenAPI](openapi.yaml).
 3. [x] **DONE — 30 de octubre de 2026:** Resolver detalles técnicos: validaciones, columnas del CSV, consulta de anulados, edición de gastos con rubros desactivados y reglas de fichas y asignaciones del personal. Decisiones registradas en el [diseño de base de datos](database-design.md), el [diseño de API](api-design.md) y el [contrato OpenAPI](openapi.yaml).
-4. Diseñar las pantallas y convertir el alcance en tareas. Retomar desde la [memoria para el diseño de pantallas](continuacion-diseno-pantallas.md).
+4. [ ] **EN CURSO — 1 de noviembre de 2026:** Diseñar las pantallas y convertir el alcance en tareas. Navegación y bocetos estáticos de gastos y personal aprobados. Pendientes: catálogos, prototipo interactivo, documentación final y backlog. Sesión pausada hasta disponer de créditos de MagicPath; continuación prevista para el 2 de noviembre. Retomar desde la [memoria para el diseño de pantallas](continuacion-diseno-pantallas.md). No marcar como completado sin confirmación expresa de Maxi.
 5. Implementar y verificar los flujos acordados.
 6. Documentar instalación, uso, respaldo y restauración.
 
