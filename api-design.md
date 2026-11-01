@@ -1,6 +1,6 @@
 # KUME — Diseño de API
 
-Este documento resume las decisiones del contrato HTTP. La definición ejecutable está en [OpenAPI](openapi.yaml).
+Este documento resume las decisiones del contrato HTTP. Las operaciones funcionales se conservan en [OpenAPI](openapi.yaml). Actualización del 1 de noviembre de 2026: Fastify se ejecutará inicialmente en Oracle Cloud Always Free, con Docker Compose y alternativa de migración completa a intranet. El contrato requiere ampliar autenticación antes de implementar el piloto; todavía no describe login, sesiones ni todos los errores de autorización.
 
 ## Convenciones
 
@@ -11,7 +11,9 @@ Este documento resume las decisiones del contrato HTTP. La definición ejecutabl
 - JSON para datos y `multipart/form-data` exclusivamente para cargas de archivos.
 - Días: `monday` a `sunday`. Turnos: `morning` y `afternoon`.
 - Roles: `teacher`, `assistant` y `workshopInstructor`.
-- Sin autenticación en el prototipo; CORS acepta únicamente el origen configurado del frontend.
+- Operaciones de negocio y archivos accesibles solo por cuentas habilitadas de secretaria y Maxi. Sin registro público; recuperación por correo y cierre/expiración de sesión.
+- Definición de endpoints de autenticación, transporte de sesión, protección CSRF cuando corresponda y respuestas 401/403 pendiente de diseño; no se elige un mecanismo implícitamente.
+- HTTPS en el acceso cloud y en el destino local según su configuración. CORS acepta únicamente el origen configurado del frontend y no sustituye autorización.
 
 El frontend traduce valores técnicos mediante mapas de presentación, por ejemplo `morning` → “Matutino”, `afternoon` → “Vespertino” y `monday` → “Lunes”.
 
@@ -23,7 +25,7 @@ El frontend traduce valores técnicos mediante mapas de presentación, por ejemp
 |---|---|---|
 | `GET` | `/health` | Estado de la API y de PostgreSQL para Docker Compose |
 | `GET` | `/openapi.json` | Contrato OpenAPI servido por la aplicación |
-| `GET` | `/documentation` | Interfaz Swagger local |
+| `GET` | `/documentation` | Interfaz Swagger según entorno y política de acceso |
 
 ### Rubros
 
@@ -124,7 +126,7 @@ Las respuestas incluyen resúmenes de relaciones para evitar peticiones repetida
 - Acciones y eliminaciones sin cuerpo: `204 No Content`.
 - Descargas y CSV: `200 OK`.
 - En `PATCH`, un campo omitido no cambia; `null` limpia únicamente campos opcionales.
-- No se implementan ETags ni control optimista de concurrencia en esta versión local y monousuario.
+- El supuesto local monousuario deja de aplicar: secretaria y Maxi pueden trabajar simultáneamente. Revisar estrategia de edición concurrente antes de implementar; conservar transacciones y restricciones únicas de asignaciones.
 
 Clasificación de errores:
 
@@ -195,4 +197,8 @@ Al eliminar un documento del personal se confirma primero el borrado de la fila 
 
 ## Respaldo y restauración
 
-No se exponen por HTTP. Los scripts manuales respaldan y restauran PostgreSQL y el volumen de archivos como una unidad versionada, con validación previa y confirmación antes de reemplazar datos.
+No se exponen por HTTP ni requieren pantallas. Las tareas administrativas generan copias diarias cifradas de PostgreSQL y archivos como una unidad consistente y versionada, fuera de Oracle, con retención de 30 días y alertas. Se conserva ejecución manual para mantenimiento. Restauración con validación previa y confirmación antes de reemplazar datos; prueba inicial y trimestral. Incluir recuperación de cuentas y configuración. Ver [alcance](alcance-prototipo.md) e [infraestructura y migración](infraestructura-y-migracion.md).
+
+## Despliegue cloud y local
+
+La API Fastify y las rutas funcionales no se reemplazan por servicios propietarios de Oracle. PostgreSQL permanece privado en la red Compose; los archivos persisten en un volumen del servidor. El frontend accede mediante HTTPS y autorización; no se exponen claves administrativas ni archivos directamente por una URL pública sin control. Al migrar, se actualizan direcciones, orígenes, certificados y configuración de sesiones, manteniendo reglas funcionales y acceso de cuentas. La demo mantiene aislamiento de datos, archivos y credenciales.

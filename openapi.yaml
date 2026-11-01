@@ -4,11 +4,15 @@ info:
   title: KUME Administrative API
   version: 1.0.0
   description: >-
-    Contrato del prototipo administrativo local de KUME. Los nombres técnicos
+    Contrato funcional de KUME, con API Fastify desplegada inicialmente en Oracle
+    Cloud Always Free y posible migración completa a intranet. Los nombres técnicos
     están en inglés y los textos administrables permanecen en español.
+    Pendiente ampliar autenticación, sesiones, recuperación de contraseña y errores
+    de autorización antes del piloto. La ausencia de securitySchemes en esta revisión
+    no autoriza exponer operaciones de negocio sin autenticación.
 servers:
   - url: http://localhost:3000
-    description: Instalación local
+    description: Referencia de desarrollo local; la URL HTTPS cloud o de intranet se definirá al desplegar
 tags:
   - name: System
   - name: Categories

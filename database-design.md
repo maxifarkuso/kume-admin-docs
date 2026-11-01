@@ -1,6 +1,6 @@
 # KUME — Diseño de base de datos
 
-Este documento define el modelo PostgreSQL del prototipo administrativo. Los nombres técnicos están en inglés, las tablas usan singular y las columnas usan `snake_case`. Los textos administrables y visibles para la usuaria permanecen en español.
+Este documento define el modelo PostgreSQL del prototipo administrativo. Actualización del 1 de noviembre de 2026: se conserva el modelo funcional y Prisma, con ejecución inicial en Oracle Cloud Always Free y posible migración a intranet. El modelo de cuentas, sesiones y recuperación debe diseñarse antes del piloto; las fichas del personal no son cuentas de acceso. Los nombres técnicos están en inglés, las tablas usan singular y las columnas usan `snake_case`. Los textos administrables y visibles para la usuaria permanecen en español.
 
 ## Diagrama entidad-relación
 
@@ -276,11 +276,17 @@ Las migraciones deberán incluir:
 
 ## Almacenamiento de archivos
 
-- Los contenidos viven fuera de PostgreSQL, en un volumen persistente de Docker.
+- Los contenidos viven fuera de PostgreSQL, en un volumen persistente de Docker en la VM Oracle inicial o en el equipo local de destino. No se incorporan a la imagen ni se almacenan en un filesystem efímero.
+- Los archivos se consultan mediante la API con autorización; la demo usa datos y almacenamiento aislados del piloto.
 - La base conserva una `storage_key` relativa; nunca una ruta absoluta de Windows o Linux.
 - `original_filename` se usa solamente para mostrar y descargar.
 - Cada archivo nuevo se valida en un área temporal antes de moverse a su clave definitiva.
 - Si falla la transacción de base, el archivo nuevo se elimina como compensación.
 - En un reemplazo, el archivo anterior se elimina únicamente después del commit.
 - Al eliminar un documento del personal, primero se confirma el borrado de la fila y después se elimina el archivo; un fallo final deja un archivo huérfano recuperable, nunca una referencia rota.
-- Respaldo y restauración tratan base y volumen de archivos como una sola unidad versionada.
+- Respaldo y restauración tratan base y volumen de archivos como una sola unidad consistente, versionada y cifrada. Las copias son diarias, externas a Oracle, con retención de 30 días y alertas; su restauración se prueba antes del uso real y trimestralmente.
+- La migración local incluye base, archivos, cuentas y configuración, verificando integridad y conservando las claves relativas. Un dump PostgreSQL no respalda por sí solo los archivos.
+
+## Ampliaciones técnicas pendientes
+
+Definir tablas o componentes de cuentas, credenciales protegidas, sesiones y recuperación por correo, sin registro público ni dependencia de un servicio de autenticación cloud para la operación local. Secretaria y Maxi tienen acceso completo a los datos del prototipo. Revisar privilegios PostgreSQL de aplicación y migraciones y la concurrencia de las dos cuentas, manteniendo las restricciones del dominio. No dar estas ampliaciones por implementadas ni cambiar las reglas funcionales aprobadas. Ver [alcance](alcance-prototipo.md) e [infraestructura y migración](infraestructura-y-migracion.md).

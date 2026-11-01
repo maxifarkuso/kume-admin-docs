@@ -4,17 +4,17 @@
 - **Rama de trabajo:** `main`
 - **Estado:** paso 4 en curso; sesión pausada por decisión de Maxi.
 - **Próxima sesión prevista:** 2 de noviembre de 2026, sujeta a disponibilidad de créditos de MagicPath.
-- **Próximo paso:** completar los bocetos de catálogos, revisarlos y continuar con el prototipo interactivo.
+- **Próximo paso:** incorporar acceso autenticado y estados cloud al inventario, completar catálogos y continuar el prototipo interactivo. Coordinar las ampliaciones técnicas de cuentas y operación.
 
 ## Estado del proyecto
 
-Los pasos 1 a 3 del alcance están completos:
+El stack y las reglas funcionales de los pasos 1 a 3 se conservan. El cambio cloud del 1 de noviembre requiere ampliaciones técnicas pendientes:
 
 1. Stack tecnológico aprobado.
-2. Base de datos, API y almacenamiento de archivos diseñados.
-3. Validaciones y reglas técnicas resueltas.
+2. Base, API y archivos diseñados; ampliar cuentas, sesiones y autorización sin reemplazar Fastify ni Prisma.
+3. Reglas funcionales resueltas; ampliar HTTPS, respaldos diarios, concurrencia y portabilidad a intranet.
 
-Todavía no se escribió código en frontend ni backend. La estructura de navegación y las tandas de bocetos estáticos de gastos y personal fueron aprobadas por Maxi en esta conversación el 1 de noviembre de 2026. La aprobación parcial no completa el paso 4.
+Todavía no se implementó el producto en frontend ni backend. Se probó una API temporal con PostgreSQL en Oracle; no sustituye la implementación de KUME. La estructura de navegación y las tandas de bocetos estáticos de gastos y personal fueron aprobadas por Maxi en esta conversación el 1 de noviembre de 2026. La aprobación parcial no completa el paso 4.
 
 ## Avance y decisiones aprobadas — 1 de noviembre de 2026
 
@@ -50,6 +50,8 @@ Todavía no se escribió código en frontend ni backend. La estructura de navega
 
 ### Pendientes al pausar
 
+**Ampliación cloud confirmada:** agregar login, recuperación de contraseña, cierre y expiración de sesión, identificación de demo e indisponibilidad de red/servicio. Estos flujos no tienen bocetos aprobados todavía. Conservar las aprobaciones de gastos y personal. Ver [infraestructura y migración](infraestructura-y-migracion.md).
+
 1. Completar C01 Rubros, C02 Cursos, C03 Talleres y C04 Estados y bajas bloqueadas. Sus marcos se crearon, pero están vacíos: las llamadas para agregar contenido fueron rechazadas por falta de cuota. No están aprobados.
 2. Incluir catálogos inactivos, validaciones y bloqueos de baja o retirada de turnos con asignaciones.
 3. Revisar y aprobar los catálogos.
@@ -75,9 +77,11 @@ En caso de contradicción, prevalece el alcance más reciente en `main`; la cont
 ## Restricciones ya confirmadas
 
 - La usuaria inicial es la secretaria administrativa de KUME y no tiene conocimientos técnicos.
-- La aplicación se usa localmente en una computadora y desde un navegador.
-- No hay autenticación ni múltiples usuarios en el prototipo.
-- No se acordó uso desde celulares; el diseño primario es de escritorio.
+- La aplicación se usa inicialmente desde distintas computadoras mediante navegador y HTTPS; backend en Oracle Cloud Always Free con Docker Compose. Posible migración completa a intranet, sin dependencia cloud para operación diaria.
+- Cuentas individuales de secretaria y Maxi, acceso completo a los datos, sin registro público. Login con correo/contraseña, cierre y expiración de sesión y recuperación por correo. Maxi administra cuentas y restauraciones; no se exigen pantallas para esas tareas.
+- Piloto real y demo aislada con datos ficticios; identificar la demo claramente.
+- Objetivo de costo cero; si los límites comprometen el uso se evalúa intranet. No hacer dimensionamiento anual del MVP.
+- El diseño primario es de escritorio; el uso completo desde celulares queda fuera del MVP.
 - Todos los textos visibles deben estar en español.
 - Los valores técnicos de API, como `morning` o `teacher`, se traducen en la interfaz.
 - Los archivos admitidos son PDF, JPG y PNG, con máximo de 10 MB.
@@ -99,6 +103,7 @@ Proyecto existente: **KUME — Diseño administrativo · Paso 4**.
 
 El avance y las aprobaciones de cada tanda se registran arriba. Este es el inventario de referencia:
 
+- Login, recuperación de contraseña y cierre de sesión.
 - Estructura general y navegación.
 - Listado de gastos, filtros, total y exportación.
 - Alta y edición de gasto con comprobante.
@@ -127,6 +132,8 @@ No agregar un dashboard independiente salvo que se demuestre que mejora el flujo
 
 ## Estados y casos que deben aparecer en los bocetos
 
+- Sesión expirada, credenciales incorrectas y recuperación de contraseña.
+- Demo identificada e indisponibilidad de red/servicio sin mensajes técnicos internos.
 - Primera utilización sin datos.
 - Carga, éxito y error.
 - Validaciones de formularios y archivos.
@@ -163,9 +170,9 @@ Trabajá siempre sobre la rama main del repositorio de documentación. Antes de 
 - database-design.md
 - stack-tecnologico.md
 
-Los pasos 1 a 3 están completos y el paso 4 está en curso. Leé primero el avance y las aprobaciones de esta memoria. Reutilizá el proyecto MagicPath 467706881381666816: gastos y personal ya están aprobados. Completá los marcos vacíos de catálogos; después seguí con el prototipo interactivo, screen-design.md y el backlog. No repitas las rondas ya resueltas.
+El stack y las reglas funcionales de los pasos 1 a 3 se conservan; hay ampliaciones técnicas pendientes de cuentas, operación cloud y migración local. El paso 4 sigue en curso. Leé primero el avance y las aprobaciones de esta memoria. Reutilizá el proyecto MagicPath 467706881381666816: gastos y personal ya están aprobados. Completá los marcos vacíos de catálogos; después seguí con el prototipo interactivo, screen-design.md y el backlog. No repitas las rondas ya resueltas.
 
-Usá el plugin MagicPath, que ya está conectado, para crear primero un mapa de navegación y luego wireframes de baja fidelidad. No implementes React todavía. Diseñá para una secretaria administrativa sin conocimientos técnicos, uso local en computadora, textos visibles en español y sin pantalla de inicio de sesión.
+Usá el plugin MagicPath, que ya está conectado, para crear primero un mapa de navegación y luego wireframes de baja fidelidad. No implementes React todavía. Diseñá para una secretaria administrativa sin conocimientos técnicos, uso desde computadoras por HTTPS, textos visibles en español, login y recuperación de contraseña. Incorporá cierre/expiración de sesión, identificación de demo e indisponibilidad cloud. El backend conserva Fastify, Prisma y PostgreSQL en Oracle; hay una alternativa futura de intranet. No diseñes pantallas de administración de cuentas ni restauración.
 
 Usá GrillMe para resolver decisiones reales de UX por rondas, con una recomendación en cada pregunta. No me preguntes hechos que puedas obtener de los documentos. Antes de dibujar todas las pantallas, presentame y recomendame:
 1. La arquitectura de información.

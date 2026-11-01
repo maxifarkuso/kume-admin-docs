@@ -1,9 +1,10 @@
 # KUME — Alcance del prototipo administrativo
 
 **Fecha:** 29 de octubre de 2026  
-**Estado:** alcance funcional, stack tecnológico y diseño técnico aprobados; pasos 1 a 3 completados; diseño de pantallas en curso (paso 4); implementación pendiente.
+**Actualización:** 1 de noviembre de 2026 — ejecución cloud en Oracle y alternativa de migración a intranet.  
+**Estado:** alcance y stack actualizados y confirmados; diseño funcional de base y API conservado, ampliaciones técnicas de autenticación y operación pendientes; diseño de pantallas en curso (paso 4); implementación de KUME pendiente; infraestructura básica cloud probada.
 
-Este documento permite retomar el proyecto en otra sesión con Maxi. Según confirmación del responsable del proyecto, los repositorios de frontend y backend están vacíos y no imponen limitaciones al stack aprobado. Todavía no se escribió código.
+Este documento permite retomar el proyecto en otra sesión con Maxi. Según confirmación del responsable del proyecto, los repositorios de frontend y backend están vacíos y no imponen limitaciones al stack aprobado. Todavía no se implementó KUME. Se ejecutó una API temporal de prueba en Oracle para verificar Fastify, PostgreSQL y persistencia; no es código del producto.
 
 ## 1. Objetivo
 
@@ -15,6 +16,8 @@ Actualmente los comprobantes se comparten por WhatsApp, habitualmente con la inf
 
 - **Usuaria inicial:** secretaria administrativa de KUME, sin conocimientos técnicos.
 - **Desarrollo y mantenimiento:** Maxi, ingeniero en sistemas.
+- **Acceso:** secretaria y Maxi, con cuentas individuales y acceso completo a los datos del prototipo.
+- **Administración técnica:** Maxi administra cuentas, atiende alertas y ejecuta restauraciones. Infraestructura y respaldos bajo control de KUME, con recuperación accesible a la institución.
 - **Fecha de entrega:** sin fecha comprometida.
 
 ## 3. Registro de gastos
@@ -74,39 +77,65 @@ Se comenzarán a registrar gastos cuando el sistema esté disponible.
 
 La carga histórica desde marzo queda fuera del prototipo. La **importación por lote** queda para una versión posterior.
 
-## 7. Ejecución local
+## 7. Ejecución cloud y alternativa local
 
-- Aplicación local en una computadora, accesible desde el navegador.
-- Sin despliegue en la nube.
-- Sin usuario ni contraseña en el prototipo.
-- Ejecución mediante **Docker Compose**.
-- Primera instalación en **Windows**, con compatibilidad para **Linux**.
-- Persistencia de datos y comprobantes al reiniciar o actualizar contenedores.
-- Configuración sin depender de rutas específicas de Windows o Linux.
+### Modalidad inicial: Oracle Cloud Always Free
 
-No se acordó acceso desde celulares u otras computadoras.
+- Backend alojado en una máquina virtual de Oracle Cloud Infrastructure elegible para Always Free, con Linux soportado y Docker Compose.
+- Una sola VM inicialmente, con API Fastify y PostgreSQL en contenedores separados y volúmenes persistentes para base de datos y archivos. PostgreSQL no se expone a internet.
+- Frontend React + TypeScript + Vite accesible por HTTPS, sin servicios locales para el uso diario. Cloudflare Pages es la opción conversada para alojarlo; verificar condiciones y definir el alojamiento final antes del despliegue.
+- Acceso desde distintas computadoras mediante navegador. Prioridad de escritorio; el uso completo desde celulares queda fuera del MVP.
+- Piloto con datos reales y demo separada con datos y archivos ficticios y cuenta propia.
+- Cuentas individuales de secretaria y Maxi, correo y contraseña, cierre y expiración de sesión y recuperación por correo. Sin registro público ni pantalla obligatoria de administración de cuentas.
+- Ambos pueden consultar y modificar los datos del sistema; administración de cuentas y restauraciones a cargo de Maxi.
+- Archivos privados y descargas autorizadas. Credenciales administrativas fuera del navegador y del repositorio.
+- Persistencia al reiniciar y actualizar contenedores. Configuración portable, sin rutas absolutas dependientes de Windows o Linux.
+- HTTPS y autenticación deben estar verificados antes de habilitar datos reales.
+
+### Costo y disponibilidad
+
+El objetivo es mantener el costo total en **USD 0**, incluyendo piloto, demo, correo y respaldos. No hay presupuesto pago preaprobado ni contrataciones automáticas. Distinguir Always Free de los créditos promocionales de tiempo limitado.
+
+No se realizará un cálculo de consumo anual para el MVP. Sí se verificarán cuotas, espacio y condiciones necesarias para desplegar y respaldar, y se observarán los límites disponibles antes de comprometer el uso. No se eliminarán datos automáticamente para liberar capacidad.
+
+Se aceptan pausas o demoras de servicios gratuitos durante demo y piloto, con mensajes claros de indisponibilidad. Oracle puede recuperar instancias consideradas inactivas y la modalidad gratuita no garantiza disponibilidad mediante SLA. Revisar continuidad antes de depender diariamente del sistema.
+
+### Alternativa futura: migración completa a intranet
+
+Si los límites o las condiciones gratuitas comprometen el uso, se evaluará migrar a un equipo del instituto. Se conservarán Node.js, Fastify, Prisma, PostgreSQL y Docker Compose; Oracle se usa como infraestructura, sin reemplazar la API por servicios propietarios. Supabase no forma parte de la arquitectura elegida.
+
+La migración deberá trasladar base de datos, archivos, cuentas y configuración, y servir el frontend desde la red local. El funcionamiento diario no dependerá de servicios cloud. La recuperación por correo y los respaldos externos pueden requerir internet; sus dependencias y alternativas deberán documentarse.
+
+El acceso inicial será solo desde la intranet, sin acceso remoto. El equipo deberá permanecer encendido durante el uso; equipo, sistema operativo soportado y mantenimiento se resolverán antes del traslado. Windows o Linux son alternativas a verificar, no instalaciones locales ya probadas.
+
+El MVP documentará dependencias y exportación y verificará portabilidad de datos y archivos. El despliegue local completo se implementará cuando se decida migrar. Se requerirá ensayo, respaldo consistente, ventana sin escrituras, validación del destino y posibilidad de volver atrás sin perder cambios; no habrá dos instalaciones aceptando escrituras en paralelo. La migración no se considera ejecutada por contar con Docker Compose.
+
+Ver [infraestructura cloud y migración local](infraestructura-y-migracion.md).
 
 ## 8. Copias de seguridad y restauración
 
-Se deben implementar **scripts manuales de respaldo y restauración**, con instrucciones para Windows y Linux.
+Se deben implementar respaldos automáticos diarios y herramientas de restauración documentadas. La automatización y el destino deben verificarse dentro del objetivo de costo cero.
 
 **Respaldo:**
 
-- Generar un único archivo con la base de datos y todos los comprobantes.
-- Incluir información sobre la versión del formato de respaldo.
-- Permitir elegir dónde guardarlo.
-- Informar claramente el resultado y los errores.
+- Incluir PostgreSQL, comprobantes, documentos del personal y configuración necesaria para recuperar el sistema y sus cuentas.
+- Generar una unidad lógica de recuperación versionada, cifrada y verificable, con consistencia entre base y archivos. Un dump de PostgreSQL no incluye el volumen documental.
+- Guardar las copias fuera de la VM y de Oracle, en almacenamiento institucional bajo control de KUME; Google Drive es el candidato conversado, pendiente de configuración y verificación.
+- Conservar 30 días y custodiar las claves de descifrado de forma recuperable y separada de las copias.
+- Objetivo de pérdida tolerable de hasta 24 horas, condicionado a copias exitosas y atención de fallas.
+- Alertar a Maxi si falla una copia e informar resultado y errores. No considerar configuradas las alertas sin comprobar su entrega.
+- Mantener una ejecución manual documentada para respaldo previo a mantenimiento o migración.
 
 **Restauración:**
 
-- Validar el respaldo.
-- Pedir confirmación antes de reemplazar los datos actuales.
-- Recuperar la base de datos y los comprobantes.
-- Informar claramente el resultado y los errores.
+- Validar formato, versión e integridad del respaldo.
+- Pedir confirmación antes de reemplazar datos existentes.
+- Recuperar base, archivos y acceso de cuentas; informar resultado y errores.
+- No se requiere pantalla de restauración; tarea administrativa a cargo de Maxi.
 
-No habrá copias automáticas ni se requiere una pantalla de restauración.
+Antes del uso real se deberá **generar una copia y restaurarla en un entorno vacío**, verificando gastos, rubros, comprobantes, fichas de personal, cursos, talleres, asignaciones, documentos y acceso autorizado. Repetir una prueba de restauración trimestralmente.
 
-Antes de finalizar el prototipo se deberá **generar una copia y restaurarla en una instalación vacía**, verificando gastos, rubros, comprobantes, fichas de personal, cursos, talleres, asignaciones y documentos del personal.
+La disponibilidad de espacio para retener 30 días, el mecanismo de automatización, las claves y el destino externo siguen pendientes de validación. El respaldo debe seguir siendo aplicable tras migrar a intranet.
 
 ## 9. Tecnología
 
@@ -118,8 +147,9 @@ El stack tecnológico está **aprobado** y se documenta en [Stack tecnológico](
 | Backend | Node.js + TypeScript + Fastify |
 | Base de datos | PostgreSQL |
 | Acceso a datos y migraciones | Prisma |
-| Archivos | Almacenamiento local persistente para comprobantes y documentos del personal |
-| Ejecución | Docker Compose |
+| Archivos | Volumen persistente del servidor, con acceso mediante la API |
+| Ejecución | Docker Compose, inicialmente en Oracle Cloud Always Free |
+| Alternativa de despliegue | Equipo local del instituto, con migración completa a intranet |
 
 **Repositorios:**
 
@@ -136,9 +166,10 @@ El stack tecnológico está **aprobado** y se documenta en [Stack tecnológico](
 - Carga histórica e importación por lote.
 - Catálogo administrable de proveedores.
 - Exportación con formato de Excel.
-- Autenticación y múltiples usuarios.
-- Despliegue en la nube.
-- Copias de seguridad automáticas.
+- Registro público y permisos diferenciados para dirección.
+- Uso completo desde celulares.
+- Ejecución de la migración completa a intranet dentro del MVP inicial; se documenta su preparación.
+- Acceso remoto a la intranet.
 
 ## 11. Registro de personal
 
@@ -248,10 +279,14 @@ CLOCK continúa pendiente para una versión futura; todavía no se conoce su mec
 ## 12. Próximos pasos con Maxi
 
 1. [x] **DONE — 29 de octubre de 2026:** Revisar ambos repositorios de código y confirmar las herramientas complementarias. El responsable confirmó que ambos repositorios están vacíos, sin limitaciones previas, y aprobó el [stack tecnológico](stack-tecnologico.md).
-2. [x] **DONE — 30 de octubre de 2026:** Diseñar la base de datos, la API y el almacenamiento de comprobantes y documentos. Ver [diseño de base de datos](database-design.md), [diseño de API](api-design.md) y [contrato OpenAPI](openapi.yaml).
-3. [x] **DONE — 30 de octubre de 2026:** Resolver detalles técnicos: validaciones, columnas del CSV, consulta de anulados, edición de gastos con rubros desactivados y reglas de fichas y asignaciones del personal. Decisiones registradas en el [diseño de base de datos](database-design.md), el [diseño de API](api-design.md) y el [contrato OpenAPI](openapi.yaml).
-4. [ ] **EN CURSO — 1 de noviembre de 2026:** Diseñar las pantallas y convertir el alcance en tareas. Navegación y bocetos estáticos de gastos y personal aprobados. Pendientes: catálogos, prototipo interactivo, documentación final y backlog. Sesión pausada hasta disponer de créditos de MagicPath; continuación prevista para el 2 de noviembre. Retomar desde la [memoria para el diseño de pantallas](continuacion-diseno-pantallas.md). No marcar como completado sin confirmación expresa de Maxi.
+2. [ ] **AMPLIACIÓN PENDIENTE — 1 de noviembre de 2026:** Conservar el diseño funcional completado el 30 de octubre y ampliar cuentas, sesiones, autorización y operación cloud/local antes de implementar. Referencia del trabajo aprobado: Diseñar la base de datos, la API y el almacenamiento de comprobantes y documentos. Ver [diseño de base de datos](database-design.md), [diseño de API](api-design.md) y [contrato OpenAPI](openapi.yaml).
+3. [ ] **AMPLIACIÓN PENDIENTE — 1 de noviembre de 2026:** Conservar reglas resueltas el 30 de octubre; definir recuperación por correo, concurrencia de ambas cuentas, respaldos diarios, HTTPS y migración. Referencia del trabajo aprobado: Resolver detalles técnicos: validaciones, columnas del CSV, consulta de anulados, edición de gastos con rubros desactivados y reglas de fichas y asignaciones del personal. Decisiones registradas en el [diseño de base de datos](database-design.md), el [diseño de API](api-design.md) y el [contrato OpenAPI](openapi.yaml).
+4. [ ] **EN CURSO — 1 de noviembre de 2026:** Diseñar las pantallas y convertir el alcance en tareas. Navegación y bocetos estáticos de gastos y personal aprobados. Pendientes: catálogos, login, recuperación de contraseña, cierre y expiración de sesión, identificación de demo, indisponibilidad cloud, prototipo interactivo, documentación final y backlog. Sesión pausada hasta disponer de créditos de MagicPath; continuación prevista para el 2 de noviembre. Retomar desde la [memoria para el diseño de pantallas](continuacion-diseno-pantallas.md). No marcar como completado sin confirmación expresa de Maxi.
 5. Implementar y verificar los flujos acordados.
-6. Documentar instalación, uso, respaldo y restauración.
+6. Documentar despliegue cloud en Oracle, uso, cuentas, respaldo/restauración y preparación de migración a intranet; comprobar recuperación y carga representativa antes del piloto.
 
 **Contexto adicional:** se mencionó el proyecto de ChatGPT “kume” y la conversación “Planilla de pagos por curso”, pero su contenido no se pudo consultar. Este documento se basa exclusivamente en las decisiones de esta sesión.
+
+## 13. Registro del cambio de ejecución — 1 de noviembre de 2026
+
+Maxi confirmó revisar los requisitos con GrillMe y luego conservar la API Node.js/Fastify, Prisma y PostgreSQL. Se eligió Oracle como infraestructura cloud y se probó una VM con Docker Compose, Fastify y consulta SQL real; la persistencia de PostgreSQL sobrevivió a recrear su contenedor. Las funciones de gastos, personal, catálogos y CSV no cambian por esta decisión. Autenticación, HTTPS, archivos del producto, respaldos, carga real y migración local aún no están implementados ni verificados. El paso 4 sigue en curso y no se marca completo.
