@@ -250,7 +250,7 @@ CLOCK continúa pendiente para una versión futura; todavía no se conoce su mec
 1. [x] **DONE — 29 de octubre de 2026:** Revisar ambos repositorios de código y confirmar las herramientas complementarias. El responsable confirmó que ambos repositorios están vacíos, sin limitaciones previas, y aprobó el [stack tecnológico](stack-tecnologico.md).
 2. [x] **DONE — 30 de octubre de 2026:** Diseñar la base de datos, la API y el almacenamiento de comprobantes y documentos. Ver [diseño de base de datos](database-design.md), [diseño de API](api-design.md) y [contrato OpenAPI](openapi.yaml).
 3. [x] **DONE — 30 de octubre de 2026:** Resolver detalles técnicos: validaciones, columnas del CSV, consulta de anulados, edición de gastos con rubros desactivados y reglas de fichas y asignaciones del personal. Decisiones registradas en el [diseño de base de datos](database-design.md), el [diseño de API](api-design.md) y el [contrato OpenAPI](openapi.yaml).
-4. Diseñar las pantallas y convertir el alcance en tareas.
+4. Diseñar las pantallas y convertir el alcance en tareas. Retomar desde la [memoria para el diseño de pantallas](continuacion-diseno-pantallas.md).
 5. Implementar y verificar los flujos acordados.
 6. Documentar instalación, uso, respaldo y restauración.
 
