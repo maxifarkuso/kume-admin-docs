@@ -1,7 +1,7 @@
 # KUME — Stack tecnológico
 
-**Fecha inicial:** 29 de octubre de 2026  
-**Actualización:** 1 de noviembre de 2026  
+**Fecha inicial:** 29 de octubre de 2026
+**Actualización:** 2 de noviembre de 2026
 **Estado:** stack conservado; ejecución inicial cloud en Oracle y alternativa local confirmadas.
 
 ## Tecnologías aprobadas
@@ -17,15 +17,15 @@
 | Infraestructura inicial | Oracle Cloud Infrastructure Always Free | Una VM Linux elegible para la modalidad gratuita. |
 | Alternativa futura | Equipo local del instituto | Misma arquitectura desplegada en intranet, con migración de datos, archivos, cuentas y configuración. |
 
-Oracle aloja nuestros servicios; no se sustituye PostgreSQL por Oracle Database. Supabase y sus funciones no forman parte del stack elegido. El contrato funcional de API se conserva, con ampliaciones pendientes para autenticación.
+Oracle aloja nuestros servicios; no se sustituye PostgreSQL por Oracle Database. Supabase y sus funciones no forman parte del stack elegido. El contrato funcional de API se conserva y la ampliación de autenticación está documentada en OpenAPI; su implementación y verificación siguen pendientes.
 
 ## Condiciones de ejecución
 
 - Uso inicial cloud mediante HTTPS, desde distintas computadoras, sin servicios locales para la usuaria.
-- Frontend: Cloudflare Pages es la opción conversada; su despliegue final y condiciones gratuitas se verificarán antes de publicar. En intranet se servirá localmente.
+- Frontend compilado servido por el proxy HTTPS de la misma VM Oracle; API bajo `/api/v1` en el mismo origen. Sustituye Cloudflare Pages por decisión del 2 de noviembre. En intranet se conserva este esquema.
 - Una VM inicialmente, PostgreSQL en red interna y archivos en volumen independiente de la imagen de API. No publicar 5432.
 - Ubuntu 24.04 LTS oficial y arquitectura compatible con el shape. La VM de prueba es x86_64; verificar imágenes por arquitectura si se cambia a ARM.
-- Cuentas individuales para secretaria y Maxi, sin registro público, con recuperación por correo. Diseño concreto de autenticación y sesiones portable pendiente; no se asume Supabase Auth.
+- Cuentas individuales para Vicky y Maxi con los mismos permisos, hashes en secrets del servidor y sin tabla de usuarios, registro público ni recuperación por correo. Cambios manuales de contraseña; cierre manual, expiración tras 8 horas de inactividad y pausas temporales por intentos fallidos por cuenta y por IP. Ver [autenticación](autenticacion-prototipo.md). Sesiones en memoria de un único proceso Fastify y cookie HttpOnly; reiniciar exige nuevo login. Diseño completo: scrypt de node:crypto, parámetros y secrets documentados; pausa de 15 minutos tras 5 fallos por cuenta o 20 por IP en ventana de 15 minutos. Implementación pendiente; no se asume Supabase Auth.
 - Piloto con datos reales y demo separada con datos ficticios, archivos y credenciales aislados.
 - Configuración sin rutas absolutas específicas de Windows o Linux; secretos fuera del código y navegador.
 - Objetivo de costo total USD 0, sin pagos automáticos. Comprobar Always Free, cuotas y persistencia; los créditos promocionales no aseguran gratuidad continua.
@@ -36,7 +36,7 @@ Oracle aloja nuestros servicios; no se sustituye PostgreSQL por Oracle Database.
 
 Mantener Docker Compose, PostgreSQL, Prisma y el almacenamiento por claves relativas. Preparar exportación y restauración consistente de base, archivos, cuentas y configuración. La implementación local completa se realizará cuando se decida migrar; no se considera probada todavía.
 
-El destino será un equipo del instituto encendido durante el uso, con acceso solo desde su intranet y sin dependencia cloud para el funcionamiento diario. Windows y Linux son alternativas a evaluar al elegir equipo y operación. Definir HTTPS, nombre interno, correo y respaldos en el destino. Ver [infraestructura y migración](infraestructura-y-migracion.md).
+El destino será un equipo del instituto encendido durante el uso, con acceso solo desde su intranet y sin dependencia cloud para el funcionamiento diario. Windows y Linux son alternativas a evaluar al elegir equipo y operación. Definir HTTPS, nombre interno y respaldos en el destino; el login y el cambio manual de contraseñas no requieren correo. Ver [infraestructura y migración](infraestructura-y-migracion.md).
 
 ## Estado de los repositorios y versiones
 
@@ -46,4 +46,4 @@ En la confirmación inicial, frontend y backend estaban vacíos; verificar su es
 - Backend: https://github.com/maxifarkuso/kume-admin-be
 - Documentación: https://github.com/maxifarkuso/kume-admin-docs
 
-Las versiones del producto se fijarán al inicializar los repositorios, verificando compatibilidad y soporte. Las imágenes Node 22 y PostgreSQL 17 usadas en el smoke test son evidencia de prueba, no fijación definitiva del stack. Pendiente definir autenticación, ampliación de OpenAPI, respaldo y restauración, concurrencia, HTTPS y despliegue final.
+Las versiones del producto se fijarán al inicializar los repositorios, verificando compatibilidad y soporte. Las imágenes Node 22 y PostgreSQL 17 usadas en el smoke test son evidencia de prueba, no fijación definitiva del stack. Contrato de autenticación incorporado a OpenAPI; diseño de credenciales y umbrales completo; pendientes implementación, respaldo y restauración, concurrencia, HTTPS y despliegue final.

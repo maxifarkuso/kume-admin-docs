@@ -1,8 +1,8 @@
 # KUME — Alcance del prototipo administrativo
 
-**Fecha:** 29 de octubre de 2026  
-**Actualización:** 1 de noviembre de 2026 — ejecución cloud en Oracle y alternativa de migración a intranet.  
-**Estado:** alcance y stack actualizados y confirmados; diseño funcional de base y API conservado, ampliaciones técnicas de autenticación y operación pendientes; diseño de pantallas en curso (paso 4); implementación de KUME pendiente; infraestructura básica cloud probada.
+**Fecha:** 29 de octubre de 2026
+**Actualización:** 2 de noviembre de 2026 — autenticación simplificada confirmada con GrillMe y restitución de tareas finalizadas.
+**Estado:** alcance y stack actualizados y confirmados; diseño funcional de base y API conservado; diseño técnico y contrato de autenticación completos; implementación de seguridad y operación pendientes; diseño de pantallas en curso (paso 4); implementación de KUME pendiente; infraestructura básica cloud probada.
 
 Este documento permite retomar el proyecto en otra sesión con Maxi. Según confirmación del responsable del proyecto, los repositorios de frontend y backend están vacíos y no imponen limitaciones al stack aprobado. Todavía no se implementó KUME. Se ejecutó una API temporal de prueba en Oracle para verificar Fastify, PostgreSQL y persistencia; no es código del producto.
 
@@ -16,7 +16,7 @@ Actualmente los comprobantes se comparten por WhatsApp, habitualmente con la inf
 
 - **Usuaria inicial:** secretaria administrativa de KUME, sin conocimientos técnicos.
 - **Desarrollo y mantenimiento:** Maxi, ingeniero en sistemas.
-- **Acceso:** secretaria y Maxi, con cuentas individuales y acceso completo a los datos del prototipo.
+- **Acceso:** Vicky (secretaria) y Maxi (técnico), con cuentas individuales y los mismos permisos de acceso completo a los datos del prototipo.
 - **Administración técnica:** Maxi administra cuentas, atiende alertas y ejecuta restauraciones. Infraestructura y respaldos bajo control de KUME, con recuperación accesible a la institución.
 - **Fecha de entrega:** sin fecha comprometida.
 
@@ -83,10 +83,10 @@ La carga histórica desde marzo queda fuera del prototipo. La **importación por
 
 - Backend alojado en una máquina virtual de Oracle Cloud Infrastructure elegible para Always Free, con Linux soportado y Docker Compose.
 - Una sola VM inicialmente, con API Fastify y PostgreSQL en contenedores separados y volúmenes persistentes para base de datos y archivos. PostgreSQL no se expone a internet.
-- Frontend React + TypeScript + Vite accesible por HTTPS, sin servicios locales para el uso diario. Cloudflare Pages es la opción conversada para alojarlo; verificar condiciones y definir el alojamiento final antes del despliegue.
+- Frontend React + TypeScript + Vite compilado y servido por el proxy de la VM Oracle, bajo el mismo origen HTTPS que la API (`/api/v1`). Decisión confirmada el 2 de noviembre; sustituye la alternativa Cloudflare Pages. Sin servicios locales para el uso diario.
 - Acceso desde distintas computadoras mediante navegador. Prioridad de escritorio; el uso completo desde celulares queda fuera del MVP.
 - Piloto con datos reales y demo separada con datos y archivos ficticios y cuenta propia.
-- Cuentas individuales de secretaria y Maxi, correo y contraseña, cierre y expiración de sesión y recuperación por correo. Sin registro público ni pantalla obligatoria de administración de cuentas.
+- Dos usuarios, Maxi y Vicky, con contraseñas individuales almacenadas como hash en un archivo de secrets del servidor, sin tabla de usuarios. Mismos permisos, cierre manual y vencimiento tras 8 horas de inactividad. Cambios de contraseña manuales a cargo de Maxi; sin recuperación por correo, registro público ni pantalla de administración de usuarios. Limitar intentos por cuenta y por IP mediante pausas temporales. Proteger pantallas, operaciones y archivos mediante una sesión válida. Ver [autenticación y tareas adicionales](autenticacion-prototipo.md).
 - Ambos pueden consultar y modificar los datos del sistema; administración de cuentas y restauraciones a cargo de Maxi.
 - Archivos privados y descargas autorizadas. Credenciales administrativas fuera del navegador y del repositorio.
 - Persistencia al reiniciar y actualizar contenedores. Configuración portable, sin rutas absolutas dependientes de Windows o Linux.
@@ -94,7 +94,7 @@ La carga histórica desde marzo queda fuera del prototipo. La **importación por
 
 ### Costo y disponibilidad
 
-El objetivo es mantener el costo total en **USD 0**, incluyendo piloto, demo, correo y respaldos. No hay presupuesto pago preaprobado ni contrataciones automáticas. Distinguir Always Free de los créditos promocionales de tiempo limitado.
+El objetivo es mantener el costo total en **USD 0**, incluyendo piloto, demo y respaldos. No hay presupuesto pago preaprobado ni contrataciones automáticas. Distinguir Always Free de los créditos promocionales de tiempo limitado.
 
 No se realizará un cálculo de consumo anual para el MVP. Sí se verificarán cuotas, espacio y condiciones necesarias para desplegar y respaldar, y se observarán los límites disponibles antes de comprometer el uso. No se eliminarán datos automáticamente para liberar capacidad.
 
@@ -104,7 +104,7 @@ Se aceptan pausas o demoras de servicios gratuitos durante demo y piloto, con me
 
 Si los límites o las condiciones gratuitas comprometen el uso, se evaluará migrar a un equipo del instituto. Se conservarán Node.js, Fastify, Prisma, PostgreSQL y Docker Compose; Oracle se usa como infraestructura, sin reemplazar la API por servicios propietarios. Supabase no forma parte de la arquitectura elegida.
 
-La migración deberá trasladar base de datos, archivos, cuentas y configuración, y servir el frontend desde la red local. El funcionamiento diario no dependerá de servicios cloud. La recuperación por correo y los respaldos externos pueden requerir internet; sus dependencias y alternativas deberán documentarse.
+La migración deberá trasladar base de datos, archivos, cuentas y configuración, y servir el frontend desde la red local. El funcionamiento diario no dependerá de servicios cloud. Los cambios de contraseña se realizan manualmente en secrets, sin servicio de correo. Los respaldos externos pueden requerir internet; sus dependencias y alternativas deberán documentarse.
 
 El acceso inicial será solo desde la intranet, sin acceso remoto. El equipo deberá permanecer encendido durante el uso; equipo, sistema operativo soportado y mantenimiento se resolverán antes del traslado. Windows o Linux son alternativas a verificar, no instalaciones locales ya probadas.
 
@@ -166,7 +166,7 @@ El stack tecnológico está **aprobado** y se documenta en [Stack tecnológico](
 - Carga histórica e importación por lote.
 - Catálogo administrable de proveedores.
 - Exportación con formato de Excel.
-- Registro público y permisos diferenciados para dirección.
+- Registro público, recuperación de contraseña por correo, pantalla de administración de usuarios y permisos diferenciados.
 - Uso completo desde celulares.
 - Ejecución de la migración completa a intranet dentro del MVP inicial; se documenta su preparación.
 - Acceso remoto a la intranet.
@@ -279,11 +279,13 @@ CLOCK continúa pendiente para una versión futura; todavía no se conoce su mec
 ## 12. Próximos pasos con Maxi
 
 1. [x] **DONE — 29 de octubre de 2026:** Revisar ambos repositorios de código y confirmar las herramientas complementarias. El responsable confirmó que ambos repositorios están vacíos, sin limitaciones previas, y aprobó el [stack tecnológico](stack-tecnologico.md).
-2. [ ] **AMPLIACIÓN PENDIENTE — 1 de noviembre de 2026:** Conservar el diseño funcional completado el 30 de octubre y ampliar cuentas, sesiones, autorización y operación cloud/local antes de implementar. Referencia del trabajo aprobado: Diseñar la base de datos, la API y el almacenamiento de comprobantes y documentos. Ver [diseño de base de datos](database-design.md), [diseño de API](api-design.md) y [contrato OpenAPI](openapi.yaml).
-3. [ ] **AMPLIACIÓN PENDIENTE — 1 de noviembre de 2026:** Conservar reglas resueltas el 30 de octubre; definir recuperación por correo, concurrencia de ambas cuentas, respaldos diarios, HTTPS y migración. Referencia del trabajo aprobado: Resolver detalles técnicos: validaciones, columnas del CSV, consulta de anulados, edición de gastos con rubros desactivados y reglas de fichas y asignaciones del personal. Decisiones registradas en el [diseño de base de datos](database-design.md), el [diseño de API](api-design.md) y el [contrato OpenAPI](openapi.yaml).
-4. [ ] **EN CURSO — 1 de noviembre de 2026:** Diseñar las pantallas y convertir el alcance en tareas. Navegación y bocetos estáticos de gastos y personal aprobados. Pendientes: catálogos, login, recuperación de contraseña, cierre y expiración de sesión, identificación de demo, indisponibilidad cloud, prototipo interactivo, documentación final y backlog. Sesión pausada hasta disponer de créditos de MagicPath; continuación prevista para el 2 de noviembre. Retomar desde la [memoria para el diseño de pantallas](continuacion-diseno-pantallas.md). No marcar como completado sin confirmación expresa de Maxi.
+2. [x] **DONE — 30 de octubre de 2026:** Diseñar la base de datos, la API y el almacenamiento de comprobantes y documentos. Completado funcional conservado; autenticación y operación se siguen como tareas adicionales independientes. Ver [diseño de base de datos](database-design.md), [diseño de API](api-design.md) y [contrato OpenAPI](openapi.yaml).
+3. [x] **DONE — 30 de octubre de 2026:** Resolver detalles técnicos: validaciones, columnas del CSV, consulta de anulados, edición de gastos con rubros desactivados y reglas de fichas y asignaciones del personal. Las ampliaciones cloud no reabren estas decisiones. Decisiones registradas en el [diseño de base de datos](database-design.md), el [diseño de API](api-design.md) y el [contrato OpenAPI](openapi.yaml).
+4. [ ] **EN CURSO — 1 de noviembre de 2026:** Diseñar las pantallas y convertir el alcance en tareas. Navegación y bocetos estáticos de gastos y personal aprobados. Pendientes: catálogos, login, intentos limitados, cierre y expiración de sesión, identificación de demo, indisponibilidad cloud, prototipo interactivo, documentación final y backlog. Sesión pausada hasta disponer de créditos de MagicPath; continuación prevista para el 2 de noviembre. Retomar desde la [memoria para el diseño de pantallas](continuacion-diseno-pantallas.md). No marcar como completado sin confirmación expresa de Maxi.
 5. Implementar y verificar los flujos acordados.
 6. Documentar despliegue cloud en Oracle, uso, cuentas, respaldo/restauración y preparación de migración a intranet; comprobar recuperación y carga representativa antes del piloto.
+
+**Tareas adicionales — 2 de noviembre de 2026:** el alcance, diseño técnico y contrato de autenticación están completos; quedan pantallas, implementación, despliegue y verificación. El detalle y los criterios para cerrar las tareas están en [autenticación del prototipo](autenticacion-prototipo.md). Concurrencia, respaldos diarios, HTTPS y preparación de migración continúan pendientes según [infraestructura](infraestructura-y-migracion.md), sin reabrir los pasos 2 y 3. El paso 4 conserva su estado en curso.
 
 **Contexto adicional:** se mencionó el proyecto de ChatGPT “kume” y la conversación “Planilla de pagos por curso”, pero su contenido no se pudo consultar. Este documento se basa exclusivamente en las decisiones de esta sesión.
 

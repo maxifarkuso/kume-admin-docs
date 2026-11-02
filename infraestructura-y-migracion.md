@@ -1,6 +1,7 @@
 # KUME — Infraestructura cloud y migración local
 
-**Fecha:** 1 de noviembre de 2026  
+**Fecha:** 1 de noviembre de 2026
+**Actualización:** 2 de noviembre de 2026 — autenticación con secrets, sin recuperación por correo.
 **Estado:** arquitectura confirmada; infraestructura básica probada por Maxi; despliegue del producto y migración local pendientes.
 
 ## Arquitectura
@@ -9,7 +10,7 @@ La modalidad inicial utiliza una VM Linux de Oracle Cloud Infrastructure Always 
 
 Oracle es infraestructura para nuestras imágenes, no una sustitución de la API ni de PostgreSQL. No se usan Oracle Database, Supabase ni Edge Functions como backend del producto.
 
-El frontend React/Vite tendrá acceso HTTPS. Cloudflare Pages es la opción conversada, pendiente de verificación final. En una migración completa a intranet también deberá servirse localmente.
+El proxy HTTPS de la VM Oracle sirve el frontend React/Vite compilado y reenvía `/api/v1` a Fastify, bajo un mismo origen; decisión confirmada el 2 de noviembre en reemplazo de Cloudflare Pages. No publicar directamente el puerto Fastify ni `/health` en Internet. Una instancia y un proceso backend por entorno, con sesiones en memoria: cada reinicio requiere nuevo login. En intranet se conserva el esquema. Ver [diseño de autenticación](autenticacion-prototipo.md).
 
 ## Condiciones operativas
 
@@ -46,16 +47,16 @@ Resultados aportados por Maxi desde la VM el 1 de noviembre de 2026:
 
 Estas imágenes y versiones describen el smoke test, no fijan versiones de producción. La API temporal en la carpeta remota de prueba no es KUME ni usa Prisma. No se instaló el producto en los repositorios por esta prueba.
 
-La validación básica no acredita rendimiento bajo carga, persistencia tras reinicio de VM, archivos del producto, HTTPS, autenticación, correo, aislamiento de demo, respaldos, restauración ni migración a intranet.
+La validación básica no acredita rendimiento bajo carga, persistencia tras reinicio de VM, archivos del producto, HTTPS, autenticación, aislamiento de demo, respaldos, restauración ni migración a intranet.
 
 ## Requisitos antes del piloto real
 
 1. Construir imagen de la API real y fijar dependencias y versiones compatibles; ejecutar migraciones Prisma controladas.
-2. Diseñar cuentas individuales, sesiones, autorización y recuperación por correo, ampliando API y OpenAPI. Conservar reglas de negocio y permisos de secretaria y Maxi.
+2. Implementar y verificar el diseño técnico y el contrato API/OpenAPI documentados para la [autenticación confirmada](autenticacion-prototipo.md): Maxi y Vicky, mismos permisos, hashes en secrets sin tabla de usuarios, cambios manuales de contraseña, cierre y expiración tras 8 horas de inactividad y límites temporales por cuenta y por IP. No incluir recuperación por correo. Conservar reglas funcionales.
 3. Configurar HTTPS, origen del frontend, certificados y proxy, sin publicar PostgreSQL ni archivos por rutas públicas sin autorización.
 4. Verificar persistencia de base y archivos, carga/descarga de documentos y operaciones representativas; medir recursos y fallos por memoria. No equiparar swap con RAM.
 5. Separar demo ficticia y piloto real en datos, archivos y credenciales.
-6. Automatizar respaldo consistente diario de base, archivos y configuración, cifrado y fuera de Oracle; retención 30 días, alertas a Maxi y claves recuperables por KUME.
+6. Automatizar respaldo consistente diario de base, archivos y configuración (incluido el archivo de usuarios en secrets, no sesiones ni contadores), cifrado y fuera de Oracle; retención 30 días, alertas a Maxi y claves recuperables por KUME.
 7. Probar restauración en entorno vacío y programar verificación trimestral. Google Drive institucional es candidato; mecanismo, capacidad gratuita y alertas aún pendientes.
 
 ## Migración completa a un entorno local
@@ -68,7 +69,7 @@ La migración es una alternativa si los límites o condiciones cloud comprometen
 - Reutilizar Docker Compose e imágenes compatibles; permitir despliegue local en Windows o Linux tras verificar condiciones de operación. No asumir instalaciones ya probadas.
 - Preparar almacenamiento persistente y PostgreSQL privado en red interna. Servir también el frontend dentro del instituto.
 - Establecer nombre interno, HTTPS y confianza de certificados en las computadoras usuarias, sin abrir acceso remoto a la intranet.
-- Identificar dependencias de correo, autenticación, CDN y otros servicios externos. La operación diaria debe funcionar sin cloud; documentar dependencias de internet para recuperación por correo y respaldos externos y resolver alternativas administrativas necesarias.
+- Identificar dependencias de autenticación, CDN y otros servicios externos. La operación diaria y los cambios manuales de contraseña deben funcionar sin cloud ni correo; documentar dependencias de internet para respaldos externos. Trasladar secrets de manera protegida y comprobar el acceso de Maxi y Vicky.
 
 ### Ensayo y traslado
 

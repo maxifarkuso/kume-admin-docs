@@ -1,6 +1,6 @@
 # KUME — Diseño de API
 
-Este documento resume las decisiones del contrato HTTP. Las operaciones funcionales se conservan en [OpenAPI](openapi.yaml). Actualización del 1 de noviembre de 2026: Fastify se ejecutará inicialmente en Oracle Cloud Always Free, con Docker Compose y alternativa de migración completa a intranet. El contrato requiere ampliar autenticación antes de implementar el piloto; todavía no describe login, sesiones ni todos los errores de autorización.
+Este documento resume las decisiones del contrato HTTP. Las operaciones funcionales se conservan en [OpenAPI](openapi.yaml). Actualización del 2 de noviembre de 2026: Fastify se ejecutará inicialmente en Oracle Cloud Always Free, con Docker Compose y alternativa de migración completa a intranet. El contrato incluye login, consulta de sesión, logout y seguridad por cookie; diseño detallado en [autenticación](autenticacion-prototipo.md). Diseño técnico completo con scrypt y umbrales de intentos confirmados; implementación y verificación pendientes.
 
 ## Convenciones
 
@@ -11,8 +11,9 @@ Este documento resume las decisiones del contrato HTTP. Las operaciones funciona
 - JSON para datos y `multipart/form-data` exclusivamente para cargas de archivos.
 - Días: `monday` a `sunday`. Turnos: `morning` y `afternoon`.
 - Roles: `teacher`, `assistant` y `workshopInstructor`.
-- Operaciones de negocio y archivos accesibles solo por cuentas habilitadas de secretaria y Maxi. Sin registro público; recuperación por correo y cierre/expiración de sesión.
-- Definición de endpoints de autenticación, transporte de sesión, protección CSRF cuando corresponda y respuestas 401/403 pendiente de diseño; no se elige un mecanismo implícitamente.
+- Operaciones de negocio y archivos accesibles solo por cuentas habilitadas de secretaria y Maxi. Maxi y Vicky tienen los mismos permisos; credenciales individuales en secrets, sin tabla de usuarios ni recuperación por correo. Cierre manual y expiración tras 8 horas de inactividad, con limitación temporal de intentos por cuenta y por IP. Ver [alcance y tareas de autenticación](autenticacion-prototipo.md).
+- Login: 5 fallos por cuenta o 20 por IP en ventana móvil de 15 minutos activan una pausa de 15 minutos, con `429` y `Retry-After`; la petición bloqueada no prolonga la pausa. Cambiar contraseña requiere actualizar secrets y reiniciar, cerrando todas las sesiones.
+- Sesiones opacas en memoria de un único proceso Fastify; cookie `__Host-kume_session` Secure, HttpOnly, SameSite=Strict y Path=/, sin Domain. Reiniciar exige nuevo login. Escrituras, login y logout exigen Origin configurado y `X-Kume-Request: 1`; errores 401/403/429 definidos en OpenAPI. GET de sesión no renueva actividad.
 - HTTPS en el acceso cloud y en el destino local según su configuración. CORS acepta únicamente el origen configurado del frontend y no sustituye autorización.
 
 El frontend traduce valores técnicos mediante mapas de presentación, por ejemplo `morning` → “Matutino”, `afternoon` → “Vespertino” y `monday` → “Lunes”.
@@ -26,6 +27,16 @@ El frontend traduce valores técnicos mediante mapas de presentación, por ejemp
 | `GET` | `/health` | Estado de la API y de PostgreSQL para Docker Compose |
 | `GET` | `/openapi.json` | Contrato OpenAPI servido por la aplicación |
 | `GET` | `/documentation` | Interfaz Swagger según entorno y política de acceso |
+
+### Autenticación
+
+| Método | Ruta | Resultado |
+|---|---|---|
+| POST | `/api/v1/auth/login` | `username` y `password`; crea cookie y devuelve usuario y `expiresAt` |
+| GET | `/api/v1/auth/session` | Consulta sesión sin renovar actividad |
+| POST | `/api/v1/auth/logout` | Invalida sesión y limpia cookie; 204 idempotente |
+
+Un mismo origen HTTPS sirve frontend y API. Las rutas funcionales y Swagger requieren sesión; login y logout no exigen una sesión previa, pero sí protección de origen y cabecera. Salud es una excepción exclusivamente interna. Ver [diseño detallado](autenticacion-prototipo.md).
 
 ### Rubros
 
@@ -133,6 +144,9 @@ Clasificación de errores:
 | Estado | Uso |
 |---:|---|
 | `400` | Petición o JSON malformado |
+| `401` | Credenciales incorrectas o sesión ausente, inválida o vencida |
+| `403` | Origen o cabecera de protección rechazados |
+| `429` | Pausa temporal de login, con Retry-After |
 | `404` | Recurso inexistente |
 | `409` | Unicidad, asignación ocupada o baja bloqueada |
 | `413` | Archivo mayor a 10 MB |

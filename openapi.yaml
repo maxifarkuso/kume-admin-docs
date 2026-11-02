@@ -7,14 +7,23 @@ info:
     Contrato funcional de KUME, con API Fastify desplegada inicialmente en Oracle
     Cloud Always Free y posible migración completa a intranet. Los nombres técnicos
     están en inglés y los textos administrables permanecen en español.
-    Pendiente ampliar autenticación, sesiones, recuperación de contraseña y errores
-    de autorización antes del piloto. La ausencia de securitySchemes en esta revisión
-    no autoriza exponer operaciones de negocio sin autenticación.
+    Alcance confirmado el 2 de noviembre de 2026: Maxi y Vicky con los mismos
+    permisos, hashes de contraseñas individuales en secrets y sin tabla de usuarios.
+    Cambios manuales de contraseña, sin recuperación por correo; cierre manual,
+    expiración tras 8 horas de inactividad y límites temporales por cuenta y por IP.
+    Sesiones en memoria de una instancia Fastify; reiniciar exige nuevo login.
+    Frontend y API bajo un mismo origen HTTPS. Contrato de autenticación definido;
+    Cambio de contraseña mediante secrets y reinicio, cerrando todas las sesiones.
+    Pausa de 15 minutos tras 5 fallos por cuenta o 20 por IP en 15 minutos.
+    Implementación y verificación pendientes antes del piloto.
 servers:
   - url: http://localhost:3000
     description: Referencia de desarrollo local; la URL HTTPS cloud o de intranet se definirá al desplegar
+security:
+  - SessionCookie: []
 tags:
   - name: System
+  - name: Authentication
   - name: Categories
   - name: Expenses
   - name: Staff members
@@ -23,8 +32,103 @@ tags:
   - name: Workshops
 
 paths:
+  /api/v1/auth/login:
+    post:
+      tags:
+      - Authentication
+      summary: Iniciar sesión
+      operationId: login
+      security: []
+      description: Valida Origin y X-Kume-Request. Rota la sesión del navegador al autenticar.
+        Credenciales incorrectas no revelan si existe el usuario. Cache-Control no-store
+        en todas las respuestas. Ventana móvil de 15 minutos; 5 fallos por cuenta
+        o 20 por IP activan una pausa de 15 minutos. El fallo que alcanza el umbral
+        y las solicitudes durante la pausa devuelven 429 con Retry-After; las
+        solicitudes rechazadas no prolongan la pausa.
+      parameters:
+      - $ref: '#/components/parameters/KumeRequest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Sesión creada; token solo en cookie.
+          headers:
+            Cache-Control: &id001
+              description: Impide almacenar respuestas de autenticación.
+              schema:
+                type: string
+                const: no-store
+            Set-Cookie: &id002
+              description: Cookie de sesión; Secure, HttpOnly, SameSite=Strict, Path=/,
+                sin Domain ni vencimiento persistente. Logout la elimina usando Max-Age=0.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/auth/session:
+    get:
+      tags:
+      - Authentication
+      summary: Consultar sesión sin renovar actividad
+      operationId: getSession
+      description: No actualiza lastActivityAt. Respuesta no-store; sesión ausente,
+        vencida o invalidada devuelve 401 y limpia cookie.
+      responses:
+        '200':
+          description: Sesión vigente; mismos permisos para ambas cuentas.
+          headers:
+            Cache-Control: *id001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSession'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/v1/auth/logout:
+    post:
+      tags:
+      - Authentication
+      summary: Cerrar sesión
+      operationId: logout
+      security: []
+      description: Valida Origin y X-Kume-Request. Elimina sesión presentada y limpia
+        cookie. Idempotente sin sesión o con sesión inválida; no cierra otras sesiones
+        del usuario.
+      parameters:
+      - $ref: '#/components/parameters/KumeRequest'
+      responses:
+        '204':
+          description: Sesión invalidada y cookie eliminada.
+          headers:
+            Cache-Control: *id001
+            Set-Cookie: *id002
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
   /health:
     get:
+      security: []
+      description: Salud interna para Compose; el proxy público no expone esta ruta.
       tags: [System]
       summary: Comprobar API y PostgreSQL
       operationId: getHealth
@@ -48,6 +152,8 @@ paths:
       summary: Obtener el contrato OpenAPI servido por la aplicación
       operationId: getOpenApiDocument
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Documento OpenAPI
           content:
@@ -62,6 +168,8 @@ paths:
       summary: Abrir la interfaz Swagger local
       operationId: getDocumentation
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Interfaz HTML
           content:
@@ -79,6 +187,8 @@ paths:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Página de rubros ordenada por nombre
           content:
@@ -99,7 +209,13 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CategoryCreate"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "201":
           description: Rubro creado
           headers:
@@ -124,6 +240,8 @@ paths:
       summary: Consultar rubro
       operationId: getCategory
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Rubro encontrado
           content:
@@ -142,7 +260,13 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CategoryPatch"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Rubro actualizado
           content:
@@ -163,7 +287,13 @@ paths:
       tags: [Categories]
       summary: Desactivar rubro
       operationId: deactivateCategory
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "204":
           description: Rubro desactivado
         "404":
@@ -172,7 +302,13 @@ paths:
       tags: [Categories]
       summary: Reactivar rubro
       operationId: reactivateCategory
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "204":
           description: Rubro reactivado
         "404":
@@ -191,6 +327,8 @@ paths:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Página de gastos y total del filtro
           content:
@@ -221,7 +359,13 @@ paths:
             encoding:
               data:
                 contentType: application/json
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "201":
           description: Gasto y comprobante creados
           headers:
@@ -253,6 +397,8 @@ paths:
         - $ref: "#/components/parameters/CategoryFilter"
         - $ref: "#/components/parameters/ExpenseStatus"
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: CSV UTF-8 con BOM y formato RFC 4180
           headers:
@@ -275,6 +421,8 @@ paths:
       summary: Consultar gasto
       operationId: getExpense
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Gasto encontrado
           content:
@@ -293,7 +441,13 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/ExpensePatch"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Gasto actualizado
           content:
@@ -314,7 +468,13 @@ paths:
       tags: [Expenses]
       summary: Anular gasto
       operationId: cancelExpense
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "204":
           description: Gasto anulado
         "404":
@@ -325,7 +485,13 @@ paths:
       tags: [Expenses]
       summary: Restaurar gasto anulado
       operationId: restoreExpense
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "204":
           description: Gasto restaurado
         "404":
@@ -351,7 +517,13 @@ paths:
                 receipt:
                   type: string
                   format: binary
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Metadatos del comprobante nuevo
           content:
@@ -377,6 +549,8 @@ paths:
       summary: Descargar comprobante
       operationId: downloadReceipt
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           $ref: "#/components/responses/BinaryFile"
         "404":
@@ -398,6 +572,8 @@ paths:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Página de personal
           content:
@@ -416,7 +592,13 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/StaffMemberCreate"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "201":
           description: Ficha creada
           headers:
@@ -439,6 +621,8 @@ paths:
       summary: Consultar ficha, asignaciones y documentos
       operationId: getStaffMember
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Ficha encontrada
           content:
@@ -457,7 +641,13 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/StaffMemberPatch"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Ficha actualizada
           content:
@@ -484,7 +674,13 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/StaffDeactivation"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "204":
           description: Ficha inactivada
         "404":
@@ -497,7 +693,13 @@ paths:
       tags: [Staff members]
       summary: Reactivar personal sin restaurar asignaciones
       operationId: reactivateStaffMember
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "204":
           description: Ficha reactivada y fecha de egreso eliminada
         "404":
@@ -516,6 +718,8 @@ paths:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Página de documentos
           content:
@@ -543,7 +747,13 @@ paths:
                 file:
                   type: string
                   format: binary
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "201":
           description: Documento creado
           headers:
@@ -573,6 +783,8 @@ paths:
       summary: Descargar documento
       operationId: downloadStaffDocument
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           $ref: "#/components/responses/BinaryFile"
         "404":
@@ -586,7 +798,13 @@ paths:
       tags: [Staff members]
       summary: Eliminar documento de una ficha activa
       operationId: deleteStaffDocument
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "204":
           description: Registro y archivo eliminados
         "404":
@@ -621,6 +839,8 @@ paths:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Página de asignaciones
           content:
@@ -639,7 +859,13 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/AssignmentWrite"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "201":
           description: Asignación creada
           headers:
@@ -664,6 +890,8 @@ paths:
       summary: Consultar asignación
       operationId: getAssignment
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Asignación encontrada
           content:
@@ -682,7 +910,13 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/AssignmentWrite"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Asignación actualizada
           content:
@@ -699,7 +933,13 @@ paths:
       tags: [Assignments]
       summary: Retirar asignación sin historial
       operationId: deleteAssignment
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "204":
           description: Asignación retirada
         "404":
@@ -721,6 +961,8 @@ paths:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Página de cursos
           content:
@@ -739,7 +981,13 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CourseCreate"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "201":
           description: Curso creado
           headers:
@@ -762,6 +1010,8 @@ paths:
       summary: Consultar curso
       operationId: getCourse
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Curso encontrado
           content:
@@ -780,7 +1030,13 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CoursePatch"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Curso actualizado
           content:
@@ -801,7 +1057,13 @@ paths:
       tags: [Courses]
       summary: Desactivar curso sin asignaciones
       operationId: deactivateCourse
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "204":
           description: Curso desactivado
         "404":
@@ -812,7 +1074,13 @@ paths:
       tags: [Courses]
       summary: Reactivar curso
       operationId: reactivateCourse
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "204":
           description: Curso reactivado
         "404":
@@ -828,6 +1096,8 @@ paths:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Página de talleres
           content:
@@ -846,7 +1116,13 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/WorkshopCreate"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "201":
           description: Taller creado
           headers:
@@ -869,6 +1145,8 @@ paths:
       summary: Consultar taller
       operationId: getWorkshop
       responses:
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Taller encontrado
           content:
@@ -887,7 +1165,13 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/WorkshopPatch"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "200":
           description: Taller actualizado
           content:
@@ -908,7 +1192,13 @@ paths:
       tags: [Workshops]
       summary: Desactivar taller sin asignaciones
       operationId: deactivateWorkshop
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "204":
           description: Taller desactivado
         "404":
@@ -919,13 +1209,25 @@ paths:
       tags: [Workshops]
       summary: Reactivar taller
       operationId: reactivateWorkshop
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
       responses:
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "204":
           description: Taller reactivado
         "404":
           $ref: "#/components/responses/NotFound"
 
 components:
+  securitySchemes:
+    SessionCookie:
+      type: apiKey
+      in: cookie
+      name: __Host-kume_session
+      description: Sesión opaca; Secure, HttpOnly, SameSite=Strict, Path=/, sin Domain. Vence tras 8 horas de inactividad; reiniciar el backend la invalida.
   headers:
     Location:
       description: URI del recurso creado
@@ -934,6 +1236,14 @@ components:
         format: uri-reference
 
   parameters:
+    KumeRequest:
+      name: X-Kume-Request
+      in: header
+      required: true
+      description: Obligatoria en escrituras, login y logout. También se valida Origin contra el origen configurado; ausente, null o distinto devuelve 403.
+      schema:
+        type: string
+        const: "1"
     Page:
       name: page
       in: query
@@ -1032,6 +1342,33 @@ components:
         format: uuid
 
   responses:
+    Unauthorized:
+      description: Sesión ausente, inválida o vencida; credenciales incorrectas en login.
+        Limpiar cookie si la sesión presentada ya no es válida.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Forbidden:
+      description: Origin ausente, null o distinto del origen configurado, o X-Kume-Request
+        ausente o inválida.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    TooManyRequests:
+      description: Login temporalmente limitado por cuenta o por IP; no revela si existe
+        la cuenta.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        Retry-After:
+          description: Segundos restantes hasta poder reintentar.
+          schema:
+            type: integer
+            minimum: 1
     BadRequest:
       description: Petición malformada
       content:
@@ -1096,6 +1433,49 @@ components:
             format: binary
 
   schemas:
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: Identificador normalizado por trim y minúsculas; maxi o vicky en
+            el piloto.
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+          description: No recortar ni normalizar; no registrar en logs.
+    AuthSession:
+      type: object
+      additionalProperties: false
+      required:
+      - user
+      - expiresAt
+      properties:
+        user:
+          type: object
+          additionalProperties: false
+          required:
+          - username
+          - displayName
+          properties:
+            username:
+              type: string
+            displayName:
+              type: string
+        expiresAt:
+          type: string
+          format: date-time
+          description: Vencimiento UTC calculado al responder; se desplaza con actividad
+            autenticada aceptada, excepto la consulta de sesión.
     Health:
       type: object
       required: [status, database]

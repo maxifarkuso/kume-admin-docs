@@ -1,18 +1,18 @@
 # KUME — Continuación del diseño de pantallas
 
-- **Fecha de traspaso:** 1 de noviembre de 2026
+- **Fecha de traspaso:** 2 de noviembre de 2026
 - **Rama de trabajo:** `main`
 - **Estado:** paso 4 en curso; sesión pausada por decisión de Maxi.
 - **Próxima sesión prevista:** 2 de noviembre de 2026, sujeta a disponibilidad de créditos de MagicPath.
-- **Próximo paso:** incorporar acceso autenticado y estados cloud al inventario, completar catálogos y continuar el prototipo interactivo. Coordinar las ampliaciones técnicas de cuentas y operación.
+- **Próximo paso:** revisión documental de autenticación antes de retomar pantallas, por pedido de Maxi del 2 de noviembre. Diseño técnico y contrato completos; implementación y verificación pendientes. Consultar el balance y los criterios de cierre en [autenticación](autenticacion-prototipo.md). No se avanzaron pantallas en esta revisión.
 
 ## Estado del proyecto
 
-El stack y las reglas funcionales de los pasos 1 a 3 se conservan. El cambio cloud del 1 de noviembre requiere ampliaciones técnicas pendientes:
+El stack y las reglas funcionales de los pasos 1 a 3 se conservan. La autenticación adicional tiene diseño técnico y contrato completos al 2 de noviembre; todavía falta implementarla y verificarla. Las ampliaciones operativas cloud siguen pendientes:
 
 1. Stack tecnológico aprobado.
-2. Base, API y archivos diseñados; ampliar cuentas, sesiones y autorización sin reemplazar Fastify ni Prisma.
-3. Reglas funcionales resueltas; ampliar HTTPS, respaldos diarios, concurrencia y portabilidad a intranet.
+2. DONE: base, API y archivos diseñados el 30 de octubre. Autenticación como tarea adicional independiente, sin reabrir el diseño funcional ni reemplazar Fastify o Prisma.
+3. DONE: reglas funcionales resueltas el 30 de octubre. HTTPS, respaldos diarios, concurrencia y portabilidad a intranet se siguen como ampliaciones independientes.
 
 Todavía no se implementó el producto en frontend ni backend. Se probó una API temporal con PostgreSQL en Oracle; no sustituye la implementación de KUME. La estructura de navegación y las tandas de bocetos estáticos de gastos y personal fueron aprobadas por Maxi en esta conversación el 1 de noviembre de 2026. La aprobación parcial no completa el paso 4.
 
@@ -50,7 +50,7 @@ Todavía no se implementó el producto en frontend ni backend. Se probó una API
 
 ### Pendientes al pausar
 
-**Ampliación cloud confirmada:** agregar login, recuperación de contraseña, cierre y expiración de sesión, identificación de demo e indisponibilidad de red/servicio. Estos flujos no tienen bocetos aprobados todavía. Conservar las aprobaciones de gastos y personal. Ver [infraestructura y migración](infraestructura-y-migracion.md).
+**Ampliación cloud confirmada:** agregar login, intentos limitados, cierre manual y expiración tras 8 horas de inactividad, identificación de demo e indisponibilidad de red/servicio. Estos flujos no tienen bocetos aprobados todavía. Conservar las aprobaciones de gastos y personal. Ver [infraestructura y migración](infraestructura-y-migracion.md).
 
 1. Completar C01 Rubros, C02 Cursos, C03 Talleres y C04 Estados y bajas bloqueadas. Sus marcos se crearon, pero están vacíos: las llamadas para agregar contenido fueron rechazadas por falta de cuota. No están aprobados.
 2. Incluir catálogos inactivos, validaciones y bloqueos de baja o retirada de turnos con asignaciones.
@@ -78,7 +78,8 @@ En caso de contradicción, prevalece el alcance más reciente en `main`; la cont
 
 - La usuaria inicial es la secretaria administrativa de KUME y no tiene conocimientos técnicos.
 - La aplicación se usa inicialmente desde distintas computadoras mediante navegador y HTTPS; backend en Oracle Cloud Always Free con Docker Compose. Posible migración completa a intranet, sin dependencia cloud para operación diaria.
-- Cuentas individuales de secretaria y Maxi, acceso completo a los datos, sin registro público. Login con correo/contraseña, cierre y expiración de sesión y recuperación por correo. Maxi administra cuentas y restauraciones; no se exigen pantallas para esas tareas.
+- Cuentas individuales de secretaria y Maxi, acceso completo a los datos, sin registro público. Maxi y Vicky tienen los mismos permisos, con contraseñas individuales almacenadas como hash en secrets, sin tabla de usuarios. Cierre manual y expiración tras 8 horas de inactividad; pausas temporales por intentos fallidos por cuenta y por IP. Maxi cambia contraseñas manualmente y administra restauraciones; no hay recuperación por correo ni pantallas de administración de usuarios. Ver [autenticación confirmada el 2 de noviembre](autenticacion-prototipo.md).
+- Frontend y API bajo un mismo origen HTTPS en Oracle; sesiones en memoria del backend, perdidas al reiniciar. Login con usuario (`maxi` o `vicky`) y contraseña, sin requerir correo. La consulta automática de sesión no renueva las 8 horas de inactividad.
 - Piloto real y demo aislada con datos ficticios; identificar la demo claramente.
 - Objetivo de costo cero; si los límites comprometen el uso se evalúa intranet. No hacer dimensionamiento anual del MVP.
 - El diseño primario es de escritorio; el uso completo desde celulares queda fuera del MVP.
@@ -103,7 +104,7 @@ Proyecto existente: **KUME — Diseño administrativo · Paso 4**.
 
 El avance y las aprobaciones de cada tanda se registran arriba. Este es el inventario de referencia:
 
-- Login, recuperación de contraseña y cierre de sesión.
+- Login y cierre de sesión; sin pantalla de recuperación de contraseña.
 - Estructura general y navegación.
 - Listado de gastos, filtros, total y exportación.
 - Alta y edición de gasto con comprobante.
@@ -132,7 +133,7 @@ No agregar un dashboard independiente salvo que se demuestre que mejora el flujo
 
 ## Estados y casos que deben aparecer en los bocetos
 
-- Sesión expirada, credenciales incorrectas y recuperación de contraseña.
+- Sesión expirada, credenciales incorrectas e intentos temporalmente limitados; indicar que contacten a Maxi para cambiar la contraseña.
 - Demo identificada e indisponibilidad de red/servicio sin mensajes técnicos internos.
 - Primera utilización sin datos.
 - Carga, éxito y error.
@@ -170,9 +171,9 @@ Trabajá siempre sobre la rama main del repositorio de documentación. Antes de 
 - database-design.md
 - stack-tecnologico.md
 
-El stack y las reglas funcionales de los pasos 1 a 3 se conservan; hay ampliaciones técnicas pendientes de cuentas, operación cloud y migración local. El paso 4 sigue en curso. Leé primero el avance y las aprobaciones de esta memoria. Reutilizá el proyecto MagicPath 467706881381666816: gastos y personal ya están aprobados. Completá los marcos vacíos de catálogos; después seguí con el prototipo interactivo, screen-design.md y el backlog. No repitas las rondas ya resueltas.
+El stack y las reglas funcionales de los pasos 1 a 3 se conservan. Leé autenticacion-prototipo.md: diseño técnico y contrato completos, implementación y pruebas pendientes; no repitas las decisiones confirmadas de sesiones, credenciales, alojamiento o límites. Hay pendientes de operación cloud y migración local. El paso 4 sigue en curso. Leé primero el avance y las aprobaciones de esta memoria. Reutilizá el proyecto MagicPath 467706881381666816: gastos y personal ya están aprobados. Completá los marcos vacíos de catálogos; después seguí con el prototipo interactivo, screen-design.md y el backlog. No repitas las rondas ya resueltas.
 
-Usá el plugin MagicPath, que ya está conectado, para crear primero un mapa de navegación y luego wireframes de baja fidelidad. No implementes React todavía. Diseñá para una secretaria administrativa sin conocimientos técnicos, uso desde computadoras por HTTPS, textos visibles en español, login y recuperación de contraseña. Incorporá cierre/expiración de sesión, identificación de demo e indisponibilidad cloud. El backend conserva Fastify, Prisma y PostgreSQL en Oracle; hay una alternativa futura de intranet. No diseñes pantallas de administración de cuentas ni restauración.
+Usá el plugin MagicPath, que ya está conectado, para crear primero un mapa de navegación y luego wireframes de baja fidelidad. No implementes React todavía. Diseñá para una secretaria administrativa sin conocimientos técnicos, uso desde computadoras por HTTPS, textos visibles en español y login de Maxi y Vicky con los mismos permisos. Contraseñas con hash en secrets sin tabla de usuarios ni recuperación por correo; cambios manuales a cargo de Maxi, cierre manual, expiración tras 8 horas de inactividad y pausas temporales de intentos por cuenta y por IP. Incorporá cierre/expiración de sesión, identificación de demo e indisponibilidad cloud. El backend conserva Fastify, Prisma y PostgreSQL en Oracle; hay una alternativa futura de intranet. No diseñes pantallas de administración de cuentas ni restauración.
 
 Usá GrillMe para resolver decisiones reales de UX por rondas, con una recomendación en cada pregunta. No me preguntes hechos que puedas obtener de los documentos. Antes de dibujar todas las pantallas, presentame y recomendame:
 1. La arquitectura de información.
