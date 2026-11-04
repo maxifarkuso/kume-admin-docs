@@ -1,0 +1,32 @@
+name: Oracle administration checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  operations:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Pinned shell checkers (runner only)
+        run: |
+          mkdir -p work/checkers
+          curl --fail --location --max-time 60 https://github.com/koalaman/shellcheck/releases/download/v0.10.0/shellcheck-v0.10.0.linux.x86_64.tar.xz --output work/checkers/shellcheck.tar.xz
+          curl --fail --location --max-time 60 https://github.com/mvdan/sh/releases/download/v3.12.0/shfmt_v3.12.0_linux_amd64 --output work/checkers/shfmt
+          echo '6c881ab0698e4e6ea235245f22832860544f17ba386442fe7e9d629f8cbedf87  work/checkers/shellcheck.tar.xz' | sha256sum --check
+          echo 'd9fbb2a9c33d13f47e7618cf362a914d029d02a6df124064fff04fd688a745ea  work/checkers/shfmt' | sha256sum --check
+          tar -xJf work/checkers/shellcheck.tar.xz -C work/checkers
+          chmod 0755 work/checkers/shfmt
+      - name: Syntax, lint and shell format
+        run: |
+          bash -n scripts/oracle-admin.sh
+          work/checkers/shellcheck-v0.10.0/shellcheck scripts/oracle-admin.sh
+          work/checkers/shfmt -d -i 2 scripts/oracle-admin.sh
+          git diff --check
+      - name: Read-only behavior (synthetic states and simulated Docker)
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
