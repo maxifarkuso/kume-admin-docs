@@ -1,6 +1,6 @@
 # 001 — Obtención automática de la revisión backend
 
-Estado: alcance solicitado por Maxi; implementación pendiente.
+Estado: implementada en rama de revisión; verificación en Oracle pendiente.
 Fecha: 4 de noviembre de 2026.
 
 ## Objetivo

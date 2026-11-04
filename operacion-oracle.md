@@ -122,3 +122,50 @@ Instalación en otra máquina y migración completa del producto siguen sin prob
 Herramienta de consulta: [administración de Oracle](administracion-oracle.md).
 Este registro no completa diseño de pantallas, no habilita piloto ni cambia el
 contrato canónico o los requisitos de seguridad acordados.
+
+## Mejora propuesta: revisión automática del backend
+
+Estado: preparada para revisión por PR independiente; no integrada ni desplegada.
+SDD documental: [001 — Revisión backend](docs/specs/001-backend-revision/spec.md).
+Implementación y runbook propietarios en
+[frontend 004](https://github.com/maxifarkuso/kume-admin-fe/blob/feat/automatic-backend-revision/docs/specs/004-backend-revision/spec.md) y
+[operación frontend](https://github.com/maxifarkuso/kume-admin-fe/blob/feat/automatic-backend-revision/docs/deployment/oracle-test.md#revisión-automática-del-backend).
+
+El workflow frontend conserva ejecución manual desde main. Para deploy, un job
+con el environment oracle-test consulta por SSH el backend instalado antes del
+build. Valida current/previous/pending, IDs completos, ausencia de pending y
+GET http://127.0.0.1:3001/health con HTTP 200, status=ok y database=ok. Solo el SHA
+completo pasa al empaquetado y al manifiesto existente; no se usa una variable
+manual, una revisión de main ni una entrega anterior como fallback.
+
+La consulta lee únicamente /home/ubuntu/kume-backend/state.json y el
+deployment.lock existente en ese directorio. Usa un lock compartido no bloqueante,
+compatible con otras consultas y excluyente con el lock exclusivo ya utilizado
+por el gestor de despliegue backend. La publicación frontend retiene ese lock
+mientras opera y revalida revisión y salud inmediatamente antes del journal y la
+activación. Si cambió el SHA durante la preparación, aborta sin cambiar la versión
+activa; las releases preparadas pueden conservarse. Las operaciones manuales que
+ignoren ese lock no están coordinadas por este mecanismo.
+
+La cuenta SSH existente debe poder atravesar esa ruta y leer ambos archivos.
+No se amplían permisos ni se consulta runtime.env, configuración privada o
+credenciales. restrict en authorized_keys no aísla los comandos de una cuenta
+administrativa: conservar explícita esa limitación. Si falta acceso, falla; no
+modificar ACL ni sudoers por inferencia. La consulta no crea ni escribe archivos
+del backend y no instala servicios permanentes.
+
+Ante SSH fallido, estado inválido, pending, backend no saludable, lock ocupado o
+revisión incompatible, revisar la causa y el estado antes de repetir. No copiar
+secrets, estado bruto ni respuestas remotas arbitrarias en logs. Se conservan
+checksums, manifiestos, journal, recuperación, activación inicial guiada y rollback
+contra el backend compatible; rollback no requiere construir otra release.
+
+BACKEND_REVISION queda ignorada por el workflow nuevo. Retirar la variable solo
+tras integrar la mejora y comprobar una ejecución manual con el SHA esperado.
+No se retira en esta tarea. Para volver al workflow anterior, revertir el commit
+de implementación del frontend y restaurar primero la variable con el SHA
+realmente instalado. No requiere migración ni cambio de configuración de la VM.
+
+Pendiente: integración y primera ejecución autorizada en Oracle. Las pruebas
+locales no acreditan permisos SSH efectivos ni despliegue en la VM. La mejora
+no depende de authentication-foundation ni cambia su rama o despliegue.

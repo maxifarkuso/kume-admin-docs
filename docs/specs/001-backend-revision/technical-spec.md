@@ -1,6 +1,6 @@
 # 001 — Diseño técnico documental
 
-Estado: diseño para implementación.
+Estado: documentación implementada; no acredita instalación en Oracle.
 
 La documentación propietaria de la implementación está en
 [frontend 004](https://github.com/maxifarkuso/kume-admin-fe/blob/feat/automatic-backend-revision/docs/specs/004-backend-revision/technical-spec.md).
