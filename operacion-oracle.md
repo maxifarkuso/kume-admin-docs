@@ -83,9 +83,36 @@ El túnel requiere mantener PuTTY conectado y se cierra al terminar la sesión.
 La computadora del trabajo administrada no se usa para intentar eludir restricciones.
 Nuevas pruebas personales de navegador quedan pendientes hasta disponer de ese equipo.
 
+## Utilidad kume-admin instalada y comprobada
+
+Maxi instaló la utilidad el 4 de noviembre de 2026 como usuario de despliegue,
+sin sudo global. Procedimiento propietario, comandos y adaptación a otra máquina:
+[administración de Oracle](administracion-oracle.md#instalación-comprobada-y-repetible).
+
+- Fuente de docs: commit 28d2460a0f75beac01bf7b02edec5b037e104054.
+- Archivo descargado a ~/.local/bin/kume-admin.download; SHA-256 completo
+  comparado y confirmado antes de instalar. La huella se conserva en la guía.
+- Copia ejecutable: ~/.local/bin/kume-admin, instalada con modo 0700 en carpeta
+  propia 0700, mediante install sin sudo.
+- Ayuda, estados reales, salud y contenedores: salidas aportadas por Maxi.
+  Frontend/backend con current definido, previous/pending null y rutas coherentes;
+  backend/SQL correctos y frontend HTTP 200 text/html. Backend y PostgreSQL activos,
+  API temporal detenida y conservada.
+- Se confirmó después que todas las consultas del menú funcionaron en la VM.
+- El comando corto inicialmente no existía en PATH. Un export temporal permitió
+  usarlo; se comprobó que ~/.profile ya incluía ~/.local/bin condicionalmente.
+  No se editaron perfiles. En una segunda sesión SSH command -v devolvió
+  /home/ubuntu/.local/bin/kume-admin.
+
+La disponibilidad en una sesión nueva no acredita persistencia de servicios tras
+reiniciar Oracle. La utilidad no se actualiza automáticamente desde GitHub.
+Habilidad para repetir el proceso: [kume-admin](.agents/skills/kume-admin/SKILL.md).
+Instalación en otra máquina y migración completa del producto siguen sin probarse.
+
 ## Próximas verificaciones y exclusiones
 
-- Ensayo real de actualización y reversión con dos releases válidas, sin tocar datos.
+- Ensayo real de actualización y reversión con dos releases válidas, sin tocar datos;
+  Maxi acordó retomarlo al instalar authentication-foundation.
 - Reinicio de VM coordinado y persistencia/arranque comprobados después.
 - Medición actual de recursos tras Nginx y carga representativa antes del uso real.
 - Autenticación integrada y desplegada por separado; origen/transporte/cookies coordinados.
