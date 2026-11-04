@@ -75,9 +75,10 @@ No incluye contenedores detenidos ni los arranca. Si el contenedor se detiene
 entre listado y selección, o la imagen no incluye id, informa el error de Docker;
 no reinicia, instala herramientas o cambia de usuario como alternativa.
 
-Esta opción es posterior a la copia instalada inicialmente en Oracle. Actualizar
-la utilidad desde una revisión aprobada con su checksum nuevo antes de usarla;
-la instalación histórica documentada conserva su commit y huella originales.
+La opción quedó instalada y comprobada por Maxi en Oracle el 4 de noviembre de
+2026, desde el menú y mediante kume-admin usuario. Ver
+[actualización comprobada](#actualización-comprobada-de-la-opción-usuario) para
+la revisión, checksum, copia anterior y resultados reales.
 
 ## Rutas que utiliza
 
@@ -183,13 +184,14 @@ install -d -m 0700 "$HOME/.local/bin"
 
 ### 2. Descargar la revisión aprobada, sin ejecutarla
 
-Versión efectivamente instalada: commit de docs
-`28d2460a0f75beac01bf7b02edec5b037e104054`, merge del
-[PR #2](https://github.com/maxifarkuso/kume-admin-docs/pull/2).
+Versión actual instalada y comprobada, incluida la opción usuario: commit de docs
+[`b79e1ad0341006c0be18fd86814eb3f63469b313`](https://github.com/maxifarkuso/kume-admin-docs/commit/b79e1ad0341006c0be18fd86814eb3f63469b313).
+La instalación inicial del PR #2 y su huella anterior se conservan como historia
+en la sección de actualización.
 Su SHA-256 de archivo es:
 
 ```text
-5d3c4dcfb526d7679c31b4a1b830ea79868612e24daeca112f29fca3c1a294a8
+5a8d2cc68e3c7a260d65a9e27f1a624d312a74a454092f04875435d086114e3b
 ```
 
 La URL siguiente queda fijada a esa revisión; no descarga main mutable. En una
@@ -201,7 +203,7 @@ reemplazarlo.
 ```bash
 curl --fail --location --connect-timeout 5 --max-time 30 \
   --output "$HOME/.local/bin/kume-admin.download" \
-  https://raw.githubusercontent.com/maxifarkuso/kume-admin-docs/28d2460a0f75beac01bf7b02edec5b037e104054/scripts/oracle-admin.sh
+  https://raw.githubusercontent.com/maxifarkuso/kume-admin-docs/b79e1ad0341006c0be18fd86814eb3f63469b313/scripts/oracle-admin.sh
 ```
 
 ### 3. Verificar e instalar la copia
@@ -313,6 +315,78 @@ En otro sistema, si falta la configuración, identificar primero el shell y qué
 perfil de login carga; agregar una única regla equivalente al perfil correcto,
 revisando el contenido existente. No sobrescribir perfiles ni agregarla a varios
 archivos a ciegas. No es necesario reiniciar la VM para esta comprobación.
+
+## Actualización comprobada de la opción usuario
+
+Maxi actualizó la copia instalada el 4 de noviembre de 2026. La versión inicial
+provenía del commit 28d2460a0f75beac01bf7b02edec5b037e104054, merge del
+[PR #2](https://github.com/maxifarkuso/kume-admin-docs/pull/2), con SHA-256
+5d3c4dcfb526d7679c31b4a1b830ea79868612e24daeca112f29fca3c1a294a8.
+Ese hash es histórico: no usarlo para validar el script actualizado.
+
+Se siguieron estos pasos, esperando resultados entre comandos, sin sudo global:
+
+1. Descargar a un archivo separado, conservando el ejecutable instalado:
+
+   ```bash
+   curl --fail --location --connect-timeout 5 --max-time 30 \
+     --output "$HOME/.local/bin/kume-admin.usuario.download" \
+     https://raw.githubusercontent.com/maxifarkuso/kume-admin-docs/b79e1ad0341006c0be18fd86814eb3f63469b313/scripts/oracle-admin.sh
+   ```
+
+2. Comparar SHA-256 completo con la huella actual de la sección de instalación;
+   Maxi confirmó que coincidía:
+
+   ```bash
+   sha256sum "$HOME/.local/bin/kume-admin.usuario.download"
+   ```
+
+3. Guardar una copia anterior con nombre único y permisos 0700. La salida confirmó
+   su ubicación; no reutilizar un nombre fijo que pueda sobrescribir otra copia:
+
+   ```bash
+   kume_backup=$(mktemp "$HOME/.local/bin/kume-admin.backup.XXXXXXXX") &&
+   install -m 0700 "$HOME/.local/bin/kume-admin" "$kume_backup" &&
+   printf 'Copia anterior guardada en: %s\n' "$kume_backup"
+   ```
+
+4. Instalar únicamente después de validar la descarga y conservar la copia:
+
+   ```bash
+   install -m 0700 "$HOME/.local/bin/kume-admin.usuario.download" "$HOME/.local/bin/kume-admin"
+   ```
+
+5. Probar el menú y la consulta directa. El selector lista solo contenedores activos;
+   su numeración depende del inventario y debe elegirse por nombre, no suponiendo
+   que un número fijo siempre corresponde al backend:
+
+   ```bash
+   kume-admin
+   ```
+
+   ```bash
+   kume-admin usuario
+   ```
+
+### Resultados reportados en la VM
+
+| Contenedor seleccionado | Salida de id                                    |
+| ----------------------- | ----------------------------------------------- |
+| kume-infra-test-db-1    | uid=0(root) gid=0(root) groups=0(root)          |
+| kume-backend-api-1      | uid=1000(node) gid=1000(node) groups=1000(node) |
+
+La selección de PostgreSQL se comprobó desde el menú y la del backend mediante
+el subcomando directo. No se pasó --user. En el backend, el nuevo proceso id se
+creó como node, sin forzar otra identidad. El resultado root de PostgreSQL no
+acredita que su servidor principal corra como root: su entrypoint puede cambiar
+de usuario antes de iniciar el servidor. No se inspeccionó el usuario de PID 1
+con estas pruebas.
+
+Estos resultados provienen de las salidas aportadas por Maxi, no de una ejecución
+contra Oracle desde Codex. La actualización no cambió imágenes, servicios,
+usuarios Docker, datos, permisos del backend, estados o credenciales. La copia
+anterior quedó conservada y su restauración no se ensayó. La copia local no
+se actualiza automáticamente con futuras modificaciones de main.
 
 ## Resultado real y reproducción en otra máquina
 
