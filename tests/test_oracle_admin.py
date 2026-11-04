@@ -147,3 +147,69 @@ class AdminTests(unittest.TestCase):
                 )
                 self.assertEqual(result.returncode, code, result.stderr)
                 self.assertNotIn("DO_NOT_PRINT", result.stdout + result.stderr)
+
+    def container_user(self, names, selection, exec_code=0, list_code=0):
+        command = """source "$1"; names=$2; exec_code=$3; list_code=$4
+sudo() {
+    if [[ $1 == docker && $2 == ps ]]; then
+        printf '%s' "$names"
+        return "$list_code"
+    fi
+    printf 'EXEC_ARG:%s\\n' "$@"
+    return "$exec_code"
+}
+run_query usuario"""
+        return subprocess.run(
+            [
+                "bash",
+                "-c",
+                command,
+                "--",
+                str(SCRIPT),
+                names,
+                str(exec_code),
+                str(list_code),
+            ],
+            input=selection,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+
+    def test_container_selector_executes_only_id_in_chosen_running_container(self):
+        result = self.container_user("backend-one\ndatabase-one\n", "2\n")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        executed = [
+            line.removeprefix("EXEC_ARG:")
+            for line in result.stdout.splitlines()
+            if line.startswith("EXEC_ARG:")
+        ]
+        self.assertEqual(executed, ["docker", "exec", "database-one", "id"])
+        self.assertNotIn("--user", executed)
+        result = self.container_user("cancelar\n", "1\n")
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("EXEC_ARG:cancelar", result.stdout)
+
+    def test_container_selector_cancel_empty_and_invalid_choice(self):
+        for names, selection in (
+            ("", ""),
+            ("backend-one\n", "0\n"),
+            ("backend-one\n", "2\n"),
+            ("backend-one\n", ""),
+        ):
+            with self.subTest(names=names, selection=selection):
+                result = self.container_user(names, selection)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertNotIn("EXEC_ARG:", result.stdout)
+        result = self.container_user("backend-one\n", "99\n1\n")
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(result.stdout.count("EXEC_ARG:docker"), 1)
+        self.assertIn("EXEC_ARG:backend-one", result.stdout)
+
+    def test_container_selector_propagates_docker_failures_without_retry(self):
+        result = self.container_user("backend-one\n", "1\n", exec_code=126)
+        self.assertEqual(result.returncode, 126)
+        self.assertEqual(result.stdout.count("EXEC_ARG:docker"), 1)
+        result = self.container_user("", "1\n", list_code=1)
+        self.assertEqual(result.returncode, 1)
+        self.assertNotIn("EXEC_ARG:", result.stdout)

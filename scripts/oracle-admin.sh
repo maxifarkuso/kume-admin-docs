@@ -77,11 +77,36 @@ except (ValueError, TypeError):
     http://127.0.0.1:8080/
 }
 
+show_container_user() {
+  local listing
+  listing=$(sudo docker ps --format '{{.Names}}') || return
+  if [[ -z $listing ]]; then
+    printf 'No hay contenedores activos.\n'
+    return
+  fi
+  local -a containers=()
+  mapfile -t containers <<<"$listing"
+  local container
+  local PS3=$'\nElegí un contenedor activo (0 para cancelar): '
+  select container in "${containers[@]}" '(cancelar)'; do
+    if [[ $REPLY == 0 || $container == '(cancelar)' ]]; then return; fi
+    if [[ -z $container ]]; then
+      printf 'Elegí un número de la lista.\n' >&2
+      continue
+    fi
+    printf 'Usuario efectivo de docker exec id en %s (sin --user):\n' "$container"
+    sudo docker exec "$container" id || return
+    return
+  done
+  return 0
+}
+
 run_query() {
   case "$1" in
   memoria) free -h ;;
   disco) df -h / /srv ;;
   contenedores) sudo docker ps -a --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}' ;;
+  usuario) show_container_user ;;
   imagenes) sudo docker image ls --format 'table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.Size}}' ;;
   consumo) sudo docker stats --no-stream --format 'table {{.Name}}\t{{.MemUsage}}\t{{.CPUPerc}}' ;;
   espacio-docker) sudo docker system df ;;
@@ -110,6 +135,7 @@ Sin opción abre un menú. Todo es consulta; no elimina ni reinicia servicios.
   memoria         RAM y swap (mirar available, no solo free)
   disco           Espacio de / y /srv
   contenedores    Activos y detenidos, imágenes, estado y puertos
+  usuario         Elegir contenedor activo y consultar su identidad con id
   imagenes        Imágenes Docker locales, ID y tamaño
   consumo         Una muestra de RAM/CPU por contenedor activo
   espacio-docker  Imágenes, contenedores, volúmenes y caché; no limpia nada
@@ -147,7 +173,7 @@ main() {
   fi
   local option
   local PS3=$'\nElegí una consulta (0 para salir): '
-  select option in memoria disco contenedores imagenes consumo espacio-docker volumenes redes rutas estados servicios salud puertos salir; do
+  select option in memoria disco contenedores usuario imagenes consumo espacio-docker volumenes redes rutas estados servicios salud puertos salir; do
     if [[ $REPLY == 0 || $option == salir ]]; then return; fi
     if [[ -z $option ]]; then
       printf 'Elegí un número de la lista.\n' >&2

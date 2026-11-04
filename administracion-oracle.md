@@ -32,25 +32,52 @@ La fuente propietaria de los comandos y evidencias sigue siendo este documento.
 
 ## Consultas y comandos equivalentes
 
-| Opción         | Qué consulta                                           | Comando principal                        |
-| -------------- | ------------------------------------------------------ | ---------------------------------------- |
-| memoria        | RAM y swap; mirar available, no solo free              | free -h                                  |
-| disco          | Sistemas de archivos / y /srv                          | df -h / /srv                             |
-| contenedores   | Todos los contenedores, incluso detenidos              | sudo docker ps -a con columnas filtradas |
-| imagenes       | Imágenes, tag, ID local y tamaño                       | sudo docker image ls                     |
-| consumo        | Una muestra de RAM/CPU por contenedor activo           | sudo docker stats --no-stream            |
-| espacio-docker | Uso de imágenes, contenedores, volúmenes y caché       | sudo docker system df                    |
-| volumenes      | Inventario de volúmenes                                | sudo docker volume ls                    |
-| redes          | Inventario de redes                                    | sudo docker network ls                   |
-| rutas          | Frontend estático, enlace current y backend            | readlink -f y rutas conocidas            |
-| estados        | current/previous/pending y coherencia básica con rutas | Python leyendo JSON conocido             |
-| servicios      | Servicio KUME y unidad nginx predeterminada            | systemctl show sin logs                  |
-| salud          | SQL del backend y respuesta HTTP del frontend          | curl a loopback, con timeout             |
-| puertos        | Listeners TCP                                          | ss -lnt                                  |
+| Opción         | Qué consulta                                             | Comando principal                          |
+| -------------- | -------------------------------------------------------- | ------------------------------------------ |
+| memoria        | RAM y swap; mirar available, no solo free                | free -h                                    |
+| disco          | Sistemas de archivos / y /srv                            | df -h / /srv                               |
+| contenedores   | Todos los contenedores, incluso detenidos                | sudo docker ps -a con columnas filtradas   |
+| imagenes       | Imágenes, tag, ID local y tamaño                         | sudo docker image ls                       |
+| usuario        | Seleccionar contenedor activo y consultar UID/GID/grupos | sudo docker ps y docker exec CONTENEDOR id |
+| consumo        | Una muestra de RAM/CPU por contenedor activo             | sudo docker stats --no-stream              |
+| espacio-docker | Uso de imágenes, contenedores, volúmenes y caché         | sudo docker system df                      |
+| volumenes      | Inventario de volúmenes                                  | sudo docker volume ls                      |
+| redes          | Inventario de redes                                      | sudo docker network ls                     |
+| rutas          | Frontend estático, enlace current y backend              | readlink -f y rutas conocidas              |
+| estados        | current/previous/pending y coherencia básica con rutas   | Python leyendo JSON conocido               |
+| servicios      | Servicio KUME y unidad nginx predeterminada              | systemctl show sin logs                    |
+| salud          | SQL del backend y respuesta HTTP del frontend            | curl a loopback, con timeout               |
+| puertos        | Listeners TCP                                            | ss -lnt                                    |
 
 Los códigos de salida de las consultas se conservan. Uso inválido: 2.
 Estado ausente/incoherente o pendiente: 1. El menú muestra fallos y permite seguir;
 una consulta fallida no se convierte en una recuperación automática.
+
+## Usuario efectivo en un contenedor
+
+```bash
+kume-admin usuario
+```
+
+La opción obtiene los nombres de contenedores activos mediante docker ps y abre
+un selector numérico; 0 o cancelar vuelve sin ejecutar nada. Luego ejecuta
+únicamente sudo docker exec CONTENEDOR id, con el nombre seleccionado como
+argumento, sin un shell intermedio ni un comando arbitrario.
+
+id muestra UID, GID y grupos, incluidos nombres cuando la imagen puede resolverlos;
+por ejemplo uid=1000(node). No usa --user para forzar root u otra identidad.
+Es el usuario efectivo del nuevo proceso id, normalmente el usuario configurado
+para exec; no demuestra el usuario del proceso principal si el entrypoint cambia
+privilegios al arrancar. La opción crea ese proceso breve de consulta en el
+contenedor, sin modificar archivos o configuración.
+
+No incluye contenedores detenidos ni los arranca. Si el contenedor se detiene
+entre listado y selección, o la imagen no incluye id, informa el error de Docker;
+no reinicia, instala herramientas o cambia de usuario como alternativa.
+
+Esta opción es posterior a la copia instalada inicialmente en Oracle. Actualizar
+la utilidad desde una revisión aprobada con su checksum nuevo antes de usarla;
+la instalación histórica documentada conserva su commit y huella originales.
 
 ## Rutas que utiliza
 
@@ -93,7 +120,8 @@ volumen presente no acredita restauración. No cambia red, servicios o credencia
 ## Comprobaciones del script
 
 - bash -n, ShellCheck 0.10.0 y shfmt 3.12.0: correctos.
-- Seis pruebas aisladas con estados sintéticos y Docker/HTTP simulados: correctas.
+- Nueve pruebas aisladas con estados sintéticos y Docker/HTTP simulados: correctas.
+  Incluyen selección por nombre, cancelación/EOF y errores de exec sin reintentos.
   Verifican filtrado, no mutación, rechazo de comandos, enlaces incoherentes,
   pending y fallos HTTP/SQL sin exposición de cuerpos.
 - CI Oracle administration checks repite esas verificaciones sin secrets ni
