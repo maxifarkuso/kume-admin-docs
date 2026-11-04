@@ -16,6 +16,8 @@ Documentación del sistema administrativo de KUME: gastos pagados, comprobantes,
 - [API](api-design.md) y [OpenAPI canónico](openapi.yaml).
 - [Base de datos](database-design.md): PostgreSQL y Prisma.
 - [Infraestructura y migración](infraestructura-y-migracion.md).
+- [Operación instalada y resultados comprobados](operacion-oracle.md).
+- [Script de consulta de Oracle](administracion-oracle.md): recursos, Docker, rutas y estados; solo lectura.
 - [Memoria de la app de prueba Oracle](memoria-app-test-oracle.md): SSH, Compose, reconstrucción y retirada antes de publicar el MVP.
 - [Estado del diseño de pantallas](continuacion-diseno-pantallas.md).
 

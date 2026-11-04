@@ -24,6 +24,13 @@ El proxy HTTPS de la VM Oracle sirve el frontend React/Vite compilado y reenvía
 - Datos y archivos privados, HTTPS, autorización del backend, secretos protegidos y PostgreSQL sin exposición pública.
 - Cuenta y recuperación bajo control de KUME, con Maxi como administrador técnico. Verificar que el control institucional esté efectivamente resuelto; no registrar datos de tarjeta, claves o correos personales en el repositorio.
 
+## Operación posterior registrada
+
+El [registro de instalación y funcionamiento](operacion-oracle.md) documenta la
+landing y backend instalados, acceso personal por túnel comprobado y pendientes.
+No reemplaza las condiciones para piloto real de este documento.
+Consultas locales: [script de administración](administracion-oracle.md).
+
 ## Evidencia de validación básica
 
 Resultados aportados por Maxi desde la VM el 1 de noviembre de 2026:

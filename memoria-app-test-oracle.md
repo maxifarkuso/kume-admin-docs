@@ -3,6 +3,14 @@
 **Registro:** 3 de noviembre de 2026. Pruebas originales realizadas el 1 de noviembre.
 **Estado:** smoke test comprobado por Maxi; memoria guardada antes de que elimine el contenido de `~/kume-infra-test` para preparar el backend MVP. La eliminación y el despliegue real todavía no fueron verificados.
 
+## Advertencia sobre la instalación posterior
+
+Esta memoria conserva una prueba histórica. En la [operación posterior](operacion-oracle.md)
+se mantuvieron PostgreSQL y su volumen/red compartidos con el backend real y solo
+se detuvo la API temporal. No ejecutar las instrucciones de retirada con Compose
+down de esta memoria sobre esa instalación actual: podrían interrumpir servicios
+compartidos. La eliminación de la carpeta no se acredita ni se solicita aquí.
+
 ## Qué era esta app
 
 Prueba aislada de infraestructura: Fastify consultando PostgreSQL por la red de Docker Compose. No era el backend de KUME, no usaba Prisma, no tenía autenticación, HTTPS ni archivos del producto. No copiar su usuario superadministrador o instalación de dependencias al arrancar a producción.
