@@ -17,6 +17,7 @@ Documentación del sistema administrativo de KUME: gastos pagados, comprobantes,
 - [Base de datos](database-design.md): PostgreSQL y Prisma.
 - [Infraestructura y migración](infraestructura-y-migracion.md).
 - [Operación instalada y resultados comprobados](operacion-oracle.md).
+- [Spec de revisión automática del backend](docs/specs/001-backend-revision/spec.md): mejora separada, pendiente de integración y verificación en Oracle.
 - [Script de consulta de Oracle](administracion-oracle.md): recursos, Docker, rutas y estados; instalación comprobada y pasos para otra máquina.
 - [SKILL kume-admin](.agents/skills/kume-admin/SKILL.md): guía versionada para instalar, adaptar y revalidar la utilidad.
 - [Memoria de la app de prueba Oracle](memoria-app-test-oracle.md): SSH, Compose, reconstrucción y retirada antes de publicar el MVP.
