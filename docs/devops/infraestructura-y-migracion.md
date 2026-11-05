@@ -10,7 +10,7 @@ La modalidad inicial utiliza una VM Linux de Oracle Cloud Infrastructure Always 
 
 Oracle es infraestructura para nuestras imágenes, no una sustitución de la API ni de PostgreSQL. No se usan Oracle Database, Supabase ni Edge Functions como backend del producto.
 
-El proxy HTTPS de la VM Oracle sirve el frontend React/Vite compilado y reenvía `/api/v1` a Fastify, bajo un mismo origen; decisión confirmada el 2 de noviembre en reemplazo de Cloudflare Pages. No publicar directamente el puerto Fastify ni `/health` en Internet. Una instancia y un proceso backend por entorno, con sesiones en memoria: cada reinicio requiere nuevo login. En intranet se conserva el esquema. Ver [diseño de autenticación](autenticacion-prototipo.md).
+El proxy HTTPS de la VM Oracle sirve el frontend React/Vite compilado y reenvía `/api/v1` a Fastify, bajo un mismo origen; decisión confirmada el 2 de noviembre en reemplazo de Cloudflare Pages. No publicar directamente el puerto Fastify ni `/health` en Internet. Una instancia y un proceso backend por entorno, con sesiones en memoria: cada reinicio requiere nuevo login. En intranet se conserva el esquema. Ver [diseño de autenticación](../technical/autenticacion-prototipo.md).
 
 ## Condiciones operativas
 
@@ -59,7 +59,7 @@ La validación básica no acredita rendimiento bajo carga, persistencia tras rei
 ## Requisitos antes del piloto real
 
 1. Construir imagen de la API real y fijar dependencias y versiones compatibles; ejecutar migraciones Prisma controladas.
-2. Implementar y verificar el diseño técnico y el contrato API/OpenAPI documentados para la [autenticación confirmada](autenticacion-prototipo.md): Maxi y Vicky, mismos permisos, hashes en secrets sin tabla de usuarios, cambios manuales de contraseña, cierre y expiración tras 8 horas de inactividad y límites temporales por cuenta y por IP. No incluir recuperación por correo. Conservar reglas funcionales.
+2. Implementar y verificar el diseño técnico y el contrato API/OpenAPI documentados para la [autenticación confirmada](../technical/autenticacion-prototipo.md): Maxi y Vicky, mismos permisos, hashes en secrets sin tabla de usuarios, cambios manuales de contraseña, cierre y expiración tras 8 horas de inactividad y límites temporales por cuenta y por IP. No incluir recuperación por correo. Conservar reglas funcionales.
 3. Configurar HTTPS, origen del frontend, certificados y proxy, sin publicar PostgreSQL ni archivos por rutas públicas sin autorización.
 4. Verificar persistencia de base y archivos, carga/descarga de documentos y operaciones representativas; medir recursos y fallos por memoria. No equiparar swap con RAM.
 5. Separar demo ficticia y piloto real en datos, archivos y credenciales.
@@ -101,4 +101,4 @@ Las condiciones de los proveedores deben volver a verificarse al aprovisionar:
 - [Preguntas frecuentes de Oracle Free Tier](https://www.oracle.com/cloud/free/faq/).
 - [Instalación oficial de Docker en Ubuntu](https://docs.docker.com/engine/install/ubuntu/).
 
-Fuentes del proyecto: [alcance](alcance-prototipo.md), [stack](stack-tecnologico.md), [API](api-design.md), [base](database-design.md) y [OpenAPI](openapi.yaml).
+Fuentes del proyecto: [alcance](../functional/alcance-prototipo.md), [stack](../technical/stack-tecnologico.md), [API](../technical/api-design.md), [base](../technical/backend/database-design.md) y [OpenAPI](../../openapi.yaml).

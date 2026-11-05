@@ -106,7 +106,7 @@ sin sudo global. Procedimiento propietario, comandos y adaptación a otra máqui
 
 La disponibilidad en una sesión nueva no acredita persistencia de servicios tras
 reiniciar Oracle. La utilidad no se actualiza automáticamente desde GitHub.
-Habilidad para repetir el proceso: [kume-admin](.agents/skills/kume-admin/SKILL.md).
+Habilidad para repetir el proceso: [kume-admin](../../.agents/skills/kume-admin/SKILL.md).
 Instalación en otra máquina y migración completa del producto siguen sin probarse.
 
 ## Próximas verificaciones y exclusiones
@@ -126,7 +126,7 @@ contrato canónico o los requisitos de seguridad acordados.
 ## Mejora propuesta: revisión automática del backend
 
 Estado: preparada para revisión por PR independiente; no integrada ni desplegada.
-SDD documental: [001 — Revisión backend](docs/specs/001-backend-revision/spec.md).
+SDD documental: [001 — Revisión backend](../specs/001-backend-revision/spec.md).
 Implementación y runbook propietarios en
 [frontend 004](https://github.com/maxifarkuso/kume-admin-fe/blob/feat/automatic-backend-revision/docs/specs/004-backend-revision/spec.md) y
 [operación frontend](https://github.com/maxifarkuso/kume-admin-fe/blob/feat/automatic-backend-revision/docs/deployment/oracle-test.md#revisión-automática-del-backend).

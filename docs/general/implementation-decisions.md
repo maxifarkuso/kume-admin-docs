@@ -2,6 +2,12 @@
 
 Fecha: 2 de noviembre de 2026. Origen: rondas GrillMe con Maxi, Q1–Q12. Estado: reglas consolidadas confirmadas expresamente por Maxi el 2 de noviembre de 2026. No acredita implementación.
 
+## Actualización de continuidad — 5 de noviembre de 2026
+
+Maxi informa que auth foundation está mergeado y desplegado en frontend y backend; aún no realizó pruebas funcionales. No se acredita verificación funcional en esta reorganización.
+
+La decisión Q6 y los pendientes de sesiones/alojamiento de la ronda original son históricos: fueron resueltos por el [diseño de autenticación del 2 de noviembre](../technical/autenticacion-prototipo.md), que define sesiones en memoria, cookie y frontend/API bajo un mismo origen HTTPS en Oracle. No reabrirlos por leer la tabla original. El resto de los pendientes conserva su evidencia y estado registrados; esta actualización no los da por completados.
+
 ## Acuerdos
 
 | Pregunta | Acuerdo |
@@ -21,12 +27,12 @@ Fecha: 2 de noviembre de 2026. Origen: rondas GrillMe con Maxi, Q1–Q12. Estado
 
 ## Documentos propietarios
 
-- frontend-architecture.md: organización, React, estado, formularios, accesibilidad y tests FE.
-- backend-architecture.md: capas, puertos, dominio, persistencia, transacciones y pruebas BE.
-- development-guide.md: sincronización entre repositorios, comandos objetivo, Git y entrega.
+- docs/technical/frontend/frontend-architecture.md: organización, React, estado, formularios, accesibilidad y tests FE.
+- docs/technical/backend/backend-architecture.md: capas, puertos, dominio, persistencia, transacciones y pruebas BE.
+- docs/technical/development-guide.md: sincronización entre repositorios, comandos objetivo, Git y entrega.
 - AGENTS.md de cada repositorio: instrucciones operativas y referencias.
 
-Se conservan alcance-prototipo.md, stack-tecnologico.md, api-design.md, openapi.yaml, database-design.md, infraestructura-y-migracion.md y continuacion-diseno-pantallas.md como fuentes funcionales y operativas. Se conservan sin cambios funcionales en esta incorporación. Las guías nuevas explicitan las ampliaciones técnicas aprobadas que todavía deben propagarse.
+Se conservan docs/functional/alcance-prototipo.md, docs/technical/stack-tecnologico.md, docs/technical/api-design.md, openapi.yaml, docs/technical/backend/database-design.md, docs/devops/infraestructura-y-migracion.md y docs/ui/continuacion-diseno-pantallas.md como fuentes funcionales y operativas. Se conservan sin cambios funcionales en esta incorporación. Las guías nuevas explicitan las ampliaciones técnicas aprobadas que todavía deben propagarse.
 
 ## Pendientes explícitos y momento de resolución
 
@@ -40,7 +46,7 @@ Se conservan alcance-prototipo.md, stack-tecnologico.md, api-design.md, openapi.
 | Representación decimal exacta del núcleo y definición del día del negocio | Implementar dinero y reglas temporales, sin depender de tipos Prisma. |
 | Librería visual/estilos | Implementar UI sobre diseños aprobados; no elegida en Q5. |
 | Pruebas de integración y futura adopción de Playwright | Siguiente decisión de estrategia de pruebas. No dar por verificada integración con unitarias. |
-| Catálogos, login/recuperación, prototipo, screen-design.md y backlog | Aprobar implementación de pantallas correspondientes. Paso 4 sigue en curso. |
+| Catálogos, login/recuperación, prototipo, docs/ui/screen-design.md y backlog | Aprobar implementación de pantallas correspondientes. Paso 4 sigue en curso. |
 | Correo, respaldos, alertas y restauración real | Piloto con datos reales, manteniendo costo cero y requisitos ya acordados. |
 
 ## Criterio para retomar

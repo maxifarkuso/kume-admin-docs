@@ -4,7 +4,7 @@
 - **Rama de trabajo:** `main`
 - **Estado:** paso 4 en curso; sesión pausada por decisión de Maxi.
 - **Próxima sesión prevista:** 2 de noviembre de 2026, sujeta a disponibilidad de créditos de MagicPath.
-- **Próximo paso:** revisión documental de autenticación antes de retomar pantallas, por pedido de Maxi del 2 de noviembre. Diseño técnico y contrato completos; implementación y verificación pendientes. Consultar el balance y los criterios de cierre en [autenticación](autenticacion-prototipo.md). No se avanzaron pantallas en esta revisión.
+- **Próximo paso:** revisión documental de autenticación antes de retomar pantallas, por pedido de Maxi del 2 de noviembre. Diseño técnico y contrato completos; implementación y verificación pendientes. Consultar el balance y los criterios de cierre en [autenticación](../technical/autenticacion-prototipo.md). No se avanzaron pantallas en esta revisión.
 
 ## Estado del proyecto
 
@@ -50,13 +50,13 @@ Todavía no se implementó el producto en frontend ni backend. Se probó una API
 
 ### Pendientes al pausar
 
-**Ampliación cloud confirmada:** agregar login, intentos limitados, cierre manual y expiración tras 8 horas de inactividad, identificación de demo e indisponibilidad de red/servicio. Estos flujos no tienen bocetos aprobados todavía. Conservar las aprobaciones de gastos y personal. Ver [infraestructura y migración](infraestructura-y-migracion.md).
+**Ampliación cloud confirmada:** agregar login, intentos limitados, cierre manual y expiración tras 8 horas de inactividad, identificación de demo e indisponibilidad de red/servicio. Estos flujos no tienen bocetos aprobados todavía. Conservar las aprobaciones de gastos y personal. Ver [infraestructura y migración](../devops/infraestructura-y-migracion.md).
 
 1. Completar C01 Rubros, C02 Cursos, C03 Talleres y C04 Estados y bajas bloqueadas. Sus marcos se crearon, pero están vacíos: las llamadas para agregar contenido fueron rechazadas por falta de cuota. No están aprobados.
 2. Incluir catálogos inactivos, validaciones y bloqueos de baja o retirada de turnos con asignaciones.
 3. Revisar y aprobar los catálogos.
 4. Crear y revisar el prototipo interactivo en MagicPath. No confundir las anotaciones de recorrido con interacciones ejecutables; no se implementó React.
-5. Documentar las decisiones finales en `screen-design.md`.
+5. Documentar las decisiones finales en `docs/ui/screen-design.md`.
 6. Preparar el backlog separado de frontend, backend e infraestructura y obtener su aprobación.
 7. Marcar el paso 4 como completado únicamente tras confirmación expresa de Maxi; luego commit y push a `main`.
 
@@ -66,11 +66,11 @@ MagicPath informó `EXTERNAL_AGENT_API_QUOTA_EXCEEDED`, con límite y uso de 50 
 
 La próxima sesión debe leer estos archivos antes de proponer pantallas:
 
-1. [Alcance del prototipo](alcance-prototipo.md): objetivos, actores, operaciones y exclusiones.
-2. [Diseño de API](api-design.md): flujos, estados, errores y comportamiento de cada recurso.
-3. [Contrato OpenAPI](openapi.yaml): campos y operaciones exactas.
-4. [Diseño de base de datos](database-design.md): entidades, relaciones y estados persistidos.
-5. [Stack tecnológico](stack-tecnologico.md): restricciones de implementación.
+1. [Alcance del prototipo](../functional/alcance-prototipo.md): objetivos, actores, operaciones y exclusiones.
+2. [Diseño de API](../technical/api-design.md): flujos, estados, errores y comportamiento de cada recurso.
+3. [Contrato OpenAPI](../../openapi.yaml): campos y operaciones exactas.
+4. [Diseño de base de datos](../technical/backend/database-design.md): entidades, relaciones y estados persistidos.
+5. [Stack tecnológico](../technical/stack-tecnologico.md): restricciones de implementación.
 
 En caso de contradicción, prevalece el alcance más reciente en `main`; la contradicción debe señalarse antes de diseñar sobre ella.
 
@@ -78,7 +78,7 @@ En caso de contradicción, prevalece el alcance más reciente en `main`; la cont
 
 - La usuaria inicial es la secretaria administrativa de KUME y no tiene conocimientos técnicos.
 - La aplicación se usa inicialmente desde distintas computadoras mediante navegador y HTTPS; backend en Oracle Cloud Always Free con Docker Compose. Posible migración completa a intranet, sin dependencia cloud para operación diaria.
-- Cuentas individuales de secretaria y Maxi, acceso completo a los datos, sin registro público. Maxi y Vicky tienen los mismos permisos, con contraseñas individuales almacenadas como hash en secrets, sin tabla de usuarios. Cierre manual y expiración tras 8 horas de inactividad; pausas temporales por intentos fallidos por cuenta y por IP. Maxi cambia contraseñas manualmente y administra restauraciones; no hay recuperación por correo ni pantallas de administración de usuarios. Ver [autenticación confirmada el 2 de noviembre](autenticacion-prototipo.md).
+- Cuentas individuales de secretaria y Maxi, acceso completo a los datos, sin registro público. Maxi y Vicky tienen los mismos permisos, con contraseñas individuales almacenadas como hash en secrets, sin tabla de usuarios. Cierre manual y expiración tras 8 horas de inactividad; pausas temporales por intentos fallidos por cuenta y por IP. Maxi cambia contraseñas manualmente y administra restauraciones; no hay recuperación por correo ni pantallas de administración de usuarios. Ver [autenticación confirmada el 2 de noviembre](../technical/autenticacion-prototipo.md).
 - Frontend y API bajo un mismo origen HTTPS en Oracle; sesiones en memoria del backend, perdidas al reiniciar. Login con usuario (`maxi` o `vicky`) y contraseña, sin requerir correo. La consulta automática de sesión no renueva las 8 horas de inactividad.
 - Piloto real y demo aislada con datos ficticios; identificar la demo claramente.
 - Objetivo de costo cero; si los límites comprometen el uso se evalúa intranet. No hacer dimensionamiento anual del MVP.
@@ -153,7 +153,7 @@ Antes de marcar el paso 4 como completo deben existir:
 - Wireframes aprobados para todos los flujos del prototipo.
 - Comportamiento definido para estados vacíos, errores y confirmaciones.
 - Enlace o referencia persistente al proyecto de MagicPath.
-- Documento `screen-design.md` con las decisiones finales y referencia a los bocetos.
+- Documento `docs/ui/screen-design.md` con las decisiones finales y referencia a los bocetos.
 - Backlog de implementación dividido entre frontend, backend e infraestructura, sin duplicar el contrato OpenAPI.
 
 El paso 4 no debe marcarse como completado hasta que Maxi confirme los wireframes y el backlog.
@@ -164,14 +164,14 @@ El paso 4 no debe marcarse como completado hasta que Maxi confirme los wireframe
 Continuemos el proyecto KUME desde el repositorio maxifarkuso/kume-admin-docs.
 
 Trabajá siempre sobre la rama main del repositorio de documentación. Antes de proponer cambios, leé completamente:
-- alcance-prototipo.md
-- continuacion-diseno-pantallas.md
-- api-design.md
+- docs/functional/alcance-prototipo.md
+- docs/ui/continuacion-diseno-pantallas.md
+- docs/technical/api-design.md
 - openapi.yaml
-- database-design.md
-- stack-tecnologico.md
+- docs/technical/backend/database-design.md
+- docs/technical/stack-tecnologico.md
 
-El stack y las reglas funcionales de los pasos 1 a 3 se conservan. Leé autenticacion-prototipo.md: diseño técnico y contrato completos, implementación y pruebas pendientes; no repitas las decisiones confirmadas de sesiones, credenciales, alojamiento o límites. Hay pendientes de operación cloud y migración local. El paso 4 sigue en curso. Leé primero el avance y las aprobaciones de esta memoria. Reutilizá el proyecto MagicPath 467706881381666816: gastos y personal ya están aprobados. Completá los marcos vacíos de catálogos; después seguí con el prototipo interactivo, screen-design.md y el backlog. No repitas las rondas ya resueltas.
+El stack y las reglas funcionales de los pasos 1 a 3 se conservan. Leé docs/technical/autenticacion-prototipo.md: diseño técnico y contrato completos, implementación y pruebas pendientes; no repitas las decisiones confirmadas de sesiones, credenciales, alojamiento o límites. Hay pendientes de operación cloud y migración local. El paso 4 sigue en curso. Leé primero el avance y las aprobaciones de esta memoria. Reutilizá el proyecto MagicPath 467706881381666816: gastos y personal ya están aprobados. Completá los marcos vacíos de catálogos; después seguí con el prototipo interactivo, docs/ui/screen-design.md y el backlog. No repitas las rondas ya resueltas.
 
 Usá el plugin MagicPath, que ya está conectado, para crear primero un mapa de navegación y luego wireframes de baja fidelidad. No implementes React todavía. Diseñá para una secretaria administrativa sin conocimientos técnicos, uso desde computadoras por HTTPS, textos visibles en español y login de Maxi y Vicky con los mismos permisos. Contraseñas con hash en secrets sin tabla de usuarios ni recuperación por correo; cambios manuales a cargo de Maxi, cierre manual, expiración tras 8 horas de inactividad y pausas temporales de intentos por cuenta y por IP. Incorporá cierre/expiración de sesión, identificación de demo e indisponibilidad cloud. El backend conserva Fastify, Prisma y PostgreSQL en Oracle; hay una alternativa futura de intranet. No diseñes pantallas de administración de cuentas ni restauración.
 
@@ -184,10 +184,10 @@ Usá GrillMe para resolver decisiones reales de UX por rondas, con una recomenda
 Después de mi confirmación, generá en MagicPath los wireframes y el prototipo interactivo. Incluí estados vacíos, carga, error, validación, confirmaciones, gastos anulados, personal inactivo, conflictos de asignación y errores de archivos.
 
 Cuando los wireframes estén aprobados:
-- documentá las decisiones en screen-design.md;
+- documentá las decisiones en docs/ui/screen-design.md;
 - convertí el alcance en un backlog separado para frontend, backend e infraestructura;
 - enlazá el proyecto de MagicPath;
-- actualizá alcance-prototipo.md y marcá el paso 4 como completado solo con mi confirmación;
+- actualizá docs/functional/alcance-prototipo.md y marcá el paso 4 como completado solo con mi confirmación;
 - hacé commit y push directamente a main.
 
 No reabras decisiones ya registradas salvo que encuentres una contradicción concreta. Si la encontrás, citá los archivos y pedime decidir antes de continuar.

@@ -15,7 +15,7 @@ compartidos. La eliminación de la carpeta no se acredita ni se solicita aquí.
 
 Prueba aislada de infraestructura: Fastify consultando PostgreSQL por la red de Docker Compose. No era el backend de KUME, no usaba Prisma, no tenía autenticación, HTTPS ni archivos del producto. No copiar su usuario superadministrador o instalación de dependencias al arrancar a producción.
 
-Los documentos vigentes prevalecen para el MVP: [infraestructura](infraestructura-y-migracion.md), [stack](stack-tecnologico.md), [autenticación](autenticacion-prototipo.md), [arquitectura backend](backend-architecture.md) y [guía de desarrollo](development-guide.md). El diseño posterior aloja frontend y API bajo el mismo proxy HTTPS en Oracle; no usa recuperación de contraseña por correo. Esta memoria no revierte esas decisiones.
+Los documentos vigentes prevalecen para el MVP: [infraestructura](infraestructura-y-migracion.md), [stack](../technical/stack-tecnologico.md), [autenticación](../technical/autenticacion-prototipo.md), [arquitectura backend](../technical/backend/backend-architecture.md) y [guía de desarrollo](../technical/development-guide.md). El diseño posterior aloja frontend y API bajo el mismo proxy HTTPS en Oracle; no usa recuperación de contraseña por correo. Esta memoria no revierte esas decisiones.
 
 ## Instancia y acceso conocidos
 

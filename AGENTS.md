@@ -2,19 +2,23 @@
 
 ## Antes de trabajar
 
-Leer implementation-decisions.md, alcance-prototipo.md y stack-tecnologico.md. Para contratos leer api-design.md y openapi.yaml; para persistencia database-design.md; para UX continuacion-diseno-pantallas.md; para operación infraestructura-y-migracion.md. Consultar frontend-architecture.md, backend-architecture.md y development-guide.md según la tarea.
+Leer [implementation-decisions.md](docs/general/implementation-decisions.md), [alcance-prototipo.md](docs/functional/alcance-prototipo.md) y [stack-tecnologico.md](docs/technical/stack-tecnologico.md). Para contratos leer [api-design.md](docs/technical/api-design.md) y [openapi.yaml](openapi.yaml); para persistencia [database-design.md](docs/technical/backend/database-design.md); para UX [continuacion-diseno-pantallas.md](docs/ui/continuacion-diseno-pantallas.md); para operación [infraestructura-y-migracion.md](docs/devops/infraestructura-y-migracion.md). Consultar [frontend-architecture.md](docs/technical/frontend/frontend-architecture.md), [backend-architecture.md](docs/technical/backend/backend-architecture.md) y [development-guide.md](docs/technical/development-guide.md) según la tarea.
 
 Este repositorio define alcance, contratos y pautas de implementación. Trabajar directamente sobre main, conservando cambios ajenos. Si el checkout usa otra rama, comprobar su estado y referencias antes de cambiar; no forzar ni descartar trabajo para cumplir la convención.
 
 ## Fuentes de verdad
 
-- Alcance funcional: alcance-prototipo.md más decisiones posteriores explícitamente aprobadas y registradas.
-- Stack: stack-tecnologico.md y ampliaciones de implementation-decisions.md.
-- HTTP: openapi.yaml; api-design.md explica comportamiento. Una discrepancia exige reconciliación explícita, no elegir silenciosamente una versión.
-- Persistencia: database-design.md; arquitectura: las dos guías correspondientes.
-- Estado de pantallas: continuacion-diseno-pantallas.md. No marcar el paso 4 completo sin confirmación expresa de Maxi.
+- Alcance funcional: [alcance-prototipo.md](docs/functional/alcance-prototipo.md) más decisiones posteriores explícitamente aprobadas y registradas.
+- Stack: [stack-tecnologico.md](docs/technical/stack-tecnologico.md) y ampliaciones de [implementation-decisions.md](docs/general/implementation-decisions.md).
+- HTTP: [openapi.yaml](openapi.yaml); [api-design.md](docs/technical/api-design.md) explica comportamiento. Una discrepancia exige reconciliación explícita, no elegir silenciosamente una versión.
+- Persistencia: [database-design.md](docs/technical/backend/database-design.md); arquitectura: las dos guías correspondientes.
+- Estado de pantallas: [continuacion-diseno-pantallas.md](docs/ui/continuacion-diseno-pantallas.md). No marcar el paso 4 completo sin confirmación expresa de Maxi.
 
-Las nuevas decisiones de arquitectura complementan el diseño funcional. La estrategia optimista está aprobada pero sus campos, cabeceras y migraciones todavía no figuran en el contrato original. Sesiones siguen pendientes. No confundir decisión con implementación.
+Las nuevas decisiones de arquitectura complementan el diseño funcional. La estrategia optimista está aprobada pero sus campos, cabeceras y migraciones todavía no figuran en el contrato original. El diseño de sesiones está definido en [autenticacion-prototipo.md](docs/technical/autenticacion-prototipo.md). Auth foundation está mergeado y desplegado en frontend y backend según Maxi (5 de noviembre de 2026); las pruebas funcionales siguen pendientes. No confundir decisión con implementación.
+
+## Organización documental
+
+Consultar el [índice del repositorio](README.md) para ubicar documentos. Clasificar por responsabilidad: funcional en `docs/functional`, acuerdos generales en `docs/general`, diseño compartido en `docs/technical`, guías específicas en `docs/technical/backend` y `docs/technical/frontend`, pantallas en `docs/ui` y operación en `docs/devops`. Conservar `docs/specs` como historial de especificaciones. Al mover archivos, actualizar enlaces entrantes y salientes, referencias en skills y rutas de consumidores; las rutas documentales se expresan desde la raíz salvo enlaces relativos.
 
 ## Al editar
 

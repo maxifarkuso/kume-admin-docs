@@ -7,7 +7,7 @@ La documentación propietaria de la implementación está en
 
 ## Cambios previstos
 
-Actualizar operacion-oracle.md con el flujo manual, la lectura de state.json y
+Actualizar docs/devops/operacion-oracle.md con el flujo manual, la lectura de state.json y
 deployment.lock y el health loopback. Enlazar la spec del frontend y la spec local
 desde README.md sin copiar algoritmos ni documentación generada de otros repos.
 

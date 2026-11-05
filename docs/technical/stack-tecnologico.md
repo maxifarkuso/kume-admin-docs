@@ -30,13 +30,13 @@ Oracle aloja nuestros servicios; no se sustituye PostgreSQL por Oracle Database.
 - Configuración sin rutas absolutas específicas de Windows o Linux; secretos fuera del código y navegador.
 - Objetivo de costo total USD 0, sin pagos automáticos. Comprobar Always Free, cuotas y persistencia; los créditos promocionales no aseguran gratuidad continua.
 - No hacer dimensionamiento anual para el MVP. Evaluar intranet si los límites comprometen el uso. La continuidad gratuita no tiene disponibilidad garantizada.
-- Respaldos diarios cifrados fuera de Oracle, retención de 30 días, alertas y restauraciones comprobadas, según el [alcance](alcance-prototipo.md).
+- Respaldos diarios cifrados fuera de Oracle, retención de 30 días, alertas y restauraciones comprobadas, según el [alcance](../functional/alcance-prototipo.md).
 
 ## Portabilidad a intranet
 
 Mantener Docker Compose, PostgreSQL, Prisma y el almacenamiento por claves relativas. Preparar exportación y restauración consistente de base, archivos, cuentas y configuración. La implementación local completa se realizará cuando se decida migrar; no se considera probada todavía.
 
-El destino será un equipo del instituto encendido durante el uso, con acceso solo desde su intranet y sin dependencia cloud para el funcionamiento diario. Windows y Linux son alternativas a evaluar al elegir equipo y operación. Definir HTTPS, nombre interno y respaldos en el destino; el login y el cambio manual de contraseñas no requieren correo. Ver [infraestructura y migración](infraestructura-y-migracion.md).
+El destino será un equipo del instituto encendido durante el uso, con acceso solo desde su intranet y sin dependencia cloud para el funcionamiento diario. Windows y Linux son alternativas a evaluar al elegir equipo y operación. Definir HTTPS, nombre interno y respaldos en el destino; el login y el cambio manual de contraseñas no requieren correo. Ver [infraestructura y migración](../devops/infraestructura-y-migracion.md).
 
 ## Estado de los repositorios y versiones
 

@@ -71,7 +71,7 @@ Esquemas HTTP validan sintaxis y forma; no sustituyen invariantes. Los errores e
 
 ## Persistencia, transacciones y concurrencia
 
-Prisma implementa acceso a PostgreSQL. SQL adicional y errores del proveedor permanecen en persistencia. Migraciones versionadas deben conservar checks, índices únicos parciales, unicidad normalizada, triggers y ON DELETE RESTRICT de database-design.md. No sustituir restricciones por consultas previas, ni usar db push como procedimiento de producción.
+Prisma implementa acceso a PostgreSQL. SQL adicional y errores del proveedor permanecen en persistencia. Migraciones versionadas deben conservar checks, índices únicos parciales, unicidad normalizada, triggers y ON DELETE RESTRICT de docs/technical/backend/database-design.md. No sustituir restricciones por consultas previas, ni usar db push como procedimiento de producción.
 
 El caso de uso define qué debe ser atómico; un puerto de transacciones/unidad de trabajo permite ejecutarlo sin nombrar Prisma. Los repositorios usados dentro de una operación deben compartir la transacción real. No abrir transacciones independientes por cada repositorio ni mantenerlas abiertas durante transferencias de archivos o llamadas de red.
 
@@ -83,7 +83,7 @@ El versionado no protege por sí solo reglas entre filas. Asignar, inactivar y m
 
 Puerto de almacenamiento con claves relativas opacas; adaptador filesystem externo. Un único archivo por carga, entre 1 y 10.485.760 bytes, PDF/JPEG/PNG, validando extensión, MIME y firma. Limitar streaming y limpiar temporales; el nombre original nunca decide una ruta. No enviar buffers de archivo al dominio ni convertir el filesystem en transacción SQL.
 
-Conservar la secuencia de api-design.md: validar temporal, almacenar archivo nuevo, confirmar datos, compensar el nuevo si falla la base y borrar el anterior solo tras commit. Limpieza fallida se registra para recuperación; no ocultarla ni borrar archivos aún referenciados. Respaldar base y archivos consistentemente.
+Conservar la secuencia de docs/technical/api-design.md: validar temporal, almacenar archivo nuevo, confirmar datos, compensar el nuevo si falla la base y borrar el anterior solo tras commit. Limpieza fallida se registra para recuperación; no ocultarla ni borrar archivos aún referenciados. Respaldar base y archivos consistentemente.
 
 No elegir mecanismos de sesión en esta guía. Definirlos en una decisión separada antes de implementar autenticación y autorizar datos reales. Autorización debe proteger cada operación y descarga del lado servidor. Las fichas de personal no son cuentas de acceso. Validar configuración al arrancar, centralizar logs seguros, limitar CORS al origen configurado y respetar secretos fuera del código.
 

@@ -14,9 +14,9 @@ Nombres técnicos en inglés: PascalCase para componentes/tipos, camelCase para 
 
 La fuente editable es kume-admin-docs; los repositorios de código deben consumir una revisión inmutable, sin depender de tener los tres checkouts abiertos.
 
-Al inicializar crear docs/reference.json con URL del repositorio docs, SHA completo de 40 caracteres, lista de rutas y SHA-256 de cada archivo sincronizado. Usar un único commit para reglas y contrato salvo una razón explícitamente documentada. Materializar esos archivos en docs/project conservando sus nombres. No guardar secretos ni configuración privada en ese snapshot.
+Al inicializar crear docs/reference.json con URL del repositorio docs, SHA completo de 40 caracteres, lista de rutas y SHA-256 de cada archivo sincronizado. Usar un único commit para reglas y contrato salvo una razón explícitamente documentada. Materializar esos archivos en docs/project conservando la estructura relativa del repositorio de origen (por ejemplo, docs/project/docs/technical/api-design.md y docs/project/openapi.yaml), para que funcionen sus enlaces. Al adoptar la reorganización, actualizar las rutas del manifiesto y del sincronizador en el mismo cambio; los snapshots de revisiones anteriores mantienen sus rutas originales. No guardar secretos ni configuración privada en ese snapshot.
 
-Incluir AGENTS.md de docs como referencia, implementation-decisions.md, development-guide.md, stack-tecnologico.md, alcance-prototipo.md, api-design.md, openapi.yaml, database-design.md y la guía de arquitectura correspondiente. Incluir continuacion-diseno-pantallas.md para frontend e infraestructura-y-migracion.md cuando se trabaje operación.
+Incluir AGENTS.md de docs como referencia, docs/general/implementation-decisions.md, docs/technical/development-guide.md, docs/technical/stack-tecnologico.md, docs/functional/alcance-prototipo.md, docs/technical/api-design.md, openapi.yaml, docs/technical/backend/database-design.md y la guía de arquitectura correspondiente. Incluir docs/ui/continuacion-diseno-pantallas.md para frontend e docs/devops/infraestructura-y-migracion.md cuando se trabaje operación.
 
 Las copias son generadas y no se editan directamente. Un script de sincronización a crear obtiene una revisión explícita, verifica hashes y actualiza manifiesto/copia en un mismo cambio. El chequeo local/CI comprueba manifiesto, hashes y regeneración sin descargar main. Acceso remoto con credenciales fuera del repositorio; el CI ordinario debe funcionar con el snapshot versionado.
 
@@ -28,7 +28,7 @@ openapi.yaml de docs es canónico. TypeBox implementa esquemas HTTP del backend;
 
 Para cambiar API:
 
-1. Proponer y aprobar cambios públicos en docs. Reconciliar api-design.md y database-design.md cuando corresponda, con ejemplos, estados y errores.
+1. Proponer y aprobar cambios públicos en docs. Reconciliar docs/technical/api-design.md y docs/technical/backend/database-design.md cuando corresponda, con ejemplos, estados y errores.
 2. Validar OpenAPI y evaluar compatibilidad. Una ampliación interna compatible no es autorización para cambiar contratos públicos sin acuerdo.
 3. Fijar el commit resultante en cada consumidor y regenerar tipos frontend de forma determinista. Elegir y fijar generador y versión al inicializar; prohibido editar el resultado.
 4. Adaptar TypeBox, rutas y mappers backend. Comprobar correspondencia semántica de rutas, verbos, parámetros, cuerpos, respuestas y errores frente al contrato fijado. Documentar las normalizaciones entre OpenAPI y JSON Schema; no comparar solo texto ni nombres de tipos.
@@ -67,7 +67,7 @@ Para docs, comprobar Markdown y enlaces locales de los archivos tocados; si camb
 
 Unitarias en frontend y backend. Frontend: comportamiento de componentes, formularios, errores y estado con colaboradores controlados. Backend: invariantes y casos de uso con dobles de puertos. Tests deterministas y nombres que expresan escenarios y resultados; probar regresiones relevantes, sin cobertura porcentual arbitraria ni snapshots indiscriminados.
 
-Playwright queda para una etapa posterior y no se instala ahora. Pruebas de integración no están acordadas todavía. No introducir Fastify.inject + PostgreSQL real como obligación aprobada ni afirmar verificaciones de SQL, sesiones, concurrencia real, navegador o almacenamiento real basándose en mocks. Las verificaciones operativas previas al piloto que ya exige alcance-prototipo.md se mantienen vigentes.
+Playwright queda para una etapa posterior y no se instala ahora. Pruebas de integración no están acordadas todavía. No introducir Fastify.inject + PostgreSQL real como obligación aprobada ni afirmar verificaciones de SQL, sesiones, concurrencia real, navegador o almacenamiento real basándose en mocks. Las verificaciones operativas previas al piloto que ya exige docs/functional/alcance-prototipo.md se mantienen vigentes.
 
 ## Criterio de entrega de un cambio
 

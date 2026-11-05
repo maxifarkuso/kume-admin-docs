@@ -4,7 +4,7 @@ Estado: documentación preparada para revisión; no acredita integración o desp
 
 ## Entrega
 
-README enlaza la spec y operacion-oracle.md registra el flujo manual, estado/salud,
+README enlaza la spec y docs/devops/operacion-oracle.md registra el flujo manual, estado/salud,
 lock compartido, revalidación previa a activar, permisos existentes, fallos sin
 fallback, retirada posterior de BACKEND_REVISION y reversión al workflow anterior.
 Se satisfacen DOC01–DOC05 sin cambiar contrato, backend, VM ni variables GitHub.

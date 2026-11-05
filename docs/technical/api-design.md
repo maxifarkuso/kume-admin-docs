@@ -1,6 +1,6 @@
 # KUME — Diseño de API
 
-Este documento resume las decisiones del contrato HTTP. Las operaciones funcionales se conservan en [OpenAPI](openapi.yaml). Actualización del 2 de noviembre de 2026: Fastify se ejecutará inicialmente en Oracle Cloud Always Free, con Docker Compose y alternativa de migración completa a intranet. El contrato incluye login, consulta de sesión, logout y seguridad por cookie; diseño detallado en [autenticación](autenticacion-prototipo.md). Diseño técnico completo con scrypt y umbrales de intentos confirmados; implementación y verificación pendientes.
+Este documento resume las decisiones del contrato HTTP. Las operaciones funcionales se conservan en [OpenAPI](../../openapi.yaml). Actualización del 2 de noviembre de 2026: Fastify se ejecutará inicialmente en Oracle Cloud Always Free, con Docker Compose y alternativa de migración completa a intranet. El contrato incluye login, consulta de sesión, logout y seguridad por cookie; diseño detallado en [autenticación](autenticacion-prototipo.md). Diseño técnico completo con scrypt y umbrales de intentos confirmados; implementación y verificación pendientes.
 
 ## Convenciones
 
@@ -211,7 +211,7 @@ Al eliminar un documento del personal se confirma primero el borrado de la fila 
 
 ## Respaldo y restauración
 
-No se exponen por HTTP ni requieren pantallas. Las tareas administrativas generan copias diarias cifradas de PostgreSQL y archivos como una unidad consistente y versionada, fuera de Oracle, con retención de 30 días y alertas. Se conserva ejecución manual para mantenimiento. Restauración con validación previa y confirmación antes de reemplazar datos; prueba inicial y trimestral. Incluir recuperación de cuentas y configuración. Ver [alcance](alcance-prototipo.md) e [infraestructura y migración](infraestructura-y-migracion.md).
+No se exponen por HTTP ni requieren pantallas. Las tareas administrativas generan copias diarias cifradas de PostgreSQL y archivos como una unidad consistente y versionada, fuera de Oracle, con retención de 30 días y alertas. Se conserva ejecución manual para mantenimiento. Restauración con validación previa y confirmación antes de reemplazar datos; prueba inicial y trimestral. Incluir recuperación de cuentas y configuración. Ver [alcance](../functional/alcance-prototipo.md) e [infraestructura y migración](../devops/infraestructura-y-migracion.md).
 
 ## Despliegue cloud y local
 

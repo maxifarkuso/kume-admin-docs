@@ -12,9 +12,9 @@ limpieza Docker, autenticación o migración completa de datos.
 ## Cargar contexto
 
 1. Leer [AGENTS.md](../../../AGENTS.md) del repositorio.
-2. Leer [administracion-oracle.md](../../../administracion-oracle.md): fuente
+2. Leer [administracion-oracle.md](../../../docs/devops/administracion-oracle.md): fuente
    propietaria de comandos, instalación por pasos, checksum histórico y PATH.
-3. Leer [operacion-oracle.md](../../../operacion-oracle.md): evidencia reportada
+3. Leer [operacion-oracle.md](../../../docs/devops/operacion-oracle.md): evidencia reportada
    y pendientes. No asumir que ese registro describe el estado actual del destino.
 4. Inspeccionar [oracle-admin.sh](../../../scripts/oracle-admin.sh) de la revisión
    elegida. No ejecutar un script descargado de una rama mutable sin revisión.
@@ -54,7 +54,7 @@ No asumir que Windows nativo, WSL o un Linux distinto se comportan como Oracle.
 Si se requiere adaptar código, hacerlo en la fuente versionada, comprobarlo y
 calcular una huella nueva; no modificar una descarga y atribuirle el hash anterior.
 Instalar la utilidad no instala ni migra el producto: la migración completa se
-rige por [infraestructura-y-migracion.md](../../../infraestructura-y-migracion.md).
+rige por [infraestructura-y-migracion.md](../../../docs/devops/infraestructura-y-migracion.md).
 
 ## Límites y cierre
 

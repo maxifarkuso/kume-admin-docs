@@ -86,7 +86,7 @@ La carga histórica desde marzo queda fuera del prototipo. La **importación por
 - Frontend React + TypeScript + Vite compilado y servido por el proxy de la VM Oracle, bajo el mismo origen HTTPS que la API (`/api/v1`). Decisión confirmada el 2 de noviembre; sustituye la alternativa Cloudflare Pages. Sin servicios locales para el uso diario.
 - Acceso desde distintas computadoras mediante navegador. Prioridad de escritorio; el uso completo desde celulares queda fuera del MVP.
 - Piloto con datos reales y demo separada con datos y archivos ficticios y cuenta propia.
-- Dos usuarios, Maxi y Vicky, con contraseñas individuales almacenadas como hash en un archivo de secrets del servidor, sin tabla de usuarios. Mismos permisos, cierre manual y vencimiento tras 8 horas de inactividad. Cambios de contraseña manuales a cargo de Maxi; sin recuperación por correo, registro público ni pantalla de administración de usuarios. Limitar intentos por cuenta y por IP mediante pausas temporales. Proteger pantallas, operaciones y archivos mediante una sesión válida. Ver [autenticación y tareas adicionales](autenticacion-prototipo.md).
+- Dos usuarios, Maxi y Vicky, con contraseñas individuales almacenadas como hash en un archivo de secrets del servidor, sin tabla de usuarios. Mismos permisos, cierre manual y vencimiento tras 8 horas de inactividad. Cambios de contraseña manuales a cargo de Maxi; sin recuperación por correo, registro público ni pantalla de administración de usuarios. Limitar intentos por cuenta y por IP mediante pausas temporales. Proteger pantallas, operaciones y archivos mediante una sesión válida. Ver [autenticación y tareas adicionales](../technical/autenticacion-prototipo.md).
 - Ambos pueden consultar y modificar los datos del sistema; administración de cuentas y restauraciones a cargo de Maxi.
 - Archivos privados y descargas autorizadas. Credenciales administrativas fuera del navegador y del repositorio.
 - Persistencia al reiniciar y actualizar contenedores. Configuración portable, sin rutas absolutas dependientes de Windows o Linux.
@@ -110,7 +110,7 @@ El acceso inicial será solo desde la intranet, sin acceso remoto. El equipo deb
 
 El MVP documentará dependencias y exportación y verificará portabilidad de datos y archivos. El despliegue local completo se implementará cuando se decida migrar. Se requerirá ensayo, respaldo consistente, ventana sin escrituras, validación del destino y posibilidad de volver atrás sin perder cambios; no habrá dos instalaciones aceptando escrituras en paralelo. La migración no se considera ejecutada por contar con Docker Compose.
 
-Ver [infraestructura cloud y migración local](infraestructura-y-migracion.md).
+Ver [infraestructura cloud y migración local](../devops/infraestructura-y-migracion.md).
 
 ## 8. Copias de seguridad y restauración
 
@@ -139,7 +139,7 @@ La disponibilidad de espacio para retener 30 días, el mecanismo de automatizaci
 
 ## 9. Tecnología
 
-El stack tecnológico está **aprobado** y se documenta en [Stack tecnológico](stack-tecnologico.md).
+El stack tecnológico está **aprobado** y se documenta en [Stack tecnológico](../technical/stack-tecnologico.md).
 
 | Componente | Tecnología aprobada |
 |---|---|
@@ -278,14 +278,14 @@ CLOCK continúa pendiente para una versión futura; todavía no se conoce su mec
 
 ## 12. Próximos pasos con Maxi
 
-1. [x] **DONE — 29 de octubre de 2026:** Revisar ambos repositorios de código y confirmar las herramientas complementarias. El responsable confirmó que ambos repositorios están vacíos, sin limitaciones previas, y aprobó el [stack tecnológico](stack-tecnologico.md).
-2. [x] **DONE — 30 de octubre de 2026:** Diseñar la base de datos, la API y el almacenamiento de comprobantes y documentos. Completado funcional conservado; autenticación y operación se siguen como tareas adicionales independientes. Ver [diseño de base de datos](database-design.md), [diseño de API](api-design.md) y [contrato OpenAPI](openapi.yaml).
-3. [x] **DONE — 30 de octubre de 2026:** Resolver detalles técnicos: validaciones, columnas del CSV, consulta de anulados, edición de gastos con rubros desactivados y reglas de fichas y asignaciones del personal. Las ampliaciones cloud no reabren estas decisiones. Decisiones registradas en el [diseño de base de datos](database-design.md), el [diseño de API](api-design.md) y el [contrato OpenAPI](openapi.yaml).
-4. [ ] **EN CURSO — 1 de noviembre de 2026:** Diseñar las pantallas y convertir el alcance en tareas. Navegación y bocetos estáticos de gastos y personal aprobados. Pendientes: catálogos, login, intentos limitados, cierre y expiración de sesión, identificación de demo, indisponibilidad cloud, prototipo interactivo, documentación final y backlog. Sesión pausada hasta disponer de créditos de MagicPath; continuación prevista para el 2 de noviembre. Retomar desde la [memoria para el diseño de pantallas](continuacion-diseno-pantallas.md). No marcar como completado sin confirmación expresa de Maxi.
+1. [x] **DONE — 29 de octubre de 2026:** Revisar ambos repositorios de código y confirmar las herramientas complementarias. El responsable confirmó que ambos repositorios están vacíos, sin limitaciones previas, y aprobó el [stack tecnológico](../technical/stack-tecnologico.md).
+2. [x] **DONE — 30 de octubre de 2026:** Diseñar la base de datos, la API y el almacenamiento de comprobantes y documentos. Completado funcional conservado; autenticación y operación se siguen como tareas adicionales independientes. Ver [diseño de base de datos](../technical/backend/database-design.md), [diseño de API](../technical/api-design.md) y [contrato OpenAPI](../../openapi.yaml).
+3. [x] **DONE — 30 de octubre de 2026:** Resolver detalles técnicos: validaciones, columnas del CSV, consulta de anulados, edición de gastos con rubros desactivados y reglas de fichas y asignaciones del personal. Las ampliaciones cloud no reabren estas decisiones. Decisiones registradas en el [diseño de base de datos](../technical/backend/database-design.md), el [diseño de API](../technical/api-design.md) y el [contrato OpenAPI](../../openapi.yaml).
+4. [ ] **EN CURSO — 1 de noviembre de 2026:** Diseñar las pantallas y convertir el alcance en tareas. Navegación y bocetos estáticos de gastos y personal aprobados. Pendientes: catálogos, login, intentos limitados, cierre y expiración de sesión, identificación de demo, indisponibilidad cloud, prototipo interactivo, documentación final y backlog. Sesión pausada hasta disponer de créditos de MagicPath; continuación prevista para el 2 de noviembre. Retomar desde la [memoria para el diseño de pantallas](../ui/continuacion-diseno-pantallas.md). No marcar como completado sin confirmación expresa de Maxi.
 5. Implementar y verificar los flujos acordados.
 6. Documentar despliegue cloud en Oracle, uso, cuentas, respaldo/restauración y preparación de migración a intranet; comprobar recuperación y carga representativa antes del piloto.
 
-**Tareas adicionales — 2 de noviembre de 2026:** el alcance, diseño técnico y contrato de autenticación están completos; quedan pantallas, implementación, despliegue y verificación. El detalle y los criterios para cerrar las tareas están en [autenticación del prototipo](autenticacion-prototipo.md). Concurrencia, respaldos diarios, HTTPS y preparación de migración continúan pendientes según [infraestructura](infraestructura-y-migracion.md), sin reabrir los pasos 2 y 3. El paso 4 conserva su estado en curso.
+**Tareas adicionales — 2 de noviembre de 2026:** el alcance, diseño técnico y contrato de autenticación están completos; quedan pantallas, implementación, despliegue y verificación. El detalle y los criterios para cerrar las tareas están en [autenticación del prototipo](../technical/autenticacion-prototipo.md). Concurrencia, respaldos diarios, HTTPS y preparación de migración continúan pendientes según [infraestructura](../devops/infraestructura-y-migracion.md), sin reabrir los pasos 2 y 3. El paso 4 conserva su estado en curso.
 
 **Contexto adicional:** se mencionó el proyecto de ChatGPT “kume” y la conversación “Planilla de pagos por curso”, pero su contenido no se pudo consultar. Este documento se basa exclusivamente en las decisiones de esta sesión.
 

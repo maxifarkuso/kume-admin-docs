@@ -196,4 +196,4 @@ Si el objetivo es marcar **todas** las tareas como hechas antes de continuar pan
 - [ ] No se exponen credenciales, hashes ni tokens en respuestas o logs. El despliegue real usa HTTPS.
 - [ ] La restauración recupera el acceso y mantiene el aislamiento entre demo y piloto.
 
-Referencias: [alcance](alcance-prototipo.md), [API](api-design.md), [base de datos](database-design.md), [OpenAPI](openapi.yaml), [infraestructura](infraestructura-y-migracion.md) y [continuación de pantallas](continuacion-diseno-pantallas.md).
+Referencias: [alcance](../functional/alcance-prototipo.md), [API](api-design.md), [base de datos](backend/database-design.md), [OpenAPI](../../openapi.yaml), [infraestructura](../devops/infraestructura-y-migracion.md) y [continuación de pantallas](../ui/continuacion-diseno-pantallas.md).

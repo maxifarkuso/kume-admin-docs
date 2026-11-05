@@ -1,6 +1,6 @@
 # Administración de consulta en Oracle
 
-Script: [scripts/oracle-admin.sh](scripts/oracle-admin.sh).
+Script: [scripts/oracle-admin.sh](../../scripts/oracle-admin.sh).
 Estado real reportado: [operación instalada](operacion-oracle.md).
 
 Ejecutarlo en la VM como el usuario de despliegue, sin sudo global. Requiere Bash
@@ -26,7 +26,7 @@ No usar `curl | bash`. La [instalación paso a paso](#instalación-comprobada-y-
 se realiza por separado del script, con revisión y checksum. No hace falta actualizar
 el frontend/backend ni publicar otra release para usarlo.
 
-Habilidad versionada: [kume-admin](.agents/skills/kume-admin/SKILL.md). Guía al agente
+Habilidad versionada: [kume-admin](../../.agents/skills/kume-admin/SKILL.md). Guía al agente
 para instalar o revalidar esta utilidad, incluyendo su adaptación a otra máquina.
 La fuente propietaria de los comandos y evidencias sigue siendo este documento.
 

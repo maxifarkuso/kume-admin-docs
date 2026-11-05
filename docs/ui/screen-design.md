@@ -141,4 +141,4 @@ Orden de trabajo previsto: revisar este mapa, registrar ajustes si los hay y pre
 
 El paso 4 sigue en curso: este documento no declara aprobados nuevos bocetos, no acredita un prototipo interactivo y no marca tareas de implementación o pruebas como hechas. El criterio de continuar con código deja de depender de completar wireframes en MagicPath por instrucción de Maxi. El cierre formal del paso 4 y el backlog deben registrarse expresamente, sin reabrir los pasos 2 y 3.
 
-Referencias: [alcance](alcance-prototipo.md), [autenticación](autenticacion-prototipo.md), [API](api-design.md), [OpenAPI](openapi.yaml) y [memoria de continuidad](continuacion-diseno-pantallas.md).
+Referencias: [alcance](../functional/alcance-prototipo.md), [autenticación](../technical/autenticacion-prototipo.md), [API](../technical/api-design.md), [OpenAPI](../../openapi.yaml) y [memoria de continuidad](continuacion-diseno-pantallas.md).
