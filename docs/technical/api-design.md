@@ -107,6 +107,11 @@ Ambos recursos permiten listar, crear, consultar, editar, desactivar y reactivar
 
 Un curso expone `name`, `level`, `internalName`, `days` y `shifts`. Un taller expone `name`, `days` y `shifts`. No se puede desactivar un destino con asignaciones.
 
+Ampliación aprobada por Maxi el 7 de noviembre de 2026, pendiente de implementación y verificación final: cursos y talleres exponen `version` entero positivo, inicialmente 1. PATCH exige la versión leída y al menos un campo editable; las acciones POST/DELETE de `deactivation` exigen cuerpo JSON `{"version":1}`. Se compara e incrementa atómicamente la versión en cada escritura aceptada, incluidas acciones cuyo estado ya coincide. Una versión obsoleta produce `409` con código `VERSION_CONFLICT`, sin sobrescritura ni reintento automático. PATCH devuelve el recurso y su nueva versión; las acciones conservan 204 y requieren nueva consulta si se necesita leer la versión resultante. Esta ampliación es incompatible con clientes que escriben sin versión y exige despliegue coordinado. Se limita a cursos y talleres.
+
+Ver [especificación de cursos y talleres](../specs/002-courses-workshops/spec.md) y [diseño técnico](../specs/002-courses-workshops/technical-spec.md). El contrato canónico es `openapi.yaml`; antes de publicar deben fijarse su revisión y los consumidores regenerados.
+
+
 ## Paginación, orden y relaciones
 
 Los listados usan `page` y `pageSize`; sus valores iniciales son 1 y 25, y el máximo de `pageSize` es 100. La forma común es:

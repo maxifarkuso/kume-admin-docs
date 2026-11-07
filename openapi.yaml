@@ -1059,6 +1059,12 @@ paths:
       operationId: deactivateCourse
       parameters:
         - $ref: "#/components/parameters/KumeRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogVersion"
       responses:
         "403":
           $ref: "#/components/responses/Forbidden"
@@ -1076,6 +1082,12 @@ paths:
       operationId: reactivateCourse
       parameters:
         - $ref: "#/components/parameters/KumeRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogVersion"
       responses:
         "403":
           $ref: "#/components/responses/Forbidden"
@@ -1085,6 +1097,8 @@ paths:
           description: Curso reactivado
         "404":
           $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
 
   /api/v1/workshops:
     get:
@@ -1194,6 +1208,12 @@ paths:
       operationId: deactivateWorkshop
       parameters:
         - $ref: "#/components/parameters/KumeRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogVersion"
       responses:
         "403":
           $ref: "#/components/responses/Forbidden"
@@ -1211,6 +1231,12 @@ paths:
       operationId: reactivateWorkshop
       parameters:
         - $ref: "#/components/parameters/KumeRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogVersion"
       responses:
         "403":
           $ref: "#/components/responses/Forbidden"
@@ -1220,6 +1246,8 @@ paths:
           description: Taller reactivado
         "404":
           $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
 
 components:
   securitySchemes:
@@ -1959,6 +1987,15 @@ components:
               items:
                 $ref: "#/components/schemas/Assignment"
 
+    CatalogVersion:
+      type: object
+      additionalProperties: false
+      required: [version]
+      properties:
+        version:
+          type: integer
+          minimum: 1
+
     CourseCreate:
       type: object
       additionalProperties: false
@@ -1990,8 +2027,12 @@ components:
     CoursePatch:
       type: object
       additionalProperties: false
-      minProperties: 1
+      minProperties: 2
+      required: [version]
       properties:
+        version:
+          type: integer
+          minimum: 1
         name:
           type: string
           minLength: 1
@@ -2019,8 +2060,11 @@ components:
       allOf:
         - $ref: "#/components/schemas/TimestampFields"
         - type: object
-          required: [id, name, level, internalName, days, shifts, isActive]
+          required: [id, name, level, internalName, days, shifts, isActive, version]
           properties:
+            version:
+              type: integer
+              minimum: 1
             id:
               type: string
               format: uuid
@@ -2075,8 +2119,12 @@ components:
     WorkshopPatch:
       type: object
       additionalProperties: false
-      minProperties: 1
+      minProperties: 2
+      required: [version]
       properties:
+        version:
+          type: integer
+          minimum: 1
         name:
           type: string
           minLength: 1
@@ -2097,8 +2145,11 @@ components:
       allOf:
         - $ref: "#/components/schemas/TimestampFields"
         - type: object
-          required: [id, name, days, shifts, isActive]
+          required: [id, name, days, shifts, isActive, version]
           properties:
+            version:
+              type: integer
+              minimum: 1
             id:
               type: string
               format: uuid

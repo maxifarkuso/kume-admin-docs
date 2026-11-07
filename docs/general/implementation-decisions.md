@@ -52,3 +52,13 @@ Se conservan docs/functional/alcance-prototipo.md, docs/technical/stack-tecnolog
 ## Criterio para retomar
 
 Leer primero este registro y los documentos de la tarea. No reabrir acuerdos sin incompatibilidad o evidencia concreta. Resolver pendientes cuando bloqueen la operación que se va a implementar; no rellenarlos silenciosamente. Actualizar este registro al acordarlos, distinguiendo aprobado, implementado y verificado.
+
+## Cursos y talleres — 7 de noviembre de 2026
+
+Maxi solicita comenzar los CRUDs por cursos y talleres, incluida la carga inicial por base de datos ya definida en el alcance. Aprueba expresamente añadir `version` a ambos recursos, exigirla al editar/desactivar/reactivar y devolver 409 ante versión obsoleta. Alcance limitado a estos dos catálogos; el pendiente de versionado de otros recursos se conserva.
+
+Estado: decisión aprobada; contrato local ampliado y especificaciones preparadas; código en curso, verificación final y despliegue pendientes. No acredita aprobación de los marcos de catálogos ni finalización del paso 4.
+
+Impacto: `openapi.yaml`, [API](../technical/api-design.md), [base](../technical/backend/database-design.md), consumidores backend/frontend y sus DTO. Es una ampliación incompatible para escrituras sin versión; antes de publicar se requiere revisión canónica inmutable, regeneración de consumidores y despliegue coordinado. No hay autorización implícita de commit, push, merge ni migración de producción.
+
+[Especificación funcional](../specs/002-courses-workshops/spec.md), [técnica](../specs/002-courses-workshops/technical-spec.md), [plan](../specs/002-courses-workshops/plan.md) y [tareas/evidencia](../specs/002-courses-workshops/tasks.md). La integración y coordinación real con asignaciones sigue pendiente de su implementación y comprobación.

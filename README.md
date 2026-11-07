@@ -40,6 +40,8 @@ En la raíz quedan este índice, `AGENTS.md`, el contrato canónico `openapi.yam
 - [Mapa de navegación y pantallas](docs/ui/screen-design.md).
 - [Estado del diseño de pantallas](docs/ui/continuacion-diseno-pantallas.md).
 
+- [Especificación de cursos y talleres](docs/specs/002-courses-workshops/spec.md): CRUDs, carga inicial por migraciones y versionado; implementación y verificación en curso.
+
 ## Estado
 
 Actualización del 5 de noviembre de 2026: Maxi informa que auth foundation está mergeado y desplegado tanto en frontend como en backend. **Pruebas funcionales pendientes**; este reporte no acredita verificación funcional ni habilitación del piloto con datos reales.

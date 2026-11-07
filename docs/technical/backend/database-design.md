@@ -244,6 +244,16 @@ Exactamente uno entre `course_id` y `workshop_id` debe estar informado. Los índ
 
 Los documentos no tienen catálogo de tipos, vencimiento ni estado de vigencia. Una carga errónea puede eliminarse físicamente junto con su archivo.
 
+## Versionado de cursos y talleres — 7 de noviembre de 2026
+
+Aprobado por Maxi; pendiente de implementación terminada y comprobación real. Agregar `version INTEGER NOT NULL DEFAULT 1 CHECK (version > 0)` a `course` y `workshop`. No extender esta decisión a las demás entidades por inferencia.
+
+En edición, baja y reactivación: bloquear la fila destino dentro de la transacción, comparar versión recibida, comprobar invariantes y actualizar con condición de versión e incremento. Las futuras escrituras de asignaciones deben bloquear esa misma fila antes de comprobar estado y disponibilidad del turno. No considerar estas reglas verificadas con dobles de repositorio.
+
+La carga inicial definida en las tablas anteriores se aplica en una migración de datos posterior a la creación del schema. El historial de Prisma impide reaplicarla. No ejecutar upserts al arrancar que restablezcan catálogos editados. En bases preexistentes, revisar conflictos antes de aplicar; no resetear ni ignorar fallas para simular una instalación correcta.
+
+Ver [especificación técnica](../../specs/002-courses-workshops/technical-spec.md), que detalla transacciones, coordinación pendiente con asignaciones y reversión sin borrar datos.
+
 ## Restricciones e índices
 
 Las migraciones deberán incluir:
