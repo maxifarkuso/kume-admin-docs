@@ -62,3 +62,9 @@ Estado: decisión aprobada; contrato local ampliado y especificaciones preparada
 Impacto: `openapi.yaml`, [API](../technical/api-design.md), [base](../technical/backend/database-design.md), consumidores backend/frontend y sus DTO. Es una ampliación incompatible para escrituras sin versión; antes de publicar se requiere revisión canónica inmutable, regeneración de consumidores y despliegue coordinado. No hay autorización implícita de commit, push, merge ni migración de producción.
 
 [Especificación funcional](../specs/002-courses-workshops/spec.md), [técnica](../specs/002-courses-workshops/technical-spec.md), [plan](../specs/002-courses-workshops/plan.md) y [tareas/evidencia](../specs/002-courses-workshops/tasks.md). La integración y coordinación real con asignaciones sigue pendiente de su implementación y comprobación.
+
+### Evidencia de implementación local de catálogos
+
+Backend `1c477d2` y frontend `e40b0d4` en ramas `feat/courses-workshops`. Pasaron 49 pruebas de backend y 14 de frontend, comprobaciones de tipos, lint y contrato. El frontend también compiló con Vite. Backend compiló TypeScript con un cliente Prisma local sin motor generado con herramientas oficiales; `npm run build` completo con motor nativo sigue bloqueado por 403 en esta instancia. No confundir esa compilación parcial con validación del artefacto de producción.
+
+Maxi instruyó diferir la ejecución de migraciones hasta antes del despliegue. No se ejecutaron migraciones ni ensayos de concurrencia PostgreSQL. Sin push, PR, merge ni despliegue. Detalle y límites en [implementación](../specs/002-courses-workshops/implementation.md). Los consumidores fijan el contrato aprobado en `1e650636705371f09be51a8c77a67f39e5251ba3`; esta actualización solo registra evidencia posterior.

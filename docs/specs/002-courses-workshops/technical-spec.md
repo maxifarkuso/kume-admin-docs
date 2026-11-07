@@ -46,7 +46,7 @@ Textos españoles, nombres técnicos ingleses, etiquetas y controles nativos acc
 
 La fuente del contrato es kume-admin-docs. La adición de versión es un cambio incompatible para clientes que escribían sin ella; coordinar frontend/backend. Antes de publicar: incorporar el contrato a un commit canónico autorizado, sincronizar revisión y hashes en ambos consumidores, regenerar DTO/esquemas, ejecutar controles y acordar despliegue compatible.
 
-Las copias locales actuales llevan una propuesta aprobada sobre la revisión base fijada; la anotación pendingContract no convierte cambios locales en un commit remoto ni acredita reproducibilidad definitiva. No publicar consumidores con ese pendiente. No hacer commit, push ni despliegue sin solicitud expresa.
+Ambos consumidores fijan el contrato del commit canónico 1e650636705371f09be51a8c77a67f39e5251ba3 con hashes y tipos regenerados, sin pendingContract. Ese commit contiene la revisión aprobada y este registro posterior no cambia su contrato. Maxi autorizó los commits; la publicación remota y el despliegue siguen pendientes.
 
 ## Verificación y reversión
 
