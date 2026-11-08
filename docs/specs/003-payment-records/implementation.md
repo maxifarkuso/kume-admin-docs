@@ -56,3 +56,7 @@ Riesgo alto por persistencia, dinero, concurrencia y archivos privados. No habil
 ## Reversión
 
 Retirar rutas/pantallas de esta feature o volver al artefacto anterior compatible; conservar tablas y archivos, sin migración down destructiva. Si se aplicaron escrituras nuevas, no operar dos versiones en paralelo y comprobar compatibilidad antes de reabrir escritura. Conservar respaldo consistente antes de migraciones y mantenimiento.
+
+## Actualización de publicación — 8 de noviembre
+
+Maxi solicita subir los cambios. Contrato incorporado al commit `0a4a28e36c03fa4cf0ec30f00edaf5c6b13295fd`; consumidores frontend y backend sincronizados y contract:check ordinario correcto en ambos. Se resuelve el bloqueo contractual descrito arriba. Ramas feat/payment-records en preparación para GitHub; sin merge, migraciones aplicadas ni despliegue.

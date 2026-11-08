@@ -15,3 +15,7 @@ Fecha: 8 de noviembre de 2026. Detalle en [implementación](implementation.md).
 - [ ] Verificar despliegue, respaldos y restauración consistente.
 
 Sin publicación ni migraciones aplicadas. Implementación local no equivale a integración, despliegue o piloto verificados.
+
+## Actualización de publicación — 8 de noviembre
+
+Maxi solicita subir los cambios. Contrato incorporado al commit `0a4a28e36c03fa4cf0ec30f00edaf5c6b13295fd`; consumidores frontend y backend sincronizados y contract:check ordinario correcto en ambos. Se resuelve el bloqueo contractual descrito arriba. Ramas feat/payment-records en preparación para GitHub; sin merge, migraciones aplicadas ni despliegue.
