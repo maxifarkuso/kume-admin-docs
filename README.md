@@ -34,7 +34,8 @@ En la raíz quedan este índice, `AGENTS.md`, el contrato canónico `openapi.yam
 - [Infraestructura y migración](docs/devops/infraestructura-y-migracion.md).
 - [Operación instalada y resultados comprobados](docs/devops/operacion-oracle.md).
 - [Spec de revisión automática del backend](docs/specs/001-backend-revision/spec.md): mejora separada, pendiente de integración y verificación en Oracle.
-- [Script de consulta de Oracle](docs/devops/administracion-oracle.md): recursos, Docker, rutas y estados; instalación comprobada y pasos para otra máquina.
+- [Administración de Oracle](docs/devops/administracion-oracle.md): recursos, Docker, rutas y estados; instalación comprobada y pasos para otra máquina.
+- [Migraciones controladas de base](docs/devops/migraciones-admin.md): ampliación local, etapas y recuperación por inspección; sin instalación en Oracle.
 - [SKILL kume-admin](.agents/skills/kume-admin/SKILL.md): guía versionada para instalar, adaptar y revalidar la utilidad.
 - [Memoria de la app de prueba Oracle](docs/devops/memoria-app-test-oracle.md): SSH, Compose, reconstrucción y retirada antes de publicar el MVP.
 - [Mapa de navegación y pantallas](docs/ui/screen-design.md).

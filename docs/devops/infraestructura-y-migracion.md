@@ -30,6 +30,9 @@ El [registro de instalación y funcionamiento](operacion-oracle.md) documenta la
 landing y backend instalados, acceso personal por túnel comprobado y pendientes.
 No reemplaza las condiciones para piloto real de este documento.
 Consultas locales: [script de administración](administracion-oracle.md).
+Gestión explícita de migraciones de esquema: [motor kume-admin](migraciones-admin.md),
+implementación local pendiente de validación en Oracle. No sustituye el traslado
+completo ni las pruebas de restauración de esta guía.
 
 ## Evidencia de validación básica
 

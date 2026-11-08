@@ -28,6 +28,16 @@ Para cambios funcionales reconciliar alcance, API/OpenAPI y base según correspo
 
 No guardar secretos, datos reales ni archivos privados. Ejemplos y fixtures deben ser ficticios. Conservar archivos de referencia y aprobaciones existentes.
 
+## Administración y migraciones
+
+La utilidad kume-admin conserva sus consultas y amplía su alcance por autorización
+expresa del 7 de noviembre de 2026. Para desarrollarla u operarla leer la
+[skill local](.agents/skills/kume-admin/SKILL.md),
+[administración](docs/devops/administracion-oracle.md) y
+[migraciones controladas](docs/devops/migraciones-admin.md).
+Desarrollo/pruebas locales no autorizan ejecución en Oracle, instalación o despliegue.
+Las reglas y límites operativos pertenecen a esas guías; conservar sus evidencias.
+
 ## Verificación y entrega
 
 Comprobar enlaces relativos, Markdown, coherencia de decisiones y, si cambia OpenAPI, validación y compatibilidad del contrato. Describir verificaciones realizadas y límites. No inventar scripts ni afirmar que se ejecutaron controles inexistentes.

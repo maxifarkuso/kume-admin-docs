@@ -28,5 +28,7 @@ jobs:
           work/checkers/shellcheck-v0.10.0/shellcheck scripts/oracle-admin.sh
           work/checkers/shfmt -d -i 2 scripts/oracle-admin.sh
           git diff --check
-      - name: Read-only behavior (synthetic states and simulated Docker)
+      - name: Python syntax
+        run: python3 -m compileall -q scripts/kume_migrations scripts/oracle-migrations.py
+      - name: Admin behavior (synthetic states and controlled migration collaborators)
         run: python3 -m unittest discover -s tests -p 'test_*.py' -v

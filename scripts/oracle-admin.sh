@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Consultas locales de KUME. Ejecutar como usuario de despliegue, sin sudo global.
+# Administración local de KUME. Ejecutar como usuario de despliegue, sin sudo global.
 set -euo pipefail
 
 show_states() {
@@ -127,10 +127,17 @@ run_query() {
   esac
 }
 
+run_migrations() {
+  local script_directory
+  script_directory=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd) || return
+  python3 "$script_directory/oracle-migrations.py" "$@"
+}
+
 show_help() {
   cat <<'HELP'
 Uso: bash oracle-admin.sh [opción]
-Sin opción abre un menú. Todo es consulta; no elimina ni reinicia servicios.
+Sin opción abre un menú. Las opciones existentes siguen siendo consultas.
+Migraciones es un grupo separado con etapas y confirmaciones explícitas.
 
   memoria         RAM y swap (mirar available, no solo free)
   disco           Espacio de / y /srv
@@ -146,15 +153,22 @@ Sin opción abre un menú. Todo es consulta; no elimina ni reinicia servicios.
   servicios       Servicio frontend y unidad nginx predeterminada
   salud           Backend interno y respuesta HTTP del frontend
   puertos         Puertos TCP en escucha
+  migraciones     Gestión controlada: migraciones --help (requiere motor instalado)
 
-Ejecutar como usuario de despliegue: sudo se usa solo al consultar Docker.
-No consulta secrets, entorno de contenedores o logs. No ejecutar con sudo global.
+Ejecutar como usuario de despliegue: Docker usa sudo por operación.
+Las consultas existentes no leen secrets, entorno de contenedores o logs.
+Migraciones usa configuración privada sin mostrar secretos; no restaura ni despliega. No ejecutar con sudo global.
 Códigos: 0 consulta correcta; 1 comprobación de estado fallida; 2 uso inválido.
 Otros comandos conservan sus códigos de error. En el menú se informa el fallo.
 HELP
 }
 
 main() {
+  if [[ ${1:-} == migraciones ]]; then
+    shift
+    run_migrations "$@"
+    return
+  fi
   if (($# > 1)); then
     show_help >&2
     return 2
@@ -173,10 +187,14 @@ main() {
   fi
   local option
   local PS3=$'\nElegí una consulta (0 para salir): '
-  select option in memoria disco contenedores usuario imagenes consumo espacio-docker volumenes redes rutas estados servicios salud puertos salir; do
+  select option in memoria disco contenedores usuario imagenes consumo espacio-docker volumenes redes rutas estados servicios salud puertos migraciones salir; do
     if [[ $REPLY == 0 || $option == salir ]]; then return; fi
     if [[ -z $option ]]; then
       printf 'Elegí un número de la lista.\n' >&2
+      continue
+    fi
+    if [[ $option == migraciones ]]; then
+      run_migrations --help || printf 'No se pudo abrir la ayuda de migraciones.\n' >&2
       continue
     fi
     if run_query "$option"; then

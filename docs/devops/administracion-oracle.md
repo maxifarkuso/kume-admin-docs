@@ -1,7 +1,13 @@
-# Administración de consulta en Oracle
+# Administración de KUME en Oracle
 
 Script: [scripts/oracle-admin.sh](../../scripts/oracle-admin.sh).
 Estado real reportado: [operación instalada](operacion-oracle.md).
+
+Ampliación local del 7 de noviembre: [migraciones controladas](migraciones-admin.md).
+El grupo `migraciones` separa preparación, respaldo y SQL con confirmaciones.
+No está instalado/verificado en Oracle. Las consultas siguientes conservan su
+comportamiento. La instalación y checksums históricos documentados abajo son de
+la versión de consultas; no validan ni instalan el motor nuevo.
 
 Ejecutarlo en la VM como el usuario de despliegue, sin sudo global. Requiere Bash
 4 o superior, Python 3.9 o superior, curl, Docker y herramientas estándar de Linux.
@@ -113,8 +119,8 @@ status ok y database ok; un 503 es fallo aunque el servidor responda. No imprime
 cuerpos inesperados. Para frontend muestra estado HTTP y Content-Type, sin cuerpo
 ni cookies: no comprueba todo el contenido de la landing o sus assets.
 
-El script no inspecciona variables de contenedores, runtime.env, claves, logs o
-configuraciones privadas. No incluye rm, prune, down, migraciones, rollback,
+Las opciones de consulta no inspeccionan variables de contenedores, runtime.env,
+claves, logs o configuraciones privadas. No incluyen rm, prune, down, migraciones, rollback,
 reinicios ni limpieza de imágenes. Espacio «reclaimable» no autoriza a borrarlo;
 volumen presente no acredita restauración. No cambia red, servicios o credenciales.
 

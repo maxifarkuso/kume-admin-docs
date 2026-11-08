@@ -169,3 +169,14 @@ realmente instalado. No requiere migración ni cambio de configuración de la VM
 Pendiente: integración y primera ejecución autorizada en Oracle. Las pruebas
 locales no acreditan permisos SSH efectivos ni despliegue en la VM. La mejora
 no depende de authentication-foundation ni cambia su rama o despliegue.
+
+## Ampliación local — 7 de noviembre de 2026
+
+Se desarrolla [gestión de migraciones con kume-admin](migraciones-admin.md).
+No se instaló ni ejecutó esta versión contra Oracle. La evidencia histórica aportada
+para el diseño describe SQL de catálogos ejecutado, primera migración registrada
+tras verificar y carga inicial sin pendientes en segunda ejecución; respaldo CUSTOM
+con índice legible y contenedor temporal retirado. No acredita restauración,
+ensayo de edición seguido de migración, concurrencia real ni despliegue posterior.
+Los workflows backend y frontend indicados como siguiente paso no se dan por ejecutados.
+Revalidar destino y versiones: los IDs y medidas de aquella operación son históricos.

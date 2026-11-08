@@ -1,13 +1,13 @@
 ---
 name: kume-admin
-description: Instalar, actualizar o comprobar la utilidad de consulta kume-admin en Oracle o una máquina Linux local; revisar recursos, Docker, rutas y estados sin modificar despliegues.
+description: Instalar, actualizar o comprobar kume-admin; conservar consultas de infraestructura y gestionar migraciones explícitas con respaldo, confirmación y evidencias.
 ---
 
-# KUME — Utilidad de consulta de infraestructura
+# KUME — Administración de infraestructura y migraciones
 
 Usar cuando se pida instalar, revalidar o adaptar kume-admin, consultar memoria,
-disco, Docker, releases o estados operativos. No es una habilidad de despliegue,
-limpieza Docker, autenticación o migración completa de datos.
+disco, Docker, releases o estados operativos. Incluye migraciones Prisma explícitas
+según autorización de la sesión. No es una habilidad de despliegue, limpieza Docker, autenticación o traslado completo de datos.
 
 ## Cargar contexto
 
@@ -18,6 +18,10 @@ limpieza Docker, autenticación o migración completa de datos.
    y pendientes. No asumir que ese registro describe el estado actual del destino.
 4. Inspeccionar [oracle-admin.sh](../../../scripts/oracle-admin.sh) de la revisión
    elegida. No ejecutar un script descargado de una rama mutable sin revisión.
+
+Para migraciones leer además [migraciones-admin.md](../../../docs/devops/migraciones-admin.md)
+y [spec 002](../../../docs/specs/002-admin-migrations/spec.md), incluido diseño,
+plan y evidencia. El permiso para desarrollar localmente no autoriza Oracle.
 
 ## Procedimiento
 
@@ -60,7 +64,12 @@ rige por [infraestructura-y-migracion.md](../../../docs/devops/infraestructura-y
 
 No pedir claves privadas, contraseñas, runtime.env, variables de contenedores o
 logs privados. No borrar imágenes/volúmenes, reiniciar, publicar, recuperar
-transacciones, aplicar migraciones o abrir puertos desde esta tarea.
+transacciones ni abrir puertos por inferencia. Las consultas existentes mantienen su garantía de lectura.
+Migraciones solo mediante etapas explícitas del motor, destino/revisión aprobados,
+locks y ventana coordinada, respaldo comprobado y confirmación literal antes de SQL.
+No convertir una inicialización excepcional en flujo automático. Ante running o
+uncertain inspeccionar y verificar, sin repetir SQL. Retirar solo el contenedor
+propio; conservar evidencias y distinguir índice legible de restauración real.
 El JSON de estado y sus rutas no acreditan CI, integridad, identidad Docker,
 restauración o acceso de navegador. Tratar cada evidencia por separado.
 Registrar revisión, checksum, ruta, PATH y consultas efectivamente probadas;
