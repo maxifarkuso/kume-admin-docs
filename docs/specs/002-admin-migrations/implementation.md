@@ -65,3 +65,11 @@ recuperación de datos exige inspección, decisión y restauración/corrección 
 por separado. No hay down migration, reset, restauración ni despliegue implícitos.
 
 Runbook propietario: [migraciones-admin.md](../../devops/migraciones-admin.md).
+
+## Publicación — 8 de noviembre de 2026
+
+Maxi autorizó subir los cambios. Implementación publicada en main de docs, commit
+`3c262bd2a92702228515d6ef7596d136e5df29a1`, después de incorporar los avances remotos sin descartarlos.
+39 pruebas locales correctas nuevamente. Se agregó el
+[paso a paso de gastos](../../devops/migraciones-payment-records.md), fijado al SQL
+del backend feat/payment-records; no se ejecutó SQL en Oracle.

@@ -193,3 +193,5 @@ Conservar la instalación anterior antes de cambiar el comando de entrada. No us
 checksum histórico para estos archivos ni mezclar revisiones del paquete y dispatcher.
 La instalación, cambio de PATH y pruebas contra la VM quedan pendientes de sesión
 autorizada; no se atribuyen a las pruebas locales de esta entrega.
+
+Procedimiento específico: [tablas de gastos y comprobantes](migraciones-payment-records.md).
