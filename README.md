@@ -41,6 +41,8 @@ En la raíz quedan este índice, `AGENTS.md`, el contrato canónico `openapi.yam
 - [Estado del diseño de pantallas](docs/ui/continuacion-diseno-pantallas.md).
 
 - [Especificación de cursos y talleres](docs/specs/002-courses-workshops/spec.md): CRUDs, carga inicial por migraciones y versionado; implementación y verificación en curso.
+- [Especificación del registro de pagos](docs/specs/003-payment-records/spec.md): gastos pagados, comprobantes, consulta y exportación; implementación local de gastos/rubros y comprobantes, con versionado aprobado; sincronización canónica pendiente.
+- Registro de pagos: [diseño técnico](docs/specs/003-payment-records/technical-spec.md), [plan](docs/specs/003-payment-records/plan.md) y [tareas](docs/specs/003-payment-records/tasks.md); implementación local preparada; verificación integrada y sincronización contractual pendientes.
 
 ## Estado
 

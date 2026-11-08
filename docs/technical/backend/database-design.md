@@ -300,3 +300,9 @@ Las migraciones deberán incluir:
 ## Ampliaciones técnicas pendientes
 
 No agregar una tabla de usuarios ni de recuperación de contraseñas. Maxi y Vicky tendrán credenciales individuales con hashes en secrets, los mismos permisos y cambios de contraseña manuales, sin recuperación por correo. Las sesiones se guardan en memoria y exigen nuevo login tras reiniciar el backend. Contadores de intentos también en memoria: 5 fallos por cuenta o 20 por IP en 15 minutos activan una pausa de 15 minutos. No se requiere un servicio de autenticación cloud para operación local. No persistir ni respaldar sesiones; ver [autenticación y tareas adicionales](../autenticacion-prototipo.md). Revisar privilegios PostgreSQL de aplicación y migraciones y la concurrencia de las dos cuentas, manteniendo las restricciones del dominio. No dar estas ampliaciones por implementadas ni cambiar las reglas funcionales aprobadas. Ver [alcance](../../functional/alcance-prototipo.md) e [infraestructura y migración](../../devops/infraestructura-y-migracion.md).
+
+## Ampliación aprobada: versionado de gastos y rubros
+
+El 8 de noviembre de 2026 Maxi aprueba añadir `version INTEGER NOT NULL DEFAULT 1 CHECK (version > 0)` a `category` y `expense`. Comparar e incrementar atómicamente en cada escritura aceptada, incluido reemplazo de comprobante, anulación/restauración y cambio de estado del rubro. `receipt` no lleva una versión independiente; usa la del gasto propietario. El diagrama inicial conserva el modelo histórico; esta ampliación complementa sus columnas y las tablas anteriores.
+
+La creación de un gasto o cambio hacia otro rubro requiere comprobar que el rubro esté activo bajo la misma transacción y bloqueo compartido con su desactivación. Conservar un rubro inactivo ya asociado sigue permitido. No eliminar datos ni archivos al anular o desactivar. El día del negocio es America/Montevideo. La migración local preparada no acredita aplicación en PostgreSQL.

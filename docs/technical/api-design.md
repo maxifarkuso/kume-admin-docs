@@ -221,3 +221,11 @@ No se exponen por HTTP ni requieren pantallas. Las tareas administrativas genera
 ## Despliegue cloud y local
 
 La API Fastify y las rutas funcionales no se reemplazan por servicios propietarios de Oracle. PostgreSQL permanece privado en la red Compose; los archivos persisten en un volumen del servidor. El frontend accede mediante HTTPS y autorización; no se exponen claves administrativas ni archivos directamente por una URL pública sin control. Al migrar, se actualizan direcciones, orígenes, certificados y configuración de sesiones, manteniendo reglas funcionales y acceso de cuentas. La demo mantiene aislamiento de datos, archivos y credenciales.
+
+## Gastos y rubros: concurrencia aprobada el 8 de noviembre de 2026
+
+Gastos y rubros exponen `version` entero positivo, inicialmente 1. PATCH exige versión y al menos un campo editable. POST/DELETE de anulación/restauración y desactivación/reactivación exigen JSON `{"version":1}`. El reemplazo de comprobante exige el campo multipart `version`, referido al gasto; devuelve los metadatos del archivo y requiere volver a consultar el gasto para obtener su nueva versión.
+
+Cada escritura aceptada compara e incrementa la versión atómicamente, incluidas acciones cuyo estado ya coincide. Una versión obsoleta produce 409 con `VERSION_CONFLICT`, sin sobrescritura ni reintento automático con versión nueva. El reemplazo y la edición/anulación comparten la misma versión del gasto. La creación no admite versión elegida por el cliente. El rubro resumido de un gasto conserva su forma actual; la versión del rubro se obtiene consultando el recurso correspondiente.
+
+El día de negocio se resuelve en America/Montevideo. Importes como texto decimal exacto en HTTP y centésimos enteros en el núcleo. La decisión no acredita implementación desplegada. Ver [especificación técnica](../specs/003-payment-records/technical-spec.md).

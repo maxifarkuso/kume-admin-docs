@@ -287,6 +287,12 @@ paths:
       tags: [Categories]
       summary: Desactivar rubro
       operationId: deactivateCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogVersion"
       parameters:
         - $ref: "#/components/parameters/KumeRequest"
       responses:
@@ -302,6 +308,12 @@ paths:
       tags: [Categories]
       summary: Reactivar rubro
       operationId: reactivateCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogVersion"
       parameters:
         - $ref: "#/components/parameters/KumeRequest"
       responses:
@@ -468,6 +480,12 @@ paths:
       tags: [Expenses]
       summary: Anular gasto
       operationId: cancelExpense
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogVersion"
       parameters:
         - $ref: "#/components/parameters/KumeRequest"
       responses:
@@ -485,6 +503,12 @@ paths:
       tags: [Expenses]
       summary: Restaurar gasto anulado
       operationId: restoreExpense
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogVersion"
       parameters:
         - $ref: "#/components/parameters/KumeRequest"
       responses:
@@ -512,8 +536,11 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              required: [receipt]
+              required: [receipt, version]
               properties:
+                version:
+                  type: integer
+                  minimum: 1
                 receipt:
                   type: string
                   format: binary
@@ -1548,8 +1575,11 @@ components:
       allOf:
         - $ref: "#/components/schemas/TimestampFields"
         - type: object
-          required: [id, name, isActive]
+          required: [id, name, isActive, version]
           properties:
+            version:
+              type: integer
+              minimum: 1
             id:
               type: string
               format: uuid
@@ -1581,8 +1611,12 @@ components:
     CategoryPatch:
       type: object
       additionalProperties: false
-      minProperties: 1
+      minProperties: 2
+      required: [version]
       properties:
+        version:
+          type: integer
+          minimum: 1
         name:
           type: string
           minLength: 1
@@ -1653,8 +1687,12 @@ components:
     ExpensePatch:
       type: object
       additionalProperties: false
-      minProperties: 1
+      minProperties: 2
+      required: [version]
       properties:
+        version:
+          type: integer
+          minimum: 1
         paymentDate:
           type: string
           format: date
@@ -1681,6 +1719,7 @@ components:
         - type: object
           required:
             - id
+            - version
             - paymentDate
             - amount
             - currency
@@ -1693,6 +1732,9 @@ components:
             id:
               type: string
               format: uuid
+            version:
+              type: integer
+              minimum: 1
             paymentDate:
               type: string
               format: date

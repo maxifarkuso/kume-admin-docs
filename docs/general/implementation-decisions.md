@@ -68,3 +68,17 @@ Impacto: `openapi.yaml`, [API](../technical/api-design.md), [base](../technical/
 Backend `1c477d2` y frontend `e40b0d4` en ramas `feat/courses-workshops`. Pasaron 49 pruebas de backend y 14 de frontend, comprobaciones de tipos, lint y contrato. El frontend también compiló con Vite. Backend compiló TypeScript con un cliente Prisma local sin motor generado con herramientas oficiales; `npm run build` completo con motor nativo sigue bloqueado por 403 en esta instancia. No confundir esa compilación parcial con validación del artefacto de producción.
 
 Maxi instruyó diferir la ejecución de migraciones hasta antes del despliegue. No se ejecutaron migraciones ni ensayos de concurrencia PostgreSQL. Sin push, PR, merge ni despliegue. Detalle y límites en [implementación](../specs/002-courses-workshops/implementation.md). Los consumidores fijan el contrato aprobado en `1e650636705371f09be51a8c77a67f39e5251ba3`; esta actualización solo registra evidencia posterior.
+
+## Registro de pagos — 8 de noviembre de 2026
+
+Maxi solicita especificación técnica, plan e implementación del módulo de gastos pagados. Tras la etapa inicial de solo especificación, aprueba expresamente:
+
+- Agregar `version` a gastos y rubros, exigirla al editar y cambiar estado, y al reemplazar comprobantes; responder 409 con `VERSION_CONFLICT` ante versión obsoleta. La autorización anterior de no cambiar contratos queda sustituida para estas operaciones.
+- Usar America/Montevideo para el día de negocio, la validación de fecha no futura y el mes inicial.
+- Incorporar el plugin oficial `@fastify/multipart` al backend para cargas de comprobantes; versión instalada y fijada 10.1.8, compatible con Fastify 5.
+
+El núcleo usa centésimos bigint y texto decimal en los límites, sin aritmética binaria para importes. El versionado comienza en 1 y se incrementa atómicamente por escritura aceptada, incluso acciones de estado ya coincidente. Reemplazar comprobante incrementa la versión del gasto y conserva la respuesta de metadatos existente; consultar de nuevo el gasto antes de otra escritura.
+
+Estado: contrato local ampliado e implementación local en curso. No acredita migraciones aplicadas, pruebas PostgreSQL, despliegue ni finalización del paso 4. La revisión inmutable y sincronización de consumidores quedan pendientes de un commit canónico autorizado; no inventar un SHA para el contrato modificado.
+
+Impacto: OpenAPI, API, base, consumidores frontend/backend y volumen privado de comprobantes. Cambio incompatible con clientes que escriben sin versión; requiere despliegue coordinado. No se autorizaron commit, push, merge ni despliegue. Evidencia y límites en [implementación](../specs/003-payment-records/implementation.md).
