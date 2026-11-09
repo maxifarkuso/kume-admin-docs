@@ -25,6 +25,7 @@ class FakeRuntime:
         self.rows = []
         self.table_count = "0"
         self.fail = None
+        self.inspection = (str(journal.directory / "inspection.sql"), "d" * 64)
         self.migrations = {"001_schema": "a" * 64, "002_seed": "b" * 64}
 
     def effect(self, name):
@@ -51,6 +52,12 @@ class FakeRuntime:
 
     def container(self):
         return "own-container"
+
+    def check_tool_access(self):
+        self.effect("access")
+
+    def verify_retry(self, inspection=None):
+        self.effect("verify_retry")
 
     def backup(self):
         self.effect("backup")
@@ -304,6 +311,88 @@ class WorkflowTests(unittest.TestCase):
         self.runtime.fail = None
         self.workflow.execute("retirar")
         self.assertEqual(self.runtime.calls.count("remove"), 1)
+
+    def failed_deploy(self):
+        self.prepared()
+        self.runtime.fail = "deploy"
+        with self.assertRaises(MigrationError):
+            self.workflow.execute("aplicar")
+        self.runtime.fail = None
+
+    def test_permission_failure_blocks_before_writing_intent_or_deploy(self):
+        self.prepared()
+        self.runtime.fail = "access"
+        with self.assertRaises(MigrationError):
+            self.workflow.execute("aplicar")
+        self.assertIsNone(self.journal.outcome("aplicar"))
+        self.assertNotIn("deploy", self.runtime.calls)
+
+    def test_inspected_retry_preserves_uncertainty_and_requires_separate_apply(self):
+        self.failed_deploy()
+        self.workflow.execute("habilitar-reintento")
+        self.assertEqual(self.runtime.calls.count("deploy"), 1)
+        self.assertEqual(self.journal.outcome("aplicar"), "uncertain")
+        self.assertTrue(self.workflow.retry_authorized())
+        self.workflow.execute("aplicar")
+        self.assertEqual(self.runtime.calls.count("deploy"), 2)
+        self.assertEqual(self.journal.outcome("aplicar"), "success")
+        self.assertTrue(
+            any(
+                e["action"] == "aplicar" and e["outcome"] == "uncertain"
+                for e in self.journal.value["events"]
+            )
+        )
+
+    def test_retry_inspection_failure_or_cancellation_does_not_enable_deploy(self):
+        self.failed_deploy()
+        self.runtime.fail = "verify_retry"
+        with self.assertRaises(MigrationError):
+            self.workflow.execute("habilitar-reintento")
+        self.assertFalse(self.workflow.retry_authorized())
+        self.runtime.fail = None
+        self.workflow.confirm = lambda prompt: "no"
+        with self.assertRaises(MigrationError):
+            self.workflow.execute("habilitar-reintento")
+        self.assertFalse(self.workflow.retry_authorized())
+        self.assertEqual(self.runtime.calls.count("deploy"), 1)
+
+    def test_retry_inspection_rejects_missing_evidence_and_exceptional_sql(self):
+        self.failed_deploy()
+        inspection = self.runtime.inspection
+        self.runtime.inspection = None
+        with self.assertRaises(MigrationError):
+            self.workflow.execute("habilitar-reintento")
+        self.runtime.inspection = inspection
+        self.journal.record("inicializar", "uncertain")
+        with self.assertRaises(MigrationError):
+            self.workflow.execute("habilitar-reintento")
+        self.assertFalse(self.workflow.retry_authorized())
+
+    def test_retry_authorization_is_consumed_by_the_next_failed_attempt(self):
+        self.failed_deploy()
+        self.workflow.execute("habilitar-reintento")
+        self.runtime.fail = "deploy"
+        with self.assertRaises(MigrationError):
+            self.workflow.execute("aplicar")
+        self.assertFalse(self.workflow.retry_authorized())
+        with self.assertRaises(MigrationError):
+            self.workflow.execute("aplicar")
+        self.assertEqual(self.runtime.calls.count("deploy"), 2)
+
+    def test_approved_inspection_is_rechecked_before_any_retry(self):
+        self.failed_deploy()
+        self.workflow.execute("habilitar-reintento")
+        self.runtime.fail = "verify_retry"
+        with self.assertRaises(MigrationError):
+            self.workflow.execute("aplicar")
+        self.assertEqual(self.runtime.calls.count("deploy"), 1)
+
+    def test_other_operations_remain_blocked_while_retry_is_authorized(self):
+        self.failed_deploy()
+        self.workflow.execute("habilitar-reintento")
+        other = Journal(self.root, "another-operation", self.config)
+        with self.assertRaises(MigrationError):
+            Workflow(FakeRuntime(other), other).check_other_operations()
 
 
 class AdapterTests(unittest.TestCase):
@@ -736,3 +825,111 @@ class RuntimeBoundaryTests(unittest.TestCase):
                 with self.assertRaises(MigrationError) as error:
                     Commands().run(["npm", command])
                 self.assertEqual(error.exception.code, 1)
+
+    def test_tool_exec_uses_operator_uid_and_private_home_without_chmod(self):
+        source = self.journal.directory / "source/prisma"
+        source.mkdir(parents=True, mode=0o700)
+        schema = source / "schema.prisma"
+        schema.write_text("// fixture")
+        schema.chmod(0o600)
+        self.journal.artifact(
+            "source",
+            {"prisma/schema.prisma": hashlib.sha256(schema.read_bytes()).hexdigest()},
+        )
+        before = (source.stat().st_mode, schema.stat().st_mode)
+        with (
+            patch("os.getuid", return_value=1001),
+            patch("os.getgid", return_value=1001),
+            patch.object(self.runtime, "container", return_value="a" * 64),
+            patch.object(self.runtime, "docker", return_value="") as docker,
+        ):
+            self.runtime.prisma(
+                "migrate", "status", "--schema=/migration/schema.prisma"
+            )
+        for call in docker.call_args_list:
+            args = call.args
+            self.assertEqual(args[args.index("--user") + 1], "1001:1001")
+            self.assertIn("HOME=/tmp/kume-prisma-home", args)
+        self.assertIn("/migration/schema.prisma", docker.call_args_list[0].args)
+        self.assertEqual(before, (source.stat().st_mode, schema.stat().st_mode))
+
+    def test_read_access_failure_prevents_npm_install(self):
+        self.config.update(network="fixture_default")
+
+        def docker(*args, **kwargs):
+            if args[0] == "run":
+                return "a" * 64
+            if "node" in args:
+                raise MigrationError("private output omitted", 13)
+            return ""
+
+        with (
+            patch.object(
+                self.runtime,
+                "preflight",
+                return_value={"image": "sha256:" + "b" * 64, "identity": {}},
+            ),
+            patch.object(self.runtime, "snapshot"),
+            patch.object(self.runtime, "connection"),
+            patch.object(self.runtime, "docker", side_effect=docker) as commands,
+        ):
+            with self.assertRaises(MigrationError) as error:
+                self.runtime.prepare()
+        self.assertEqual(error.exception.code, 13)
+        self.assertFalse(
+            any("install" in call.args for call in commands.call_args_list)
+        )
+
+    def test_new_container_runs_as_operator_and_overrides_home_after_env_file(self):
+        self.config.update(network="fixture_default")
+
+        def docker(*args, **kwargs):
+            if args[0] == "run":
+                return "a" * 64
+            if "--help" in args:
+                return "npm <command> install rebuild"
+            return ""
+
+        with (
+            patch("os.getuid", return_value=1001),
+            patch("os.getgid", return_value=1001),
+            patch.object(
+                self.runtime,
+                "preflight",
+                return_value={"image": "sha256:" + "b" * 64, "identity": {}},
+            ),
+            patch.object(self.runtime, "snapshot"),
+            patch.object(self.runtime, "connection"),
+            patch.object(self.runtime, "docker", side_effect=docker) as commands,
+            patch.object(self.runtime, "prisma", return_value="prisma : 6.19.0\n"),
+        ):
+            self.runtime.prepare()
+        run = commands.call_args_list[0].args
+        self.assertEqual(run[run.index("--user") + 1], "1001:1001")
+        self.assertIn("readonly", run[run.index("--mount") + 1])
+        self.assertGreater(
+            run.index("HOME=/tmp/kume-prisma-home"), run.index("--env-file")
+        )
+
+    def test_retry_cli_requires_absolute_inspection_path_and_complete_checksum(self):
+        entry = Path(__file__).resolve().parents[1] / "scripts/oracle-migrations.py"
+        base = [
+            sys.executable,
+            str(entry),
+            "habilitar-reintento",
+            "--config",
+            "/nonexistent-fixture.json",
+            "--operacion",
+            "fixture",
+        ]
+        for extra in (
+            [],
+            ["--inspeccion-sql", "/fixture.sql"],
+            ["--inspeccion-sql", "/fixture.sql", "--inspeccion-sha256", "invalid"],
+            ["--inspeccion-sql", "relative.sql", "--inspeccion-sha256", "a" * 64],
+        ):
+            with self.subTest(extra=extra):
+                result = subprocess.run(
+                    base + extra, capture_output=True, text=True, timeout=5
+                )
+                self.assertEqual(result.returncode, 2)

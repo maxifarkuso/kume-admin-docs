@@ -89,3 +89,39 @@ inválida sin exponer su contenido. Suite completa: 42 pruebas correctas, Ruff l
 formato y diff --check correctos. La recuperación operativa requiere retirar el
 contenedor propio, actualizar y comenzar una nueva preparación, sin forzar etapas.
 Validación de esa corrección en Oracle y aplicación de SQL siguen pendientes.
+
+## Corrección de UID/GID y recuperación — 9 de noviembre de 2026
+
+Evidencia de la sesión guiada: snapshot de ubuntu con UID/GID 1001:1001, modo
+0700/0600; herramientas de la imagen ejecutadas como node 1000:1000. Prisma migrate
+status mostró EACCES sobre /migration/schema.prisma. El historial solo contenía
+las dos migraciones previas completas, y category/expense/receipt/payment_updated_at
+seguían ausentes. No se atribuye éxito al deploy fallido ni restauración al dump.
+
+Corrección: UID/GID operativo en run y exec Prisma, HOME temporal propio, lectura
+comprobada de todos los archivos antes de npm/Prisma y antes de intención SQL.
+El bind sigue readonly y el snapshot privado. exec explícito permite corregir el
+acceso usando el contenedor propio existente sin cambiar su configuración ni los
+usuarios del backend y PostgreSQL. Se registra tool_exec_user; no hay chmod/chown.
+
+La operación incierta no se elude con otro ID: habilitar-reintento exige inspección
+manual concluyente y SELECT READ ONLY aprobado por SHA-256, respaldo/fuente/historia/
+identidad comprobados, ausencia de inicialización excepcional y confirmación propia.
+Se agrega evidencia, sin sobrescribir el evento aplicar=uncertain. Solo habilita
+el siguiente intento en esa operación, con inspector y hash revalidados antes de SQL.
+La autorización no desbloquea operaciones ajenas ni ejecuta migraciones por sí sola.
+
+Verificación: 53 pruebas locales con colaboradores controlados, incluidas regresiones
+UID 1001 frente a imagen 1000, HOME privado, lectura previa, permisos conservados,
+recuperación cancelada/fallida, aprobación de un único intento, relectura del inspector,
+flags completos y bloqueo de otras operaciones. Ruff, compilación Python, sintaxis
+Bash y diff --check correctos. Enlaces y bloques Markdown de documentos tocados
+comprobados. No hay capas .clean declaradas: límites/imports revisados manualmente.
+No se afirma validación de UID/HOME con Docker real, SQL o recuperación en Oracle
+por estas pruebas. La instalación y validación guiada de la corrección siguen pendientes.
+
+Riesgo alto por recuperación de escrituras: el inspector es código del operador
+aprobado contra todos los efectos SQL del commit, no una prueba universal inferida
+por el administrador. Rollback de herramienta: recuperar la distribución anterior
+conservando journals y dumps; no revierte datos ni elimina la incertidumbre. Volver
+a una versión anterior no resuelve el acceso privado ni habilita repetir el deploy.

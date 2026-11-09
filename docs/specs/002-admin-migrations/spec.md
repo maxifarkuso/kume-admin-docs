@@ -41,3 +41,16 @@ Fuentes: [administración](../../devops/administracion-oracle.md),
 [infraestructura](../../devops/infraestructura-y-migracion.md),
 [alcance](../../functional/alcance-prototipo.md) y
 [base](../../technical/backend/database-design.md).
+
+## Corrección operativa aprobada — 9 de noviembre de 2026
+
+Maxi solicita corregir el acceso del contenedor al snapshot. El operador Ubuntu
+usa UID/GID 1001 y la imagen node usa 1000; 0700/0600 impiden esa lectura. Mantener
+el snapshot privado y ejecutar herramientas con UID/GID operativo y HOME temporal,
+comprobando acceso antes de SQL. No modificar el usuario de servicios del producto.
+
+Para retomar el deploy afectado, admitir habilitar-reintento tras inspección SQL
+específica aprobada por hash y confirmación separada. Conservar el evento incierto,
+revalidar identidad/respaldo/historia/fuente y el inspector antes de la siguiente
+aplicación. No repetir SQL automáticamente ni habilitar recuperación excepcional
+con resolve. El procedimiento propietario está en la guía de migraciones.

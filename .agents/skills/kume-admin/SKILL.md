@@ -68,7 +68,8 @@ transacciones ni abrir puertos por inferencia. Las consultas existentes mantiene
 Migraciones solo mediante etapas explícitas del motor, destino/revisión aprobados,
 locks y ventana coordinada, respaldo comprobado y confirmación literal antes de SQL.
 No convertir una inicialización excepcional en flujo automático. Ante running o
-uncertain inspeccionar y verificar, sin repetir SQL. Retirar solo el contenedor
+uncertain inspeccionar y verificar, sin repetir SQL a ciegas. Para deploy, solo
+habilitar un reintento mediante la inspección aprobada y confirmación documentadas. Retirar solo el contenedor
 propio; conservar evidencias y distinguir índice legible de restauración real.
 El JSON de estado y sus rutas no acreditan CI, integridad, identidad Docker,
 restauración o acceso de navegador. Tratar cada evidencia por separado.

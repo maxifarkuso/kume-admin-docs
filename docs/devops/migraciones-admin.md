@@ -208,3 +208,46 @@ respuesta de ayuda. No editar el journal para marcar éxito: conservar la eviden
 retirar el contenedor propio mediante retirar, actualizar la distribución completa
 y preparar una operación nueva tras diagnosticar el fallo. Esta recuperación de
 herramientas no autoriza repetir SQL ni borrar journals de escrituras inciertas.
+
+## UID/GID operativo y recuperación por inspección
+
+Los snapshots siguen privados (directorios 0700 y archivos 0600). El contenedor
+nuevo usa --user UID:GID del operador, con HOME=/tmp/kume-prisma-home. El bind
+permanece readonly. No se cambia el usuario del backend/PostgreSQL ni se conceden
+permisos a otros usuarios. También cada docker exec de Prisma fija ese UID/GID y
+HOME: permite usar herramientas de un contenedor propio creado por la versión
+anterior. Antes de instalar o ejecutar Prisma se comprueba lectura de todos los
+archivos del snapshot bajo ese usuario y se registra tool_exec_user. Un fallo de
+acceso bloquea la escritura antes de registrar intención SQL.
+
+Para un deploy previo incierto, arreglar permisos no basta para repetirlo. Se
+incorpora habilitar-reintento, que solo habilita el siguiente intento en la misma
+operación; no ejecuta migrate deploy. No aplica a db execute/resolve excepcionales.
+
+1. Mantener la ventana coordinada y comprobar que no sigue un proceso migrador.
+2. Inspeccionar el historial, esquema y efectos posibles de TODOS los SQL pendientes
+   del commit aprobado. La ausencia de una fila del historial por sí sola no prueba
+   ausencia de efectos. Resolver cualquier aplicación parcial antes de continuar;
+   este paso no es un mecanismo para saltear SQL pendiente ni errores del esquema.
+3. Preparar un archivo SQL privado revisado, de un único SELECT, que devuelva solo
+   ok si el destino está en condiciones de volver a ejecutar los SQL pendientes.
+   Debe verificar los efectos posibles de la migración particular, no solo contar
+   tablas. No usar SELECT 'ok' sin condiciones ni funciones con efectos externos.
+4. Calcular su SHA-256 y ejecutar habilitar-reintento con --config, --operacion,
+   --inspeccion-sql RUTA_ABSOLUTA y --inspeccion-sha256 HASH. El motor comprueba
+   identidad, fuente, respaldo, historia no divergente y el SELECT READ ONLY.
+5. Confirmar específicamente habilitar-reintento con destino/revisión/ventana. Se
+   repiten las comprobaciones y se agrega la evidencia al journal. El evento
+   aplicar=uncertain original permanece intacto; no se lo transforma en éxito.
+6. Ejecutar aplicar por separado en la misma operación. El motor vuelve a comprobar
+   el hash y el resultado del inspector antes de SQL. La autorización queda ligada
+   al intento incierto y a los pendientes inspeccionados: un nuevo intento fallido
+   la consume y exige otra investigación. Otras operaciones siguen bloqueadas
+   mientras esa escritura permanezca incierta, aunque haya autorización de reintento.
+
+No editar/borrar journals ni cambiar el ID para eludir incertidumbre. El inspector
+es código aprobado por el operador, igual que el verificador final; la herramienta
+no puede deducir por sí sola la semántica de cualquier migración ni dar por probada
+la recuperación mediante un SELECT trivial. Una historia ya completa se verifica;
+no necesita habilitar-reintento. Esta acción exige preparado=success y respaldo
+intacto, además de una inspección manual concluyente de la causa original.

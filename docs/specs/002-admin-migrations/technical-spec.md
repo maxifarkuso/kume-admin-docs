@@ -46,3 +46,21 @@ Retirada verifica ID y etiqueta propios; nunca limpia por nombre genérico.
 Reversión de herramienta: volver a la instalación anterior conservada, sin cambiar
 base. Revertir código no revierte SQL; recuperación de datos requiere plan y
 restauración explícitos, fuera de esta feature.
+
+## Corrección UID y recuperación explícita — 9 de noviembre
+
+La cuenta operativa puede tener UID/GID distintos a la imagen. Docker run y exec
+Prisma fijan los del operador no root, con HOME propio en /tmp, y verifican lectura
+del snapshot antes de instalar o escribir. No ampliar 0700/0600 ni escribir el bind.
+Para contenedores antiguos, exec fija usuario/HOME sin recrear servicios.
+
+habilitar-reintento es una acción sin SQL de escritura. Solo admite un migrate
+deploy incierto, preparado correcto y ausencia de inicialización/resolve. Requiere
+un SELECT de recuperación privado aprobado por SHA-256, en flags separados para
+conservar la configuración inmutable. Lo ejecuta READ ONLY antes/después de la
+confirmación, compara historia y verifica respaldo/fuente/destino. Agrega evento y
+evidencia ligados al índice del intento incierto y pendientes actuales. No cambia
+ese evento a éxito ni desbloquea operaciones ajenas. El siguiente aplicar consume
+la habilitación al registrar una nueva intención; antes relee el inspector y hash.
+Una aplicación parcial o semántica no demostrada por la inspección sigue bloqueada.
+El operador es responsable de revisar el inspector contra todos los efectos SQL.

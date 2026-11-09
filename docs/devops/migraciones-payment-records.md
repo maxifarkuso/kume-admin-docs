@@ -189,3 +189,18 @@ Conservar journal, dump y checkout. No borrar volúmenes ni restaurar implícita
 Desplegar gastos/backend/frontend es un paso posterior y separado; requiere también
 el volumen privado de comprobantes y su respaldo, según la
 [implementación de pagos](../specs/003-payment-records/implementation.md).
+
+## Incidencia de acceso y actualización — 9 de noviembre
+
+La sesión guiada identificó snapshot 0700/0600 de ubuntu UID/GID 1001 y contenedor
+node UID/GID 1000. Preparar no había comprobado lectura; aplicar falló con EACCES
+sobre /migration/schema.prisma. Se inspeccionaron dos migraciones antiguas completas
+y ausencia de category/expense/receipt/payment_updated_at. Estos resultados son
+previos a la recuperación: no registrar la migración como aplicada por esta evidencia.
+
+No repetir con otro ID ni ampliar permisos del snapshot. Actualizar a la revisión
+con corrección UID/HOME y habilitar-reintento según la guía propietaria. La revisión
+original 3c262bd y la corrección npm 9012f0d son históricas y no corrigen esta incidencia.
+Conservar payment-records-002 y su respaldo. Antes de habilitar el reintento deben
+confirmarse causa y ausencia de efectos parciales y de procesos migradores activos,
+con inspector específico aprobado; después aplicar se ejecuta por separado.

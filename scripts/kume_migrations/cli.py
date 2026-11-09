@@ -116,7 +116,27 @@ def main(arguments=None):
         required=True,
         help="ID único; conservar para inspección y reanudación",
     )
+    parser.add_argument(
+        "--inspeccion-sql",
+        type=Path,
+        help="SELECT de recuperación aprobado, privado y de solo lectura",
+    )
+    parser.add_argument(
+        "--inspeccion-sha256", help="SHA-256 del SQL de recuperación revisado"
+    )
     args = parser.parse_args(arguments)
+    if args.action == "habilitar-reintento":
+        if (
+            not args.inspeccion_sql
+            or not args.inspeccion_sql.is_absolute()
+            or not args.inspeccion_sha256
+            or not re.fullmatch(r"[0-9a-f]{64}", args.inspeccion_sha256)
+        ):
+            parser.error(
+                "habilitar-reintento requiere --inspeccion-sql y --inspeccion-sha256"
+            )
+    elif args.inspeccion_sql or args.inspeccion_sha256:
+        parser.error("La inspección adicional solo corresponde a habilitar-reintento")
     os.umask(0o077)
     signal.signal(signal.SIGTERM, interrupted)
     try:
@@ -125,7 +145,14 @@ def main(arguments=None):
         root = Path.home() / ".local/share/kume-admin/migrations"
         with locks(root, Path(config["deployment_lock"])):
             journal = Journal(root, args.operacion, config)
-            Workflow(Runtime(config, journal), journal).execute(args.action)
+            inspection = (
+                (args.inspeccion_sql, args.inspeccion_sha256)
+                if args.action == "habilitar-reintento"
+                else None
+            )
+            Workflow(Runtime(config, journal, inspection=inspection), journal).execute(
+                args.action
+            )
         return 0
     except MigrationError as error:
         print(str(error), file=sys.stderr)

@@ -55,10 +55,11 @@ class Commands:
 
 
 class Runtime:
-    def __init__(self, config, journal, commands=None):
+    def __init__(self, config, journal, commands=None, *, inspection=None):
         self.config = config
         self.journal = journal
         self.commands = commands or Commands()
+        self.inspection = inspection
 
     def docker(self, *arguments, **kwargs):
         return self.commands.run(["sudo", "docker", *arguments], **kwargs)
@@ -282,10 +283,14 @@ class Runtime:
             "--pull=never",
             "--memory=384m",
             "--memory-swap=384m",
+            "--user",
+            f"{os.getuid()}:{os.getgid()}",
             "--network",
             self.config["network"],
             "--env-file",
             self.config["runtime_env"],
+            "--env",
+            "HOME=/tmp/kume-prisma-home",
             "--mount",
             f"type=bind,src={self.journal.directory}/source/prisma,dst=/migration,readonly",
             "--entrypoint",
@@ -295,8 +300,11 @@ class Runtime:
         ).strip()
         require(re.fullmatch(r"[0-9a-f]{64}", container), "ID temporal inválido")
         self.journal.artifact("container", container)
-        self.journal.artifact("versions", versions)
+        self.journal.artifact(
+            "versions", {**versions, "tool_user": f"{os.getuid()}:{os.getgid()}"}
+        )
         self.connection(container)
+        self.check_tool_access(container)
         self.docker(
             "exec",
             container,
@@ -367,9 +375,46 @@ class Runtime:
         )
         return actual
 
+    def check_tool_access(self, container=None):
+        container = container or self.container()
+        files = self.journal.value["artifacts"].get("source", {})
+        paths = sorted(
+            {
+                "/migration/schema.prisma",
+                *("/migration/" + name.removeprefix("prisma/") for name in files),
+            }
+        )
+        script = """const fs=require('node:fs');
+fs.mkdirSync(process.env.HOME,{recursive:true,mode:0o700});
+for(const path of process.argv.slice(1)) fs.accessSync(path,fs.constants.R_OK);"""
+        try:
+            self.docker(
+                "exec",
+                "--user",
+                f"{os.getuid()}:{os.getgid()}",
+                "--env",
+                "HOME=/tmp/kume-prisma-home",
+                container,
+                "node",
+                "-e",
+                script,
+                *paths,
+            )
+        except MigrationError as error:
+            raise MigrationError(
+                "No se pudo leer el snapshot o preparar HOME con el UID/GID operativo",
+                error.code,
+            ) from error
+        self.journal.artifact("tool_exec_user", f"{os.getuid()}:{os.getgid()}")
+
     def prisma(self, *arguments):
+        self.check_tool_access()
         return self.docker(
             "exec",
+            "--user",
+            f"{os.getuid()}:{os.getgid()}",
+            "--env",
+            "HOME=/tmp/kume-prisma-home",
             self.container(),
             "/tmp/kume-prisma/node_modules/.bin/prisma",
             *arguments,
@@ -469,9 +514,13 @@ class Runtime:
         self._verify_file("initial_verification_sql", "initial_verification_sha256")
 
     def _verification_query(self, path_key, checksum_key):
-        path = Path(self.config[path_key])
+        return self._read_verification(
+            Path(self.config[path_key]), self.config[checksum_key]
+        )
+
+    def _read_verification(self, path, checksum):
         private_file(path)
-        require(digest(path) == self.config[checksum_key], "Verificación no aprobada")
+        require(digest(path) == checksum, "Verificación no aprobada")
         query = path.read_text()
         # psql meta-commands can escape the read-only server transaction.
         require(
@@ -483,7 +532,15 @@ class Runtime:
         return query
 
     def _verify_file(self, path_key, checksum_key):
-        query = self._verification_query(path_key, checksum_key)
+        self._execute_verification(self._verification_query(path_key, checksum_key))
+
+    def verify_retry(self, inspection=None):
+        inspection = inspection or self.inspection
+        require(inspection is not None, "Falta inspección SQL y checksum aprobados")
+        path, checksum = inspection
+        self._execute_verification(self._read_verification(Path(path), checksum))
+
+    def _execute_verification(self, query):
         result = self.docker(
             "exec",
             "-i",
