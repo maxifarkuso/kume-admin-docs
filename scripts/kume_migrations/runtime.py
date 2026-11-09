@@ -23,7 +23,15 @@ HISTORY_SQL = """SELECT COALESCE(json_agg(row_to_json(m)), '[]'::json)::text FRO
 
 
 class Commands:
-    def run(self, arguments, *, input=None, output=None, input_file=None):
+    def run(
+        self,
+        arguments,
+        *,
+        input=None,
+        output=None,
+        input_file=None,
+        accepted_codes=(0,),
+    ):
         try:
             with input_file.open("rb") if input_file else nullcontext(None) as stream:
                 result = subprocess.run(
@@ -39,7 +47,7 @@ class Commands:
             raise MigrationError(
                 "Tiempo agotado; inspeccionar resultado antes de continuar", 124
             ) from error
-        if result.returncode:
+        if result.returncode not in accepted_codes:
             raise MigrationError(
                 "Falló colaborador; salida privada omitida", result.returncode
             )
@@ -302,7 +310,19 @@ class Runtime:
             "--save-exact",
             "prisma@6.19.0",
         )
-        capabilities = self.docker("exec", container, "npm", "--help")
+        # npm 11.17 prints normal help with status 1. Accept that status only
+        # for this read-only probe, and require recognizable command help.
+        capabilities = self.docker(
+            "exec", container, "npm", "--help", accepted_codes=(0, 1)
+        )
+        require(
+            re.search(r"\bnpm\s+<command>", capabilities)
+            and all(
+                re.search(r"\b" + command + r"\b", capabilities)
+                for command in ("install", "rebuild")
+            ),
+            "Ayuda npm no reconocida; preparación detenida",
+        )
         if re.search(r"\bapprove-scripts\b", capabilities):
             self.docker(
                 "exec",

@@ -533,7 +533,7 @@ class RuntimeBoundaryTests(unittest.TestCase):
             if args[0] == "run":
                 return "a" * 64
             if "--help" in args:
-                return "install, rebuild, help"
+                return "npm <command>\ninstall, rebuild, help"
             return ""
 
         with (
@@ -640,7 +640,7 @@ class RuntimeBoundaryTests(unittest.TestCase):
             if args[0] == "run":
                 return "a" * 64
             if "--help" in args:
-                return "install, rebuild, approve-scripts"
+                return "npm <command>\ninstall, rebuild, approve-scripts"
             return ""
 
         with (
@@ -664,3 +664,75 @@ class RuntimeBoundaryTests(unittest.TestCase):
             approval[approval.index("approve-scripts") + 1 :],
             ("prisma@6.19.0", "@prisma/engines@6.19.0"),
         )
+
+    def test_prepare_accepts_npm_help_exit_one_with_recognized_commands(self):
+        self.config.update(network="fixture_default")
+
+        def command(arguments, **kwargs):
+            if "--help" in arguments:
+                return subprocess.CompletedProcess(
+                    arguments,
+                    1,
+                    b"npm <command>\ninstall, rebuild, approve-scripts\n",
+                    b"",
+                )
+            output = b"a" * 64 if "run" in arguments else b""
+            return subprocess.CompletedProcess(arguments, 0, output, b"")
+
+        with (
+            patch.object(
+                self.runtime,
+                "preflight",
+                return_value={"image": "sha256:" + "b" * 64, "identity": {}},
+            ),
+            patch.object(self.runtime, "snapshot"),
+            patch.object(self.runtime, "connection"),
+            patch.object(self.runtime, "prisma", return_value="prisma : 6.19.0\n"),
+            patch("subprocess.run", side_effect=command) as commands,
+        ):
+            self.runtime.prepare()
+        arguments = [call.args[0] for call in commands.call_args_list]
+        self.assertTrue(any("approve-scripts" in args for args in arguments))
+        self.assertTrue(any("rebuild" in args for args in arguments))
+
+    def test_npm_help_error_is_not_accepted_as_capability_evidence(self):
+        self.config.update(network="fixture_default")
+
+        def command(arguments, **kwargs):
+            if "--help" in arguments:
+                return subprocess.CompletedProcess(
+                    arguments, 1, b"DO_NOT_PRINT", b"PASSWORD"
+                )
+            return subprocess.CompletedProcess(
+                arguments, 0, b"a" * 64 if "run" in arguments else b"", b""
+            )
+
+        with (
+            patch.object(
+                self.runtime,
+                "preflight",
+                return_value={"image": "sha256:" + "b" * 64, "identity": {}},
+            ),
+            patch.object(self.runtime, "snapshot"),
+            patch.object(self.runtime, "connection"),
+            patch("subprocess.run", side_effect=command) as commands,
+        ):
+            with self.assertRaises(MigrationError) as error:
+                self.runtime.prepare()
+        self.assertNotIn("DO_NOT_PRINT", str(error.exception))
+        self.assertFalse(
+            any("rebuild" in call.args[0] for call in commands.call_args_list)
+        )
+
+    def test_nonzero_status_remains_an_error_for_writing_commands(self):
+        for command in ("install", "approve-scripts", "rebuild"):
+            with (
+                self.subTest(command=command),
+                patch(
+                    "subprocess.run",
+                    return_value=subprocess.CompletedProcess([], 1, b"", b""),
+                ),
+            ):
+                with self.assertRaises(MigrationError) as error:
+                    Commands().run(["npm", command])
+                self.assertEqual(error.exception.code, 1)

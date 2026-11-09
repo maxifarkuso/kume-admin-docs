@@ -73,3 +73,19 @@ Maxi autorizó subir los cambios. Implementación publicada en main de docs, com
 39 pruebas locales correctas nuevamente. Se agregó el
 [paso a paso de gastos](../../devops/migraciones-payment-records.md), fijado al SQL
 del backend feat/payment-records; no se ejecutó SQL en Oracle.
+
+## Corrección del sondeo de npm — 8 de noviembre de 2026
+
+En la preparación guiada en Oracle, npm install devolvió 0 y npm --help devolvió 1
+con ayuda reconocible y approve-scripts anunciado. La primera implementación trató
+esa ayuda como error y dejó preparar=failed, código 1. El contenedor temporal quedó
+activo; no se ejecutó SQL de migración. La consulta manual Prisma --version mostró
+6.19.0 y motores disponibles; no se cambió por eso el resultado fallido del journal.
+
+Se reprodujo el fallo localmente antes del cambio. Ahora solo el sondeo de ayuda
+acepta 0/1, condicionado a contenido reconocido; las operaciones de instalación,
+aprobación y reconstrucción conservan su tratamiento de errores. Se rechaza ayuda
+inválida sin exponer su contenido. Suite completa: 42 pruebas correctas, Ruff lint/
+formato y diff --check correctos. La recuperación operativa requiere retirar el
+contenedor propio, actualizar y comenzar una nueva preparación, sin forzar etapas.
+Validación de esa corrección en Oracle y aplicación de SQL siguen pendientes.

@@ -195,3 +195,16 @@ La instalación, cambio de PATH y pruebas contra la VM quedan pendientes de sesi
 autorizada; no se atribuyen a las pruebas locales de esta entrega.
 
 Procedimiento específico: [tablas de gastos y comprobantes](migraciones-payment-records.md).
+
+## Compatibilidad con la ayuda de npm 11.17
+
+npm 11.17 puede devolver código 1 aun cuando imprime ayuda válida. El motor admite
+0/1 exclusivamente en ese sondeo de lectura y exige reconocer npm <command> y los
+comandos install/rebuild; cualquier otra respuesta detiene la preparación. Los
+códigos no cero de install, approve-scripts y rebuild siguen siendo errores.
+
+Una versión anterior puede haber detenido preparar después de install por esa
+respuesta de ayuda. No editar el journal para marcar éxito: conservar la evidencia,
+retirar el contenedor propio mediante retirar, actualizar la distribución completa
+y preparar una operación nueva tras diagnosticar el fallo. Esta recuperación de
+herramientas no autoriza repetir SQL ni borrar journals de escrituras inciertas.
