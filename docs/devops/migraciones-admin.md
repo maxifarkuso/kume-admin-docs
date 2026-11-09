@@ -1,15 +1,165 @@
 # Migraciones de base con kume-admin
 
-Estado: implementación local; no instalada ni verificada en Oracle. La
+Estado al 9 de noviembre de 2026: instalada y utilizada en Oracle durante la sesión
+guiada, según resultados aportados por Maxi. Reportó la aplicación, verificación y
+retirada de herramientas de `payment-records-002` después de corregir npm y UID/GID.
+No es una inspección remota desde Codex ni una restauración comprobada. La
 [spec 002](../specs/002-admin-migrations/spec.md) y su
 [diseño](../specs/002-admin-migrations/technical-spec.md) definen esta ampliación.
 Oracle es el host; la base sigue siendo PostgreSQL. Consultas anteriores conservan
 su contrato de lectura. Ninguna migración se ejecuta al abrir el menú.
 
+Ir a: [recorrido y diagramas](#uso-autónomo-recorrido-del-operador),
+[configuración](#configuración-privada), [comandos por etapa](#etapas-explícitas),
+[inspección de tablas](#inspeccionar-estructuras-e-historial) o
+[recuperación por inspección](#uidgid-operativo-y-recuperación-por-inspección).
+
+## Uso autónomo: recorrido del operador
+
+Esta guía permite operar desde la terminal sin un agente. El operador elige y
+aprueba destino, revisión y SQL; ejecuta una etapa por vez y revisa su resultado.
+Los comandos no generan migraciones nuevas: aplican los archivos ya versionados
+en el backend. El menú solo abre ayuda; las etapas se invocan por CLI.
+
+### Flujo habitual
+
+```mermaid
+flowchart TD
+    A["Elegir destino y SHA completo del backend"] --> B["Revisar SQL y preparar configuración y verificadores privados"]
+    B --> C["Coordinar ventana sin despliegues ni escrituras"]
+    C --> D["diagnostico"]
+    D --> E{"¿Destino e historial correctos?"}
+    E -->|No| STOP["Detenerse e investigar; no escribir"]
+    E -->|Sí| F{"¿Hay pendientes esperadas?"}
+    F -->|No| DONE["Terminar diagnóstico; no aplicar"]
+    F -->|Sí| G["preparar + confirmación: herramientas temporales"]
+    G --> H["respaldo + confirmación: dump e índice legible"]
+    H --> I["estado: revisar pendientes y etapas exitosas"]
+    I --> J["aplicar + confirmación: ESCRIBE EN LA BASE"]
+    J --> K["verificar: ejecutar SELECT aprobado"]
+    K --> L["Inspeccionar estructuras e historial"]
+    L --> M["retirar + confirmación: detener solo herramientas propias"]
+    M --> N["Conservar respaldo y journal; cerrar ventana"]
+    G -.->|Fallo| ERR["No avanzar: seguir flujo de fallos"]
+    H -.->|Fallo| ERR
+    I -.->|Fallo| ERR
+    J -.->|Fallo o interrupción| ERR
+    K -.->|Fallo| ERR
+    M -.->|Fallo| ERR
+```
+
+| Etapa | Qué hace | Cuándo avanzar |
+|---|---|---|
+| `diagnostico` | Comprueba destino, recursos, código e historia; muestra pendientes. | Solo aparecen los SQL revisados y esperados. Si no hay pendientes, terminar. |
+| `preparar` | Crea herramientas temporales y snapshot privado; comprueba acceso con UID/GID operativo. | Muestra `Etapa completada: preparar`. |
+| `respaldo` | Genera dump CUSTOM, lee su índice y registra checksum. | Muestra `Etapa completada: respaldo`. No significa restauración probada. |
+| `estado` | Revisa pendientes e informa etapas registradas. | Preparar y respaldo terminaron con éxito; pendientes siguen siendo las aprobadas. |
+| `aplicar` | Revalida respaldo/destino y ejecuta `prisma migrate deploy`, historia y verificador. | Muestra `Etapa completada: aplicar`. Un error puede haber dejado efectos. |
+| `verificar` | Repite el SELECT de verificación aprobado. | Muestra `Etapa completada: verificar` y la inspección complementaria coincide. |
+| `retirar` | Detiene el contenedor de esta operación, conservando sus archivos. | Muestra `Etapa completada: retirar`. |
+
+Si una etapa falla, no continuar con la siguiente ni cambiar el ID para evitar
+el error. Los `running` anteriores seguidos de `success` de la misma etapa son
+historia normal: interpretar el último resultado de cada acción. Un último
+`running` o `uncertain` exige inspección; no significa que el SQL se revirtió.
+
+### Qué preparar para cada nueva migración
+
+1. Verificar instalación completa y versión revisada del motor. Las versiones
+   anteriores a la corrección `170d15e1d1b3dc0bc8372caf9675fe58b631ba0a` no
+   corrigen el acceso del UID operativo al snapshot privado.
+2. Revalidar host, usuario, estados, contenedores, red y conexión filtrada. Usar
+   `kume-admin estados`, `memoria` y `contenedores`; el diagnóstico repite controles
+   automáticos. No exponer `runtime.env` ni usar `docker inspect` completo.
+3. Elegir un SHA backend completo, revisar **todos** sus SQL pendientes y disponer
+   de un checkout limpio separado de releases. Un checkout de una migración anterior
+   no incorpora automáticamente migraciones nuevas. No actualizar el producto.
+4. Crear una configuración JSON nueva según [Configuración privada](#configuración-privada),
+   con el destino actual y esa revisión. Preparar un verificador específico para
+   el resultado esperado, guardarlo privado y calcular su SHA-256. Para el flujo
+   normal, los campos `initial_*` siguen siendo obligatorios pero no habilitan
+   inicialización; ambos verificadores pueden apuntar al mismo archivo final.
+5. Elegir un ID nuevo para esta operación, conservándolo entre todas sus etapas.
+   No modificar su JSON o archivos aprobados a mitad del proceso. Una corrección
+   de un deploy incierto se trata en la misma operación mediante inspección.
+6. Coordinar y mantener la ventana de mantenimiento. El motor toma locks por
+   invocación; entre etapas no conserva el lock. Los actores que lo ignoran deben
+   coordinarse externamente durante toda la operación.
+
+No reutilizar a ciegas el verificador de `payment-records-002`: exigía cero gastos
+/comprobantes y cantidades de catálogos observadas en esa sesión. Tras empezar a
+usar la aplicación esas condiciones pueden dejar de ser válidas. El verificador
+siguiente debe comprobar la nueva migración y la conservación de datos actuales.
+
+### Cómo responder a una confirmación
+
+El proceso tiene dos entradas diferentes:
+
+1. En el prompt Bash `ubuntu@host:~$`, ejecutar el comando `kume-admin migraciones ...`.
+2. Cuando el programa muestre `Confirmá escribiendo exactamente:`, pegar allí la
+   frase que generó y presionar Enter. Revisar acción, host, base, revisión y respaldo
+   antes de hacerlo. Confirmar `ventana-coordinada` solo si esa ventana existe.
+3. Esperar el resultado de la etapa y el regreso al prompt Bash antes del comando siguiente.
+
+La frase **no es un comando Bash**. Si aparece `-bash: preparar: command not found`,
+se la escribió fuera del programa y esa línea no preparó herramientas. Si se canceló
+antes de registrar la intención, puede volver a abrirse esa etapa; si hay una etapa
+previa registrada, inspeccionar su resultado antes de repetirla.
+
+### Por qué se hacen estas validaciones
+
+| Control | Qué evita o demuestra |
+|---|---|
+| Host, conexión, identidad física y revisión | Aplicar SQL a otra base o usar otro código; detecta cambios de destino entre etapas. |
+| Checksums de archivos e historial | Usar una migración modificada o una historia divergente. |
+| Recursos, permisos y acceso UID/GID | Fallar por falta de capacidad o porque Prisma no puede leer su snapshot. |
+| Dump e índice legible | Tener una copia previa identificada; no demuestra restauración completa. |
+| Locks, estados y ventana | Excluir operaciones cooperantes y coordinar las restantes; mirar `pending` una vez no elimina carreras. |
+| Revalidación después de confirmar | Detectar cambios ocurridos mientras el operador revisaba el resumen. |
+| Verificación final e inspección | Comprobar historia, estructura y efectos esperados del SQL específico. |
+| Inspección antes de reintentar | Evitar repetir SQL parcialmente ejecutado o marcar como aplicado algo pendiente. |
+
+Las consultas manuales ayudan a investigar y aprobar el destino; no hace falta
+repetir todas en cada etapa. El motor repite sus comprobaciones en los puntos donde
+el estado puede haber cambiado. Una confirmación no sustituye esos controles.
+
+### Si algo falla
+
+```mermaid
+flowchart TD
+    A["Error o interrupción: detener la secuencia"] --> B["Consultar estado y último resultado por etapa"]
+    B --> C{"¿Se intentó SQL de escritura?"}
+    C -->|No| D["Diagnosticar herramientas o respaldo sin repetir escrituras"]
+    D --> E["Corregir causa; retirar herramientas propias si corresponde"]
+    E --> F["Conservar evidencia y preparar otra operación si la etapa no es repetible"]
+    C -->|Sí o no se sabe| G["Mantener la ventana; inspeccionar procesos, historial, esquema y efectos SQL"]
+    G --> H{"¿Deploy uncertain y reintento seguro demostrado?"}
+    H -->|Sí| I["SELECT inspector privado + SHA-256 aprobado"]
+    I --> J["habilitar-reintento + confirmación: NO aplica SQL"]
+    J --> K["aplicar por separado en la misma operación"]
+    K --> L["Si tiene éxito: verificar e inspeccionar; después retirar"]
+    K -.->|Nuevo fallo| G
+    H -->|No| M["No reintentar: investigar o definir recuperación específica"]
+```
+
+`habilitar-reintento` solo sirve para un deploy cuyo último resultado sea
+`uncertain`, con preparación correcta y respaldo intacto. Requiere una inspección
+concluyente, no un SELECT trivial. Si el historial ya está completo, hay efectos
+parciales, sigue un migrador activo, el último estado es `running` o intervino
+`inicializar`/`resolve`, detenerse y definir la recuperación correspondiente.
+La herramienta no ofrece reparación universal para esos casos. Un fallo de lectura
+posterior al deploy tampoco autoriza repetir SQL que ya figura aplicado.
+
+El procedimiento de recuperación soportado y sus argumentos están en
+[UID/GID operativo y recuperación por inspección](#uidgid-operativo-y-recuperación-por-inspección).
+La [inicialización excepcional](#inicialización-excepcional) es una rama distinta;
+una base con tablas no es motivo suficiente para elegirla.
+
 ## Antes de operar
 
-Obtener autorización expresa para el destino y SQL de esta sesión. Esta entrega
-solo autoriza desarrollo y pruebas locales. Revalidar host, usuario, estados,
+El operador responsable debe aprobar el destino y los SQL concretos de la operación.
+El permiso para desarrollar o publicar la herramienta no autoriza otras bases ni
+futuros despliegues. Revalidar host, usuario, estados,
 backend, PostgreSQL, red y recursos; los nombres/SHA de la sesión histórica no
 son descubrimiento del entorno actual. Ejecutar como usuario operativo, sin sudo
 global. Python 3.9+, Git, Docker, sudo ya autorizado, Bash y acceso SSH configurado.
@@ -91,9 +241,11 @@ Un fallo de capacidades/versiones aborta; no instala otra versión como alternat
 ## Etapas explícitas
 
 Usar un ID nuevo por operación, conservar el mismo ID y el mismo JSON entre etapas.
-Los comandos siguientes son una secuencia de referencia; en una terminal del usuario
-explicar y ejecutar uno por vez, esperando su resultado. No copiar toda la secuencia
-contra Oracle sin revisión y autorización.
+Los comandos siguientes son una secuencia de referencia: ejecutar uno por vez y
+revisar su resultado antes del siguiente, con el destino y los SQL ya aprobados.
+Las rutas e ID de ejemplo se reemplazan por los propios; no pegar el bloque entero
+ni encadenar las etapas. No hace falta que un agente valide cada salida si el
+operador puede comprobar los criterios del recorrido anterior.
 
 ```bash
 kume-admin migraciones --help
@@ -132,6 +284,77 @@ acción/host/base/revisión/ventana y revalidación antes de migrate deploy. Com
 historia completa y verificador final. Si no hay pendientes en una segunda llamada
 tras éxito, informa sin volver a escribir. Una base pública no vacía sin historial
 no entra en deploy automático. Los datos de carga inicial provienen de las migraciones.
+
+## Inspeccionar estructuras e historial
+
+Estas consultas son de solo lectura. Revisar estructura no demuestra funcionamiento
+de la aplicación, almacenamiento de comprobantes o restauración. Los nombres de
+contenedor/base/usuario siguientes corresponden al destino de la sesión de pagos;
+revalidarlos para otra máquina.
+
+### Columnas, tipos, obligatoriedad y defaults
+
+Ejecutar en una sesión SQL conectada a la base destino:
+
+```sql
+SELECT c.relname AS tabla,
+       a.attname AS columna,
+       pg_catalog.format_type(a.atttypid, a.atttypmod) AS tipo,
+       a.attnotnull AS obligatoria,
+       pg_catalog.pg_get_expr(d.adbin, d.adrelid) AS valor_inicial
+FROM pg_catalog.pg_class AS c
+JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace
+JOIN pg_catalog.pg_attribute AS a ON a.attrelid = c.oid
+LEFT JOIN pg_catalog.pg_attrdef AS d
+       ON d.adrelid = c.oid AND d.adnum = a.attnum
+WHERE n.nspname = 'public'
+  AND c.relkind IN ('r', 'p')
+  AND c.relname IN ('category', 'expense', 'receipt')
+  AND a.attnum > 0 AND NOT a.attisdropped
+ORDER BY c.relname, a.attnum;
+```
+
+Deben aparecer las tres tablas. Comparar las definiciones contra el SQL del commit
+aprobado; esta consulta no verifica constraints, índices ni triggers.
+
+### Estructura completa desde la terminal de Oracle
+
+Para ver también PK, FK, CHECK, índices y triggers, psql ofrece el metacomando
+`\d+`. No es SQL estándar ni forma parte de los archivos SELECT verificadores:
+
+```bash
+sudo docker exec kume-infra-test-db-1 psql -X -v ON_ERROR_STOP=1 -U kume_test -d kume_test \
+  -c '\d+ public.category' \
+  -c '\d+ public.expense' \
+  -c '\d+ public.receipt'
+```
+
+Contrastar la salida con migration.sql. Para pagos, revisar particularmente las
+FK restrictivas, unicidad de rubro normalizado, comprobante por gasto y storage_key,
+los checks y los tres triggers de updated_at. La especificación de columnas y reglas
+permanece en el [diseño de base](../technical/backend/database-design.md).
+
+### Comprobar el registro de Prisma
+
+```sql
+SELECT migration_name, checksum,
+       finished_at IS NOT NULL AS terminada,
+       rolled_back_at IS NOT NULL AS revertida,
+       applied_steps_count
+FROM public._prisma_migrations
+WHERE migration_name = '20261108170000_payment_records'
+ORDER BY started_at, id;
+```
+
+Para la operación de pagos completada se espera una fila con `terminada=true`,
+`revertida=false` y el checksum del migration.sql aprobado:
+`3f5d83a3c41a9c04328fa9d55fc16f3364e0e87395fa24bab8e9b8ceacc9a7b4`.
+Cero filas, filas duplicadas, checksum distinto o ausencia de finalización requieren
+investigar; no se corrigen marcando resolve ni editando el historial. Para futuras
+migraciones sustituir el nombre y comparar con su propio checksum, no con este valor.
+
+El verificador aprobado y `kume-admin migraciones estado` complementan estas
+consultas. No hace falta recrear un contenedor temporal retirado para usar psql.
 
 ## Inicialización excepcional
 
@@ -191,15 +414,17 @@ Preparar una carpeta versionada privada con todos esos archivos de un commit rev
 validar los SHA-256 de cada archivo y ejecutar allí sintaxis, suite y ambas ayudas.
 Conservar la instalación anterior antes de cambiar el comando de entrada. No usar el
 checksum histórico para estos archivos ni mezclar revisiones del paquete y dispatcher.
-La instalación, cambio de PATH y pruebas contra la VM quedan pendientes de sesión
-autorizada; no se atribuyen a las pruebas locales de esta entrega.
+En la sesión guiada, Maxi confirmó el comando corto apuntando al checkout completo
+y fijó la revisión correctora `170d15e1d1b3dc0bc8372caf9675fe58b631ba0a`.
+Una actualización futura requiere revisar y fijar su propia revisión completa;
+modificar main en GitHub no actualiza automáticamente ese checkout de la VM.
 
 Procedimiento específico: [tablas de gastos y comprobantes](migraciones-payment-records.md).
 
 ## Compatibilidad con la ayuda de npm 11.17
 
 npm 11.17 puede devolver código 1 aun cuando imprime ayuda válida. El motor admite
-0/1 exclusivamente en ese sondeo de lectura y exige reconocer npm <command> y los
+0/1 exclusivamente en ese sondeo de lectura y exige reconocer `npm <command>` y los
 comandos install/rebuild; cualquier otra respuesta detiene la preparación. Los
 códigos no cero de install, approve-scripts y rebuild siguen siendo errores.
 
