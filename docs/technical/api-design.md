@@ -233,3 +233,7 @@ El día de negocio se resuelve en America/Montevideo. Importes como texto decima
 ## Comprobante opcional — 13 de noviembre de 2026
 
 Maxi aprueba registrar gastos sin comprobante. POST exige solo data; receipt es opcional. Las respuestas de gastos mantienen receipt, con null si no hay archivo. PUT de comprobante permite adjuntar el primero o reemplazar el existente, conserva archivo obligatorio en esa operación y versión del gasto. Sin cambios de esquema ni migraciones: la relación ya era opcional. Despliegue coordinado frontend/backend; clientes anteriores que asumen receipt no nulo requieren actualización.
+
+## Personal: concurrencia aprobada — 13 de noviembre de 2026
+
+Versionado común de ficha, asignaciones y documentos. Reglas de transporte, transferencia y conflictos en [diseño técnico de personal](../specs/005-staff/technical-spec.md); contrato actualizado en OpenAPI. Cambio incompatible de escrituras de personal, todavía sin implementación verificada.

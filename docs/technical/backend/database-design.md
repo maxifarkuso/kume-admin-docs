@@ -306,3 +306,7 @@ No agregar una tabla de usuarios ni de recuperación de contraseñas. Maxi y Vic
 El 8 de noviembre de 2026 Maxi aprueba añadir `version INTEGER NOT NULL DEFAULT 1 CHECK (version > 0)` a `category` y `expense`. Comparar e incrementar atómicamente en cada escritura aceptada, incluido reemplazo de comprobante, anulación/restauración y cambio de estado del rubro. `receipt` no lleva una versión independiente; usa la del gasto propietario. El diagrama inicial conserva el modelo histórico; esta ampliación complementa sus columnas y las tablas anteriores.
 
 La creación de un gasto o cambio hacia otro rubro requiere comprobar que el rubro esté activo bajo la misma transacción y bloqueo compartido con su desactivación. Conservar un rubro inactivo ya asociado sigue permitido. No eliminar datos ni archivos al anular o desactivar. El día del negocio es America/Montevideo. La migración local preparada no acredita aplicación en PostgreSQL.
+
+## Personal: versión común — 13 de noviembre de 2026
+
+Añadir `version INTEGER NOT NULL DEFAULT 1 CHECK (version > 0)` a `staff_member`. Asignaciones y documentos no tienen versión independiente; cada escritura incrementa la de su ficha propietaria en la misma transacción. Transferir asignación requiere las versiones de ambas fichas y aumenta ambas una vez. Bloqueos e invariantes en [diseño técnico de personal](../../specs/005-staff/technical-spec.md). Migración aditiva pendiente de implementación/aplicación.

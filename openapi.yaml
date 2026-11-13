@@ -720,6 +720,12 @@ paths:
       tags: [Staff members]
       summary: Reactivar personal sin restaurar asignaciones
       operationId: reactivateStaffMember
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogVersion"
       parameters:
         - $ref: "#/components/parameters/KumeRequest"
       responses:
@@ -765,8 +771,11 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              required: [name, file]
+              required: [name, file, version]
               properties:
+                version:
+                  type: integer
+                  minimum: 1
                 name:
                   type: string
                   minLength: 1
@@ -825,6 +834,12 @@ paths:
       tags: [Staff members]
       summary: Eliminar documento de una ficha activa
       operationId: deleteStaffDocument
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogVersion"
       parameters:
         - $ref: "#/components/parameters/KumeRequest"
       responses:
@@ -960,6 +975,12 @@ paths:
       tags: [Assignments]
       summary: Retirar asignación sin historial
       operationId: deleteAssignment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogVersion"
       parameters:
         - $ref: "#/components/parameters/KumeRequest"
       responses:
@@ -971,6 +992,8 @@ paths:
           description: Asignación retirada
         "404":
           $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
 
   /api/v1/courses:
     get:
@@ -1821,8 +1844,13 @@ components:
     StaffMemberPatch:
       type: object
       additionalProperties: false
-      minProperties: 1
+      minProperties: 2
+      required: [version]
       properties:
+        version:
+          type: integer
+          minimum: 1
+          description: Versión de la ficha propietaria leída por el cliente.
         firstName:
           type: string
           minLength: 1
@@ -1856,8 +1884,12 @@ components:
           $ref: "#/components/schemas/Role"
     StaffMemberSummary:
       type: object
-      required: [id, firstName, lastName, nic, role, isActive]
+      required: [id, firstName, lastName, nic, role, isActive, version]
       properties:
+        version:
+          type: integer
+          minimum: 1
+          description: Versión de la ficha propietaria leída por el cliente.
         id:
           type: string
           format: uuid
@@ -1875,8 +1907,11 @@ components:
       allOf:
         - $ref: "#/components/schemas/TimestampFields"
         - type: object
-          required: [id, firstName, lastName, nic, phone, role, isActive]
+          required: [id, firstName, lastName, nic, phone, role, isActive, version]
           properties:
+            version:
+              type: integer
+              minimum: 1
             id:
               type: string
               format: uuid
@@ -1933,8 +1968,12 @@ components:
     StaffDeactivation:
       type: object
       additionalProperties: false
-      required: [endDate]
+      required: [endDate, version]
       properties:
+        version:
+          type: integer
+          minimum: 1
+          description: Versión de la ficha propietaria leída por el cliente.
         endDate:
           type: string
           format: date
@@ -1972,8 +2011,16 @@ components:
     AssignmentWrite:
       type: object
       additionalProperties: false
-      required: [staffMemberId, targetType, targetId, shift]
+      required: [staffMemberId, targetType, targetId, shift, version]
       properties:
+        version:
+          type: integer
+          minimum: 1
+          description: Versión de la ficha propietaria leída por el cliente.
+        targetStaffVersion:
+          type: integer
+          minimum: 1
+          description: Solo PUT al transferir a otra persona; versión de la ficha receptora. version corresponde a la propietaria original. Obligatoria cuando cambia staffMemberId.
         staffMemberId:
           type: string
           format: uuid
