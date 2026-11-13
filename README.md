@@ -63,3 +63,5 @@ Las rutas de las guías cambiaron con esta reorganización. Los consumidores exi
 - [Documentación](https://github.com/maxifarkuso/kume-admin-docs).
 
 Documentación se mantiene directamente en main. Frontend y backend usarán ramas cortas y PR con CI una vez inicializados. Ver la guía de desarrollo para fijar revisiones de documentación y contrato.
+
+- [Personal V1](docs/specs/005-staff/spec.md): fichas, asignaciones y documentos; versionado común aprobado, desarrollo en curso.

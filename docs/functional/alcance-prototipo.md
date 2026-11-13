@@ -1,5 +1,7 @@
 # KUME — Alcance del prototipo administrativo
 
+> **Actualización de continuidad — 13 de noviembre de 2026:** Maxi confirma que el único desarrollo funcional pendiente para esta primera versión es personal: fichas, asignaciones a cursos y talleres y documentos. El uso inicial será de una sola persona; se mantienen las cuentas y permisos acordados. Se aprueba una versión común de la ficha para detectar escrituras basadas en datos anteriores, incluidas modificaciones de asignaciones y documentos. Ver el [registro de la decisión y su estado contractual](../general/implementation-decisions.md#continuidad-y-personal--13-de-noviembre-de-2026). Esta actualización prevalece sobre las referencias históricas a repositorios vacíos o producto sin implementar; no acredita verificación integrada, despliegue ni cierre operativo.
+
 **Fecha:** 29 de octubre de 2026
 **Actualización:** 2 de noviembre de 2026 — autenticación simplificada confirmada con GrillMe y restitución de tareas finalizadas.
 **Estado:** alcance y stack actualizados y confirmados; diseño funcional de base y API conservado; diseño técnico y contrato de autenticación completos; implementación de seguridad y operación pendientes; diseño de pantallas en curso (paso 4); implementación de KUME pendiente; infraestructura básica cloud probada.

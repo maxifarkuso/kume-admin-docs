@@ -2,6 +2,19 @@
 
 Fecha: 2 de noviembre de 2026. Origen: rondas GrillMe con Maxi, Q1–Q12. Estado: reglas consolidadas confirmadas expresamente por Maxi el 2 de noviembre de 2026. No acredita implementación.
 
+## Continuidad y personal — 13 de noviembre de 2026
+
+Maxi confirma que el único desarrollo funcional pendiente para la primera versión es personal: fichas, asignaciones a cursos y talleres y documentos. Esta actualización sustituye los estados históricos que todavía presentan todo el producto como pendiente; no acredita pruebas integradas, despliegue ni preparación operativa.
+
+Tras revisar la documentación con GrillMe, Maxi aprueba usar `version` común a la ficha, sus asignaciones y sus documentos. Aunque inicialmente el sistema lo utilizará una sola persona, se conserva el control optimista para contemplar crecimiento de uso.
+
+- Cada modificación de datos, estado, asignaciones o documentos incrementa la versión de la ficha propietaria.
+- Una escritura basada en una versión anterior se rechaza sin sobrescribir cambios; la interfaz conserva el borrador y solicita revisar la información vigente. No renovar la versión ni reintentar automáticamente para eludir el conflicto.
+- La inactivación debe detectar asignaciones agregadas después de leer la ficha y exigir revisión antes de retirarlas.
+- Se mantienen los campos, reglas de asignación, archivos privados y restricciones de fichas inactivas ya aprobados.
+
+Estado: decisión aprobada; concreción técnica y sincronización de OpenAPI, API, base de datos y consumidores pendientes. El contrato existente todavía no expresa este versionado de personal. Definir en la especificación el transporte de la versión en cada operación, su incremento atómico y la coordinación con los bloqueos de cursos/talleres ya acordados. No considerar esta decisión implementada ni verificada.
+
 ## Actualización de continuidad — 5 de noviembre de 2026
 
 Maxi informa que auth foundation está mergeado y desplegado en frontend y backend; aún no realizó pruebas funcionales. No se acredita verificación funcional en esta reorganización.
