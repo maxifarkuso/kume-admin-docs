@@ -150,7 +150,7 @@ erDiagram
 | `created_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | — |
 | `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Actualizado por trigger |
 
-La base permite un gasto sin comprobante para no imponer la regla desde persistencia. La API exige el archivo al crear el gasto. Reemplazarlo actualiza la misma fila, sin historial de versiones.
+La base permite un gasto sin comprobante para no imponer la regla desde persistencia. La API permite crear el gasto sin archivo; devuelve receipt nulo mientras no se adjunte. Reemplazarlo actualiza la misma fila, sin historial de versiones.
 
 ### `staff_member`
 
@@ -272,7 +272,7 @@ Las migraciones deberán incluir:
 
 ## Reglas delegadas a la API
 
-- Exigir comprobante al crear un gasto, impedir fechas futuras y aceptar solo UYU.
+- Permitir comprobante opcional al crear un gasto, impedir fechas futuras y aceptar solo UYU.
 - Impedir editar un gasto anulado hasta restaurarlo.
 - Conservar el rubro inactivo de un gasto existente, pero no asignarlo a gastos nuevos.
 - Validar firma real, extensión, MIME y tamaño de cada archivo.

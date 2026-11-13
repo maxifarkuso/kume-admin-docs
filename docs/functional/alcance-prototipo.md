@@ -31,13 +31,13 @@ Se podrán **crear, consultar, editar y anular** gastos ya pagados.
 | Destinatario o proveedor | Texto libre |
 | Concepto | Descripción de qué se pagó |
 | Rubro | Selección de un rubro administrable |
-| Comprobante | Un único archivo obligatorio |
+| Comprobante | Un único archivo opcional |
 
 **Reglas acordadas:**
 
 - Una compra de octubre pagada en noviembre se contabiliza en noviembre.
 - Se admiten comprobantes **PDF, JPG y PNG, de hasta 10 MB**.
-- No se puede guardar un gasto sin comprobante.
+- Se puede guardar un gasto sin comprobante y adjuntarlo más adelante.
 - El comprobante puede reemplazarse al editar.
 - No se requiere adjuntar una factura adicional.
 - La eliminación se realiza mediante un **flag de anulación**.

@@ -88,3 +88,7 @@ Impacto: OpenAPI, API, base, consumidores frontend/backend y volumen privado de 
 Maxi aprobó dirección B institucional y la maqueta de Gastos con sus ajustes finales, y pidió publicar todos los acuerdos como regla general de interfaz del sistema. La fuente propietaria es [Reglas generales de interfaz](../ui/sistema-visual.md); incluye componentes, estados, accesibilidad, ingreso desde centésimos y alcance transversal. Esta decisión resuelve la dirección visual pendiente de Q5 sin elegir librerías visuales o nuevas dependencias.
 
 Estado: diseño aprobado y publicación documental autorizada. Implementación del frontend, plan de extensión y verificaciones de producto pendientes. No cierra el paso 4 ni autoriza despliegue. Los controles de revisión de la maqueta no forman parte de la UI final.
+
+## Comprobante opcional — 13 de noviembre de 2026
+
+Maxi aprueba registrar gastos sin comprobante. POST exige solo data; receipt es opcional. Las respuestas de gastos mantienen receipt, con null si no hay archivo. PUT de comprobante permite adjuntar el primero o reemplazar el existente, conserva archivo obligatorio en esa operación y versión del gasto. Sin cambios de esquema ni migraciones: la relación ya era opcional. Despliegue coordinado frontend/backend; clientes anteriores que asumen receipt no nulo requieren actualización.

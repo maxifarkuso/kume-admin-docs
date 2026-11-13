@@ -353,7 +353,7 @@ paths:
           $ref: "#/components/responses/InternalError"
     post:
       tags: [Expenses]
-      summary: Crear gasto con comprobante obligatorio
+      summary: Crear gasto con comprobante opcional
       operationId: createExpense
       requestBody:
         required: true
@@ -361,7 +361,7 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              required: [data, receipt]
+              required: [data]
               properties:
                 data:
                   $ref: "#/components/schemas/ExpenseCreate"
@@ -1753,7 +1753,9 @@ components:
             category:
               $ref: "#/components/schemas/CategorySummary"
             receipt:
-              $ref: "#/components/schemas/FileMetadata"
+              anyOf:
+                - $ref: "#/components/schemas/FileMetadata"
+                - type: "null"
     ExpenseSummary:
       type: object
       required: [totalAmount, currency]

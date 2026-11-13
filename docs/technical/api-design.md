@@ -229,3 +229,7 @@ Gastos y rubros exponen `version` entero positivo, inicialmente 1. PATCH exige v
 Cada escritura aceptada compara e incrementa la versión atómicamente, incluidas acciones cuyo estado ya coincide. Una versión obsoleta produce 409 con `VERSION_CONFLICT`, sin sobrescritura ni reintento automático con versión nueva. El reemplazo y la edición/anulación comparten la misma versión del gasto. La creación no admite versión elegida por el cliente. El rubro resumido de un gasto conserva su forma actual; la versión del rubro se obtiene consultando el recurso correspondiente.
 
 El día de negocio se resuelve en America/Montevideo. Importes como texto decimal exacto en HTTP y centésimos enteros en el núcleo. La decisión no acredita implementación desplegada. Ver [especificación técnica](../specs/003-payment-records/technical-spec.md).
+
+## Comprobante opcional — 13 de noviembre de 2026
+
+Maxi aprueba registrar gastos sin comprobante. POST exige solo data; receipt es opcional. Las respuestas de gastos mantienen receipt, con null si no hay archivo. PUT de comprobante permite adjuntar el primero o reemplazar el existente, conserva archivo obligatorio en esa operación y versión del gasto. Sin cambios de esquema ni migraciones: la relación ya era opcional. Despliegue coordinado frontend/backend; clientes anteriores que asumen receipt no nulo requieren actualización.
