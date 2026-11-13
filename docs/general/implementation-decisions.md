@@ -13,7 +13,7 @@ Tras revisar la documentación con GrillMe, Maxi aprueba usar `version` común a
 - La inactivación debe detectar asignaciones agregadas después de leer la ficha y exigir revisión antes de retirarlas.
 - Se mantienen los campos, reglas de asignación, archivos privados y restricciones de fichas inactivas ya aprobados.
 
-Estado: decisión aprobada; concreción técnica y sincronización de OpenAPI, API, base de datos y consumidores pendientes. El contrato existente todavía no expresa este versionado de personal. Definir en la especificación el transporte de la versión en cada operación, su incremento atómico y la coordinación con los bloqueos de cursos/talleres ya acordados. No considerar esta decisión implementada ni verificada.
+Estado posterior: especificaciones, plan y contrato canónico publicados; backend/frontend implementados en ramas `feat/staff`, con consumidores sincronizados a `ca6503acea54d0c9d3e779d888ede6f3365f2ace`. El contrato ya expresa el versionado de personal. Ver [evidencia, commits y límites](../specs/005-staff/implementation.md). Pendientes integración, migración, comprobación PostgreSQL y despliegue; las pruebas locales no acreditan funcionamiento productivo.
 
 ## Actualización de continuidad — 5 de noviembre de 2026
 

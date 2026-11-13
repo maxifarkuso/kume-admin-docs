@@ -236,4 +236,4 @@ Maxi aprueba registrar gastos sin comprobante. POST exige solo data; receipt es 
 
 ## Personal: concurrencia aprobada — 13 de noviembre de 2026
 
-Versionado común de ficha, asignaciones y documentos. Reglas de transporte, transferencia y conflictos en [diseño técnico de personal](../specs/005-staff/technical-spec.md); contrato actualizado en OpenAPI. Cambio incompatible de escrituras de personal, todavía sin implementación verificada.
+Versionado común de ficha, asignaciones y documentos. Reglas de transporte, transferencia y conflictos en [diseño técnico de personal](../specs/005-staff/technical-spec.md); contrato actualizado en OpenAPI. Cambio incompatible de escrituras de personal, implementado localmente en ramas para revisión; [evidencia y límites](../specs/005-staff/implementation.md). No acredita despliegue ni verificación integrada.
