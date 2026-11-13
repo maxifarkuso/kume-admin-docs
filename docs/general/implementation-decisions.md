@@ -82,3 +82,9 @@ El núcleo usa centésimos bigint y texto decimal en los límites, sin aritméti
 Estado: contrato local ampliado e implementación local en curso. No acredita migraciones aplicadas, pruebas PostgreSQL, despliegue ni finalización del paso 4. La revisión inmutable y sincronización de consumidores quedan pendientes de un commit canónico autorizado; no inventar un SHA para el contrato modificado.
 
 Impacto: OpenAPI, API, base, consumidores frontend/backend y volumen privado de comprobantes. Cambio incompatible con clientes que escriben sin versión; requiere despliegue coordinado. No se autorizaron commit, push, merge ni despliegue. Evidencia y límites en [implementación](../specs/003-payment-records/implementation.md).
+
+## Interfaz general — 13 de noviembre de 2026
+
+Maxi aprobó dirección B institucional y la maqueta de Gastos con sus ajustes finales, y pidió publicar todos los acuerdos como regla general de interfaz del sistema. La fuente propietaria es [Reglas generales de interfaz](../ui/sistema-visual.md); incluye componentes, estados, accesibilidad, ingreso desde centésimos y alcance transversal. Esta decisión resuelve la dirección visual pendiente de Q5 sin elegir librerías visuales o nuevas dependencias.
+
+Estado: diseño aprobado y publicación documental autorizada. Implementación del frontend, plan de extensión y verificaciones de producto pendientes. No cierra el paso 4 ni autoriza despliegue. Los controles de revisión de la maqueta no forman parte de la UI final.

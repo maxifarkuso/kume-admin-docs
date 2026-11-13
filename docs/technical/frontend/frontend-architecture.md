@@ -67,3 +67,7 @@ No incluir secretos en VITE_*: esas variables son públicas. Evitar HTML no conf
 Vitest + React Testing Library para comportamiento aislado: formularios, traducción de errores, estados de consulta, filtros y conflictos. Usar interacciones y consultas accesibles, evitar asserts sobre internals y snapshots masivos. Sin Playwright en esta etapa. Las pruebas unitarias no acreditan integración real con backend o navegador completo.
 
 Referencias: [React](https://react.dev/learn), [reglas de React](https://react.dev/reference/rules), [React Router](https://reactrouter.com/), [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview), [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/), [WAI Forms](https://www.w3.org/WAI/tutorials/forms/). Verificar APIs contra las versiones instaladas.
+
+## Sistema visual aprobado — 13 de noviembre de 2026
+
+Aplicar las [reglas generales de interfaz](../../ui/sistema-visual.md) a los componentes compartidos y pantallas de todas las funcionalidades. El piloto de Gastos está aprobado visualmente, incluidas las correcciones de menú y altura uniforme de filtros. Esta decisión resuelve la dirección visual pendiente, pero no selecciona una librería visual ni autoriza nuevas dependencias de producción. La aprobación visual no acredita implementación ni modifica contratos o recorridos funcionales.

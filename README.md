@@ -40,6 +40,7 @@ En la raíz quedan este índice, `AGENTS.md`, el contrato canónico `openapi.yam
 - [Memoria de la app de prueba Oracle](docs/devops/memoria-app-test-oracle.md): SSH, Compose, reconstrucción y retirada antes de publicar el MVP.
 - [Mapa de navegación y pantallas](docs/ui/screen-design.md).
 - [Estado del diseño de pantallas](docs/ui/continuacion-diseno-pantallas.md).
+- [Reglas generales de interfaz](docs/ui/sistema-visual.md): acuerdos del 13 de noviembre; dirección B institucional, componentes y estados comunes para todo el sistema; piloto de Gastos aprobado.
 
 - [Especificación de cursos y talleres](docs/specs/002-courses-workshops/spec.md): CRUDs, carga inicial por migraciones y versionado; implementación y verificación en curso.
 - [Especificación del registro de pagos](docs/specs/003-payment-records/spec.md): gastos pagados, comprobantes, consulta y exportación; implementación local de gastos/rubros y comprobantes, con versionado aprobado; sincronización canónica pendiente.

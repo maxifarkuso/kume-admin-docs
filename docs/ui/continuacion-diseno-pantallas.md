@@ -6,6 +6,12 @@
 - **Próxima sesión prevista:** 2 de noviembre de 2026, sujeta a disponibilidad de créditos de MagicPath.
 - **Próximo paso:** revisión documental de autenticación antes de retomar pantallas, por pedido de Maxi del 2 de noviembre. Diseño técnico y contrato completos; implementación y verificación pendientes. Consultar el balance y los criterios de cierre en [autenticación](../technical/autenticacion-prototipo.md). No se avanzaron pantallas en esta revisión.
 
+## Actualización — 13 de noviembre de 2026
+
+Maxi pidió revisar la UI existente y acordó dirección B institucional, densidad equilibrada y componentes del piloto de Gastos. Los acuerdos completos y sus pendientes están en [Reglas generales de interfaz](sistema-visual.md). Autorizó una maqueta de listado, formulario y detalle, y registrar las definiciones en este repositorio. Maxi aprobó el resto de la composición y pidió quitar el borde azul lateral y angostar las opciones del menú; ajustes aplicados. El cabezal y sus selectores se conservan como herramientas exclusivas de la maqueta. El plan de implementación y extensión es la siguiente etapa. No se declara completo el paso 4, no se reabren G01–G05 ni P01–P07 y no se incorporan dependencias de producción.
+
+Las notas siguientes son históricas: el frontend revisado ya contiene Gastos, autenticación y catálogos; eso no acredita despliegue ni verificación funcional de esas operaciones.
+
 ## Estado del proyecto
 
 El stack y las reglas funcionales de los pasos 1 a 3 se conservan. La autenticación adicional tiene diseño técnico y contrato completos al 2 de noviembre; todavía falta implementarla y verificarla. Las ampliaciones operativas cloud siguen pendientes:
@@ -192,3 +198,7 @@ Cuando los wireframes estén aprobados:
 
 No reabras decisiones ya registradas salvo que encuentres una contradicción concreta. Si la encontrás, citá los archivos y pedime decidir antes de continuar.
 ```
+
+## Regla general de interfaz aprobada
+
+Maxi autorizó consolidar y publicar todos los acuerdos gráficos como reglas comunes de KUME Admin. [Sistema visual](sistema-visual.md) es la fuente propietaria para pantallas actuales y futuras. Gastos conserva el papel de piloto aprobado; aplicación al código, plan de extensión y cierre del paso 4 siguen siendo etapas distintas.

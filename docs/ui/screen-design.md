@@ -7,6 +7,10 @@ Maxi autorizó usar Markdown y Mermaid mientras MagicPath permanece sin cuota se
 
 La imagen de referencia contiene cinco destinos permanentes: Gastos, Personal, Rubros, Cursos y Talleres. Se conserva esa estructura, con login antes del acceso privado y cierre de sesión dentro de la aplicación. Ambos usuarios tienen los mismos destinos y permisos.
 
+## Revisión visual — 13 de noviembre de 2026
+
+La dirección B institucional, densidad equilibrada y componentes del piloto de Gastos están acordados en [Reglas generales de interfaz](sistema-visual.md). Maxi aprobó el resto del diseño del piloto y solicitó quitar la marca azul lateral y angostar las opciones del menú; ajustes aplicados en la maqueta. El cabezal de revisión se conserva por su pedido y no forma parte de la UI final. Esta aprobación no modifica los recorridos ni completa el paso 4. Las notas de implementación anteriores conservan su fecha histórica.
+
 ## Mapa principal
 
 ```mermaid
@@ -142,3 +146,7 @@ Orden de trabajo previsto: revisar este mapa, registrar ajustes si los hay y pre
 El paso 4 sigue en curso: este documento no declara aprobados nuevos bocetos, no acredita un prototipo interactivo y no marca tareas de implementación o pruebas como hechas. El criterio de continuar con código deja de depender de completar wireframes en MagicPath por instrucción de Maxi. El cierre formal del paso 4 y el backlog deben registrarse expresamente, sin reabrir los pasos 2 y 3.
 
 Referencias: [alcance](../functional/alcance-prototipo.md), [autenticación](../technical/autenticacion-prototipo.md), [API](../technical/api-design.md), [OpenAPI](../../openapi.yaml) y [memoria de continuidad](continuacion-diseno-pantallas.md).
+
+## Regla general de interfaz aprobada
+
+Maxi autorizó consolidar y publicar todos los acuerdos gráficos como reglas comunes de KUME Admin. [Sistema visual](sistema-visual.md) es la fuente propietaria para pantallas actuales y futuras. Gastos conserva el papel de piloto aprobado; aplicación al código, plan de extensión y cierre del paso 4 siguen siendo etapas distintas.

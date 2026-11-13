@@ -12,6 +12,7 @@ Este repositorio define alcance, contratos y pautas de implementación. Trabajar
 - Stack: [stack-tecnologico.md](docs/technical/stack-tecnologico.md) y ampliaciones de [implementation-decisions.md](docs/general/implementation-decisions.md).
 - HTTP: [openapi.yaml](openapi.yaml); [api-design.md](docs/technical/api-design.md) explica comportamiento. Una discrepancia exige reconciliación explícita, no elegir silenciosamente una versión.
 - Persistencia: [database-design.md](docs/technical/backend/database-design.md); arquitectura: las dos guías correspondientes.
+- Interfaz del sistema: [sistema-visual.md](docs/ui/sistema-visual.md), reglas generales aprobadas y referencia del piloto de Gastos; aplicar en pantallas actuales y futuras sin alterar reglas funcionales.
 - Estado de pantallas: [continuacion-diseno-pantallas.md](docs/ui/continuacion-diseno-pantallas.md). No marcar el paso 4 completo sin confirmación expresa de Maxi.
 
 Las nuevas decisiones de arquitectura complementan el diseño funcional. La estrategia optimista está aprobada pero sus campos, cabeceras y migraciones todavía no figuran en el contrato original. El diseño de sesiones está definido en [autenticacion-prototipo.md](docs/technical/autenticacion-prototipo.md). Auth foundation está mergeado y desplegado en frontend y backend según Maxi (5 de noviembre de 2026); las pruebas funcionales siguen pendientes. No confundir decisión con implementación.
