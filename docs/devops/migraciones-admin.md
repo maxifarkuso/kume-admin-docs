@@ -476,3 +476,38 @@ no puede deducir por sí sola la semántica de cualquier migración ni dar por p
 la recuperación mediante un SELECT trivial. Una historia ya completa se verifica;
 no necesita habilitar-reintento. Esta acción exige preparado=success y respaldo
 intacto, además de una inspección manual concluyente de la causa original.
+
+## Recuperar una única migración fallida — 16 de noviembre de 2026
+
+La ampliación autorizada `recuperar-fallida` cubre el caso que no admitía la versión
+anterior: un migrate deploy deja una migración fallida en `_prisma_migrations`.
+`habilitar-reintento` por sí solo sigue sin marcarla ni ejecutar SQL.
+
+Usar el mismo ID/JSON/respaldo. Requiere preparación exitosa, aplicar `uncertain`,
+ninguna inicialización excepcional, exactamente una migración pendiente y su
+último intento fallido sin terminar/revertir. Revisar manualmente la causa y todos
+los efectos de ese SQL. Un inspector aprobado READ ONLY debe demostrar que el
+esquema previo está completo y que la causa fue corregida; no basta con una fila
+sin finished_at. La acción no revierte cambios ni elimina datos.
+
+La confirmación agrega nombre, ID Prisma y checksum del intento. Se revalidan
+respaldo, fuente, identidad, permisos, inactividad de herramientas/base, inspector,
+verificador final e historial bajo los locks antes del resolve. Ejecuta solamente
+`prisma migrate resolve --rolled-back NOMBRE`. Guarda el intento original en el
+journal y exige que solo cambie su indicador rolled_back. Si resolve se interrumpe
+o su resultado no coincide, queda uncertain y se requiere inspección manual; no
+se ofrece repetición automática de la recuperación.
+
+El verificador final adicional se aprueba mediante flags/hash y se conserva en el
+journal sin cambiar el JSON ni el verificador original. Debe contar aplicaciones
+exitosas, admitiendo los intentos revertidos conservados. Su integridad se comprueba
+antes de nuevas operaciones; sustituye la ejecución del verificador original al
+aplicar/verificar. Los validadores originales siguen siendo archivos inmutables.
+
+Después de recuperar: `habilitar-reintento` con inspector aprobado; luego `aplicar`,
+`verificar`, `estado` y `retirar`, cada etapa con revisión/confirmación donde corresponda.
+La lectura del historial reconoce filas revertidas válidas sin contarlas como
+aplicadas, manteniendo checksum, prefijo y orden. Esta regla sustituye el rechazo
+universal de filas revertidas de la versión anterior; no desbloquea journals inciertos.
+
+[Comandos completos para la recuperación de roles](recuperacion-roles-personal.md).

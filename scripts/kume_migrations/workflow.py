@@ -16,8 +16,9 @@ ACTIONS = (
     "verificar",
     "retirar",
     "habilitar-reintento",
+    "recuperar-fallida",
 )
-WRITES = {"aplicar", "inicializar", "registrar-inicializacion"}
+WRITES = {"aplicar", "inicializar", "registrar-inicializacion", "recuperar-fallida"}
 
 
 def check_history(history, migrations):
@@ -28,8 +29,16 @@ def check_history(history, migrations):
             name in migrations and row["checksum"] == migrations[name],
             "Historial divergente",
         )
+        if row["rolled_back"]:
+            require(
+                not row["finished"]
+                and len(applied) < len(migrations)
+                and name == list(migrations)[len(applied)],
+                "Intento revertido inválido o fuera de secuencia",
+            )
+            continue
         require(
-            row["finished"] and not row["rolled_back"],
+            row["finished"],
             "Historial fallido o recuperado: inspección manual requerida",
         )
         require(name not in applied, "Historial duplicado")
@@ -39,12 +48,13 @@ def check_history(history, migrations):
 
 
 class Workflow:
-    def __init__(self, runtime, journal, confirm=input):
+    def __init__(self, runtime, journal, confirm=input, *, migration=None):
         self.runtime = runtime
         self.journal = journal
         self.confirm = confirm
+        self.migration = migration
 
-    def confirmation(self, action):
+    def confirmation(self, action, *, attempt=None):
         config = self.runtime.config
         summary = {
             key: config[key]
@@ -88,6 +98,13 @@ class Workflow:
                 .get(config["initial_migration"]),
             )
         phrase = f"{action} {config['host']} {config['database']} {config['revision']} ventana-coordinada"
+        if attempt is not None:
+            print("Intento fallido a marcar revertido:", attempt)
+            print("Verificador final aprobado:", self.runtime.recovery_verification)
+            print("Inspector aprobado:", self.runtime.inspection)
+            phrase += (
+                f" {attempt['migration_name']} {attempt['id']} {attempt['checksum']}"
+            )
         try:
             answer = self.confirm("Confirmá escribiendo exactamente: " + phrase + "\n")
         except EOFError:
@@ -123,6 +140,9 @@ class Workflow:
         if action == "habilitar-reintento":
             self.authorize_retry(migrations)
             return
+        if action == "recuperar-fallida":
+            self.recover_failed(migrations)
+            return
         if action == "respaldo":
             require(
                 self.journal.outcome(action) is None,
@@ -154,9 +174,7 @@ class Workflow:
             code = (
                 error.code
                 if isinstance(error, MigrationError)
-                else 130
-                if isinstance(error, KeyboardInterrupt)
-                else 1
+                else 130 if isinstance(error, KeyboardInterrupt) else 1
             )
             try:
                 self.journal.record(
@@ -184,6 +202,11 @@ class Workflow:
 
     def write(self, action, migrations):
         self.check_other_operations()
+        require(
+            self.journal.outcome("recuperar-fallida")
+            not in ("running", "uncertain", "failed"),
+            "Recuperación incierta: inspeccionar, sin repetir SQL",
+        )
         if action == "aplicar" and self.journal.outcome(action) == "success":
             require(
                 not check_history(self.runtime.history(), migrations),
@@ -296,6 +319,11 @@ class Workflow:
 
     def authorize_retry(self, migrations):
         require(
+            self.journal.outcome("recuperar-fallida")
+            not in ("running", "uncertain", "failed"),
+            "Recuperación incierta: inspeccionar antes de habilitar",
+        )
+        require(
             self.journal.outcome("aplicar") == "uncertain",
             "Solo un deploy incierto admite esta inspección",
         )
@@ -340,6 +368,94 @@ class Workflow:
         }
         self.stage(
             "habilitar-reintento", lambda: self.journal.artifact("retry", evidence)
+        )
+
+    def recover_failed(self, migrations):
+        require(self.journal.outcome("aplicar") == "uncertain", "Falta deploy incierto")
+        require(
+            self.journal.outcome("recuperar-fallida") is None,
+            "Recuperación ya intentada: inspección manual requerida",
+        )
+        require(
+            not any(
+                self.journal.outcome(action)
+                for action in ("inicializar", "registrar-inicializacion")
+            ),
+            "No recuperar una inicialización excepcional",
+        )
+        require(self.runtime.inspection is not None, "Falta inspección aprobada")
+        self.check_other_operations()
+        self.runtime.check_backup()
+        self.runtime.check_recovery_verification()
+        history = [dict(row) for row in self.runtime.history()]
+        require(history, "Sin intento fallido")
+        attempt = history[-1]
+        require(
+            attempt["migration_name"] == self.migration
+            and self.migration in migrations
+            and attempt["checksum"] == migrations[self.migration]
+            and not attempt["finished"]
+            and not attempt["rolled_back"]
+            and isinstance(attempt.get("id"), str)
+            and bool(attempt["id"]),
+            "El último intento no es la migración fallida aprobada",
+        )
+        require(
+            check_history(history[:-1], migrations) == [self.migration],
+            "Recuperación limitada a la única migración pendiente",
+        )
+        self.runtime.ensure_idle()
+        self.runtime.verify_retry()
+        self.confirmation("recuperar-fallida", attempt=attempt)
+        self.runtime.preflight()
+        require(self.runtime.check_snapshot() == migrations, "Snapshot cambió")
+        self.runtime.connection(self.runtime.container())
+        self.runtime.check_tool_access()
+        self.runtime.check_backup()
+        self.runtime.check_recovery_verification()
+        self.runtime.ensure_idle()
+        require(
+            self.runtime.history() == history, "Historial cambió durante confirmación"
+        )
+        self.runtime.verify_retry()
+        path, checksum = self.runtime.inspection
+        self.journal.artifact(
+            "failed_migration_recovery",
+            {
+                "attempt": attempt,
+                "history": history,
+                "inspection": {"path": str(path), "sha256": checksum},
+                "verification": {
+                    "path": str(self.runtime.recovery_verification[0]),
+                    "sha256": self.runtime.recovery_verification[1],
+                },
+            },
+        )
+        self.stage(
+            "recuperar-fallida", lambda: self.resolve_failed(history, migrations)
+        )
+
+    def resolve_failed(self, history, migrations):
+        self.runtime.prisma(
+            "migrate",
+            "resolve",
+            "--rolled-back",
+            self.migration,
+            "--schema=/migration/schema.prisma",
+        )
+        expected = [*history[:-1], {**history[-1], "rolled_back": True}]
+        require(
+            self.runtime.history() == expected,
+            "Resultado de resolve incierto: inspeccionar historial",
+        )
+        require(
+            check_history(expected, migrations) == [self.migration],
+            "Pendientes inesperadas después de resolve",
+        )
+        self.runtime.verify_retry()
+        path, checksum = self.runtime.recovery_verification
+        self.journal.artifact(
+            "recovery_verification", {"path": str(path), "sha256": checksum}
         )
 
     def check_other_operations(self):

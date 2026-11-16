@@ -54,3 +54,19 @@ específica aprobada por hash y confirmación separada. Conservar el evento inci
 revalidar identidad/respaldo/historia/fuente y el inspector antes de la siguiente
 aplicación. No repetir SQL automáticamente ni habilitar recuperación excepcional
 con resolve. El procedimiento propietario está en la guía de migraciones.
+
+## Recuperación de una migración fallida — 16 de noviembre de 2026
+
+Maxi autoriza extender el motor tras un deploy con vencimiento terminado y roles
+fallido por un valor retirado. La ficha de prueba fue eliminada por el operador;
+esta extensión no borra fichas ni revierte SQL. Agregar `recuperar-fallida` para
+marcar mediante Prisma **solo la única migración pendiente fallida** como revertida,
+tras comprobar que sus efectos se revirtieron y que la causa fue corregida.
+
+Exigir misma operación/configuración/respaldo/destino, deploy `uncertain`, ausencia
+de inicialización excepcional, inspector READ ONLY aprobado por SHA-256 y
+verificador final adicional aprobado sin cambiar el JSON original. Confirmación
+literal identifica también nombre, ID y checksum del intento. No repetir resolve
+si su resultado es incierto. Mantener historial y journal; habilitar-reintento y
+aplicar siguen siendo etapas separadas. Las filas revertidas válidas no cuentan
+como aplicadas; checksums, prefijo y orden continúan siendo obligatorios.

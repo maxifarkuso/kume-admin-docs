@@ -64,3 +64,31 @@ ese evento a éxito ni desbloquea operaciones ajenas. El siguiente aplicar consu
 la habilitación al registrar una nueva intención; antes relee el inspector y hash.
 Una aplicación parcial o semántica no demostrada por la inspección sigue bloqueada.
 El operador es responsable de revisar el inspector contra todos los efectos SQL.
+
+## Recuperación de intento fallido — 16 de noviembre de 2026
+
+CLI exige `--migracion`, `--inspeccion-sql/sha256` y `--verificacion-sql/sha256`
+exclusivamente para `recuperar-fallida`. La lectura de historia incorpora el ID
+Prisma. Antes y después de confirmar: identidad física, snapshot, respaldo,
+permisos, historia idéntica, herramientas con solo sleep y base sin otra actividad
+transaccional. La ventana externa sigue siendo necesaria.
+
+Solo se admite el último registro fallido, no terminado ni revertido, de la única
+migración restante y con checksum idéntico al snapshot. Los registros anteriores
+deben formar el prefijo correcto; otros intentos fallidos bloquean. El inspector
+específico demuestra estado anterior completo y causa corregida. Persistir evidencia
+antes de intención `running`; usar `prisma migrate resolve --rolled-back NOMBRE`
+con UID/GID operativo. La única diferencia admitida después es `rolled_back=true`
+en ese mismo ID. Cualquier error posterior conserva `uncertain` y bloquea resolve,
+habilitación y aplicación automáticas. No es recuperación universal del propio resolve.
+
+Guardar el nuevo verificador final y su checksum fuera del config inmutable,
+en artifacts del journal. Se valida antes de nuevas operaciones y se ejecuta al
+verificar/aplicar. Evita que un verificador antiguo cuente intentos revertidos
+como aplicaciones exitosas. No cambia el respaldo ni los eventos originales.
+
+El lector acepta intentos revertidos solo sin `finished`, con nombre/checksum
+aprobados y en la posición de la próxima migración; nunca cuentan como aplicados.
+Después puede aparecer el intento exitoso de esa migración. Historial duplicado,
+divergente o fuera de secuencia sigue bloqueado. Los journals inciertos bloquean
+otras operaciones aunque la fila de Prisma ya esté revertida.

@@ -26,6 +26,7 @@ class FakeRuntime:
         self.table_count = "0"
         self.fail = None
         self.inspection = (str(journal.directory / "inspection.sql"), "d" * 64)
+        self.recovery_verification = (str(journal.directory / "final.sql"), "e" * 64)
         self.migrations = {"001_schema": "a" * 64, "002_seed": "b" * 64}
 
     def effect(self, name):
@@ -59,6 +60,14 @@ class FakeRuntime:
     def verify_retry(self, inspection=None):
         self.effect("verify_retry")
 
+    def ensure_idle(self):
+        self.effect("idle")
+
+    def check_recovery_verification(self):
+        self.effect("check_recovery_verification")
+        if self.recovery_verification is None:
+            raise MigrationError("Sin verificador")
+
     def backup(self):
         self.effect("backup")
         self.journal.artifact(
@@ -88,6 +97,9 @@ class FakeRuntime:
     def prisma(self, *args):
         name = args[1]
         self.effect(name)
+        if name == "resolve" and "--rolled-back" in args:
+            self.rows[-1] = {**self.rows[-1], "rolled_back": True}
+            return
         if name == "execute":
             self.table_count = "2"
         else:
@@ -96,7 +108,18 @@ class FakeRuntime:
                 if name == "deploy"
                 else [self.config["initial_migration"]]
             )
-            self.rows = [
+            retained = list(self.rows)
+            names = [
+                item
+                for item in names
+                if not any(
+                    row["migration_name"] == item
+                    and row["finished"]
+                    and not row["rolled_back"]
+                    for row in retained
+                )
+            ]
+            self.rows = retained + [
                 {
                     "migration_name": item,
                     "checksum": self.migrations[item],
