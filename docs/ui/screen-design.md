@@ -150,3 +150,7 @@ Referencias: [alcance](../functional/alcance-prototipo.md), [autenticación](../
 ## Regla general de interfaz aprobada
 
 Maxi autorizó consolidar y publicar todos los acuerdos gráficos como reglas comunes de KUME Admin. [Sistema visual](sistema-visual.md) es la fuente propietaria para pantallas actuales y futuras. Gastos conserva el papel de piloto aprobado; aplicación al código, plan de extensión y cierre del paso 4 siguen siendo etapas distintas.
+
+## Registro de horas — ampliación del 16 de noviembre de 2026
+
+La pestaña deshabilitada del mapa anterior refleja Personal V1. Maxi autoriza ahora diseñar Registro de horas dentro de la ficha, con mes, tabla diaria, totales y revisión administrativa. No se habilita por este documento en el producto. Reglas en [registro de horas](../functional/registro-horas.md); [prototipo](maquetas/registro-horas/README.md) aprobado visualmente por Maxi el 16/11/2026. La composición aprobada incluye filtro de mes, resumen, tabla diaria por bloques y revisión lateral con marcas originales, ajuste, motivo opcional e historial. No se agrega un destino al menú ni se cierra el paso 4.

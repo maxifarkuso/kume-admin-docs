@@ -257,3 +257,7 @@ Solicitud aprobada; implementación y verificación en branch separado. Ver [esp
 Eliminar assistant / Auxiliar. Incorporar cleaningAssistant / Auxiliar de limpieza, classroomAssistant / Auxiliar de sala, classroomLead / Encargada de sala y director / Directora. Conservar teacher y workshopInstructor. Maxi confirma que aún no existen fichas; no se requiere compatibilidad histórica ni reasignación de datos. Migración cambia CHECK, sin borrar ni modificar fichas y falla si aparecen roles retirados.
 
 Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/009-staff-roles/spec.md). No acredita despliegue.
+
+## SoftwareClock — investigación del 16 de noviembre de 2026
+
+La [API externa de SoftwareClock](softwareclock-api.md) permite autenticación y consulta básica, comprobadas por Maxi. Las [reglas del registro de horas](../functional/registro-horas.md) y su interfaz están aprobadas para avanzar a especificaciones y conexión; ver [preparación](registro-horas-preparacion.md). No hay todavía contrato interno KUME de horas: `openapi.yaml` se conserva sin rutas nuevas. Diseñar y revisar contrato, errores, caché y concurrencia antes de implementar consumidores.

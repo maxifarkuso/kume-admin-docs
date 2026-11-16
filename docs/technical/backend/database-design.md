@@ -330,3 +330,7 @@ Solicitud aprobada; implementación y verificación en branch separado. Ver [esp
 Eliminar assistant / Auxiliar. Incorporar cleaningAssistant / Auxiliar de limpieza, classroomAssistant / Auxiliar de sala, classroomLead / Encargada de sala y director / Directora. Conservar teacher y workshopInstructor. Maxi confirma que aún no existen fichas; no se requiere compatibilidad histórica ni reasignación de datos. Migración cambia CHECK, sin borrar ni modificar fichas y falla si aparecen roles retirados.
 
 Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../../specs/009-staff-roles/spec.md). No acredita despliegue.
+
+## Registro de horas — ampliación en diseño, 16 de noviembre de 2026
+
+La exclusión histórica de CLOCK aplica a la implementación de Personal V1. Se aprobaron [reglas y prototipo](../../functional/registro-horas.md), pero no un esquema persistente ni migraciones. Diseñar eventos originales, ajustes locales auditables, identidad estable, concurrencia y horarios con vigencia antes de implementar; no recalcular meses pasados solo con asignaciones actuales. [Hallazgos de API externa](../softwareclock-api.md).

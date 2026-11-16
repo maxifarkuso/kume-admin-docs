@@ -125,3 +125,11 @@ Solicitud aprobada; implementación y verificación en branch separado. Ver [esp
 Eliminar assistant / Auxiliar. Incorporar cleaningAssistant / Auxiliar de limpieza, classroomAssistant / Auxiliar de sala, classroomLead / Encargada de sala y director / Directora. Conservar teacher y workshopInstructor. Maxi confirma que aún no existen fichas; no se requiere compatibilidad histórica ni reasignación de datos. Migración cambia CHECK, sin borrar ni modificar fichas y falla si aparecen roles retirados.
 
 Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/009-staff-roles/spec.md). No acredita despliegue.
+
+## Registro de horas y SoftwareClock — 16 de noviembre de 2026
+
+Maxi aprueba las [reglas funcionales](../functional/registro-horas.md) y autoriza el prototipo en MagicPath y su documentación. Esto amplía la exclusión histórica de CLOCK para investigación y diseño; no habilita la pestaña en Personal V1 ni autoriza implementación o despliegue. Se conserva el sistema visual aprobado.
+
+Autenticación Basic y posterior consulta Bearer de asistencias en Portal del Empleado respondieron HTTP 200 en las pruebas ejecutadas por Maxi. [Evidencia, endpoints y límites](../technical/softwareclock-api.md). El agente no realizó esas pruebas con credenciales. No se guardan secretos.
+
+Reglas principales: referencia de cursos KUME, bloques/pausas explícitos, sugerencias sin completar faltantes automáticamente, margen configurable inicial de 60 minutos, correcciones locales solo por administración, motivo siempre opcional e historial. Los contratos internos, persistencia y vigencia histórica se diseñarán antes de implementar. [Maqueta y estado](../ui/maquetas/registro-horas/README.md). Maxi aprobó visualmente la interfaz después de la entrega y solicitó consolidar la documentación para comenzar especificaciones y conexión. [Preparación de la siguiente etapa](../technical/registro-horas-preparacion.md). Contratos internos y persistencia pendientes; sin cambios de OpenAPI ni migraciones. Maxi autorizó posteriormente commit y push de esta documentación.

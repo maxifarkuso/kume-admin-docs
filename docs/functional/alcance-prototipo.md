@@ -2,6 +2,8 @@
 
 > **Actualización de continuidad — 13 de noviembre de 2026:** Maxi confirma que el único desarrollo funcional pendiente para esta primera versión es personal: fichas, asignaciones a cursos y talleres y documentos. El uso inicial será de una sola persona; se mantienen las cuentas y permisos acordados. Se aprueba una versión común de la ficha para detectar escrituras basadas en datos anteriores, incluidas modificaciones de asignaciones y documentos. Ver el [registro de la decisión y su estado contractual](../general/implementation-decisions.md#continuidad-y-personal--13-de-noviembre-de-2026). Esta actualización prevalece sobre las referencias históricas a repositorios vacíos o producto sin implementar; no acredita verificación integrada, despliegue ni cierre operativo.
 
+> **Ampliación — 16 de noviembre de 2026:** reglas e interfaz de [Registro de horas](registro-horas.md) aprobadas por Maxi para avanzar a especificaciones y conexión con SoftwareClock. La integración básica fue probada por Maxi; el producto aún no implementa esta ampliación. Ver [preparación y pendientes](../technical/registro-horas-preparacion.md).
+
 **Fecha:** 29 de octubre de 2026
 **Actualización:** 2 de noviembre de 2026 — autenticación simplificada confirmada con GrillMe y restitución de tareas finalizadas.
 **Estado:** alcance y stack actualizados y confirmados; diseño funcional de base y API conservado; diseño técnico y contrato de autenticación completos; implementación de seguridad y operación pendientes; diseño de pantallas en curso (paso 4); implementación de KUME pendiente; infraestructura básica cloud probada.
@@ -276,7 +278,7 @@ Los respaldos y la restauración deberán incluir estos documentos, además de l
 - Múltiples roles por persona.
 - Vencimientos y alertas de documentos.
 
-CLOCK continúa pendiente para una versión futura; todavía no se conoce su mecanismo de integración.
+Actualización del 16 de noviembre de 2026: se autorizaron la investigación de SoftwareClock, las [reglas del registro de horas](registro-horas.md) y un prototipo visual. Autenticación y lectura básica fueron comprobadas por Maxi; [hallazgos y límites](../technical/softwareclock-api.md). La exclusión anterior se conserva para la implementación de Personal V1. Esta ampliación no implementa ni despliega el módulo ni cierra el paso 4.
 
 ## 12. Próximos pasos con Maxi
 

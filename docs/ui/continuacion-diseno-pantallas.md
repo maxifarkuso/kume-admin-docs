@@ -12,6 +12,10 @@ Maxi pidió revisar la UI existente y acordó dirección B institucional, densid
 
 Las notas siguientes son históricas: el frontend revisado ya contiene Gastos, autenticación y catálogos; eso no acredita despliegue ni verificación funcional de esas operaciones.
 
+## Actualización — 16 de noviembre de 2026
+
+Maxi confirmó reglas de registro de horas y autorizó crear el prototipo interactivo y documentar la API. La prohibición histórica de diseñar CLOCK queda sustituida para esta ampliación concreta; Personal V1 y sus contratos siguen sin horas implementadas. Ver [reglas](../functional/registro-horas.md), [API externa](../technical/softwareclock-api.md) y [maqueta](maquetas/registro-horas/README.md). Tras revisar la entrega, Maxi aprobó la composición de Registro de horas y pidió documentar para comenzar especificaciones y conexión. La siguiente etapa de esta función se organiza en la [guía de preparación](../technical/registro-horas-preparacion.md). El cierre del paso 4 general sigue pendiente.
+
 ## Estado del proyecto
 
 El stack y las reglas funcionales de los pasos 1 a 3 se conservan. La autenticación adicional tiene diseño técnico y contrato completos al 2 de noviembre; todavía falta implementarla y verificarla. Las ampliaciones operativas cloud siguen pendientes:

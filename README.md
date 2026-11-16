@@ -65,3 +65,5 @@ Las rutas de las guías cambiaron con esta reorganización. Los consumidores exi
 Documentación se mantiene directamente en main. Frontend y backend usarán ramas cortas y PR con CI una vez inicializados. Ver la guía de desarrollo para fijar revisiones de documentación y contrato.
 
 - [Personal V1](docs/specs/005-staff/spec.md): fichas, asignaciones y documentos; versionado común aprobado e implementación publicada para revisión; [evidencia y PRs](docs/specs/005-staff/implementation.md).
+
+- Registro de horas: [decisiones funcionales](docs/functional/registro-horas.md), [hallazgos de API SoftwareClock](docs/technical/softwareclock-api.md) y [prototipo aprobado](docs/ui/maquetas/registro-horas/README.md). Reglas e interfaz aprobadas; [preparación para especificaciones y conexión](docs/technical/registro-horas-preparacion.md). Sin implementación ni despliegue.
