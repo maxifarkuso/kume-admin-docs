@@ -1701,7 +1701,7 @@ components:
     ExpenseCreate:
       type: object
       additionalProperties: false
-      required: [paymentDate, amount, currency, payee, description, categoryId]
+      required: [paymentDate, amount, currency, categoryId]
       properties:
         dueDate:
           anyOf:
@@ -1719,11 +1719,9 @@ components:
           const: UYU
         payee:
           type: string
-          minLength: 1
           maxLength: 200
         description:
           type: string
-          minLength: 1
           maxLength: 500
         categoryId:
           type: string
@@ -1753,11 +1751,9 @@ components:
           const: UYU
         payee:
           type: string
-          minLength: 1
           maxLength: 200
         description:
           type: string
-          minLength: 1
           maxLength: 500
         categoryId:
           type: string
