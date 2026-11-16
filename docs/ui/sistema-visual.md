@@ -150,3 +150,10 @@ La aprobación inicial del piloto fue ampliada por Maxi a reglas generales de in
 ### Ajuste final de filtros
 
 Maxi aprobó el ajuste del menú y solicitó que todos los campos de filtros tengan el mismo alto. Se fija una altura uniforme de **44 px** para mes, fechas Desde/Hasta y selectores de período, rubro y estado, con el mismo modelo de caja y centrado vertical. Se conserva el comportamiento automático de los filtros.
+
+
+## Personal: coherencia visual con Gastos — 16 de noviembre de 2026
+
+Usar button-link, back-link, Icon, data-table, table-scroll, row-actions, status-badge y pagination compartidos. Tabla con encabezado, cantidad, carga, vacío y error accesibles; sin importar CSS de Gastos.
+
+Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/008-staff-visuals/spec.md). No acredita despliegue.
