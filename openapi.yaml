@@ -1859,10 +1859,8 @@ components:
           minLength: 1
           maxLength: 30
         birthDate:
-          anyOf:
-            - type: string
-              format: date
-            - type: "null"
+          type: [string, "null"]
+          format: date
         email:
           type: [string, "null"]
           format: email
@@ -1871,10 +1869,8 @@ components:
           type: [string, "null"]
           maxLength: 500
         startDate:
-          anyOf:
-            - type: string
-              format: date
-            - type: "null"
+          type: [string, "null"]
+          format: date
         role:
           $ref: "#/components/schemas/Role"
     StaffMemberPatch:
@@ -1904,10 +1900,8 @@ components:
           minLength: 1
           maxLength: 30
         birthDate:
-          anyOf:
-            - type: string
-              format: date
-            - type: "null"
+          type: [string, "null"]
+          format: date
         email:
           type: [string, "null"]
           format: email
@@ -1916,10 +1910,8 @@ components:
           type: [string, "null"]
           maxLength: 500
         startDate:
-          anyOf:
-            - type: string
-              format: date
-            - type: "null"
+          type: [string, "null"]
+          format: date
         role:
           $ref: "#/components/schemas/Role"
     StaffMemberSummary:
@@ -1964,29 +1956,23 @@ components:
             phone:
               type: string
             birthDate:
-              anyOf:
-                - type: string
-                  format: date
-                - type: "null"
+              type: [string, "null"]
+              format: date
             email:
               type: [string, "null"]
               format: email
             address:
               type: [string, "null"]
             startDate:
-              anyOf:
-                - type: string
-                  format: date
-                - type: "null"
+              type: [string, "null"]
+              format: date
             role:
               $ref: "#/components/schemas/Role"
             isActive:
               type: boolean
             endDate:
-              anyOf:
-                - type: string
-                  format: date
-                - type: "null"
+              type: [string, "null"]
+              format: date
     StaffMemberDetail:
       allOf:
         - $ref: "#/components/schemas/StaffMember"
