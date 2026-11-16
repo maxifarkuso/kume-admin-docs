@@ -182,12 +182,12 @@ class RecoveryAdapterTests(unittest.TestCase):
 
     def test_idle_tools_and_database_checked_without_exposing_process_arguments(self):
         with patch.object(self.runtime, "container", return_value="own"), patch.object(
-            self.runtime, "docker", return_value="COMMAND\nsleep\n"
+            self.runtime, "docker", return_value="PID COMMAND\n123 sleep\n"
         ), patch.object(self.runtime, "sql", return_value="t"):
             self.runtime.ensure_idle()
         for processes, database in (
-            ("COMMAND\nsleep\nnode\n", "t"),
-            ("COMMAND\nsleep\n", "f"),
+            ("PID COMMAND\n123 sleep\n456 node\n", "t"),
+            ("PID COMMAND\n123 sleep\n", "f"),
         ):
             with patch.object(
                 self.runtime, "container", return_value="own"
@@ -198,6 +198,34 @@ class RecoveryAdapterTests(unittest.TestCase):
             ):
                 with self.assertRaises(MigrationError):
                     self.runtime.ensure_idle()
+
+    def test_docker_top_requires_pid_column_and_still_rejects_a_migrator(self):
+        def top(*args, **kwargs):
+            if args != ("top", "own", "-eo", "pid,comm"):
+                raise MigrationError("Couldn't find PID field in ps output")
+            return "PID COMMAND\n123 sleep\n"
+
+        with patch.object(self.runtime, "container", return_value="own"), patch.object(
+            self.runtime, "docker", side_effect=top
+        ), patch.object(self.runtime, "sql", return_value="t"):
+            self.runtime.ensure_idle()
+
+    def test_malformed_or_missing_process_rows_never_prove_idle(self):
+        for output in (
+            "",
+            "PID COMMAND\n",
+            "COMMAND\nsleep\n",
+            "PID COMMAND\nbad sleep\n",
+            "PID COMMAND\n123 sleep extra\n",
+        ):
+            with self.subTest(output=output), patch.object(
+                self.runtime, "container", return_value="own"
+            ), patch.object(self.runtime, "docker", return_value=output), patch.object(
+                self.runtime, "sql"
+            ) as sql:
+                with self.assertRaises(MigrationError):
+                    self.runtime.ensure_idle()
+                sql.assert_not_called()
 
     def test_approved_recovery_verifier_replaces_only_execution_not_original_config(
         self,

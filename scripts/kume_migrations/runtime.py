@@ -520,9 +520,16 @@ for(const path of process.argv.slice(1)) fs.accessSync(path,fs.constants.R_OK);"
         self.check_backup_index(path)
 
     def ensure_idle(self):
-        processes = self.docker("top", self.container(), "-eo", "comm").splitlines()
+        processes = self.docker("top", self.container(), "-eo", "pid,comm").splitlines()
+        rows = [line.split() for line in processes[1:]]
         require(
-            [line.strip() for line in processes[1:]] == ["sleep"],
+            bool(processes)
+            and processes[0].split() == ["PID", "COMMAND"]
+            and len(rows) == 1
+            and len(rows[0]) == 2
+            and rows[0][0].isdigit()
+            and int(rows[0][0]) > 0
+            and rows[0][1] == "sleep",
             "Herramientas con procesos activos: inspeccionar antes de recuperar",
         )
         idle = self.sql(

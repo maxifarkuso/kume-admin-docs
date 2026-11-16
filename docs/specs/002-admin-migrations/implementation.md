@@ -142,3 +142,15 @@ y lector de historial correctos. No es una prueba remota de Oracle ni del flujo 
 preflight completo; recursos/identidad/locks siguen probados con dobles. Sin cambios
 en la base de Oracle, instalación remota ni restauración. Runbook y checksums en
 [recuperación de roles](../../devops/recuperacion-roles-personal.md).
+
+### Corrección de Docker top — 16 de noviembre de 2026
+
+La salida aportada por Maxi identificó un error de la nueva comprobación:
+`docker top -eo comm` falla porque Docker exige el campo PID en la salida de ps.
+Cambiar a `-eo pid,comm` y validar encabezado, PID positivo y una única fila sleep;
+seguir rechazando procesos adicionales y respuestas vacías/malformadas.
+Pruebas de regresión reprodujeron el error antes del cambio; pasan 70 pruebas.
+La comprobación específica se probó también contra Docker local real, con un
+contenedor sleep propio y un proceso adicional. La validación de base se simuló
+en esa prueba específica; no es una ejecución en Oracle. Se mantiene la evidencia
+anterior del ciclo Prisma/PostgreSQL y no se modifica SQL ni journal operativo.

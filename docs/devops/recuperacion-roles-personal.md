@@ -114,3 +114,14 @@ como parte de un plan de diagnóstico específico; no sustituye resolver incerti
 No hay despliegue implícito del producto. Conservar copia y distribución anterior:
 volver a la herramienta antigua no revierte SQL y esa versión no comprende este
 historial revertido; usar la nueva distribución para futuras operaciones.
+
+## Actualización por el error de Docker top
+
+La primera revisión publicada `d356136` solicitaba solo comm y Docker rechaza esa
+salida por faltar PID. Usar la revisión correctora publicada: solicita pid,comm,
+acepta solo el sleep propio y mantiene el bloqueo por procesos adicionales.
+Si el journal no contiene ningún evento recuperar-fallida, el error ocurrió antes
+del resolve: después de actualizar y verificar checksums puede abrirse de nuevo
+esa etapa, conservando ID, config, respaldo y SELECT aprobados. Si hay eventos
+running/uncertain de recuperar-fallida, inspeccionar; la corrección no habilita
+repetir resolve. No editar el motor instalado a mano ni atribuirle el checksum viejo.
