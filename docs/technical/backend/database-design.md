@@ -310,3 +310,10 @@ La creación de un gasto o cambio hacia otro rubro requiere comprobar que el rub
 ## Personal: versión común — 13 de noviembre de 2026
 
 Añadir `version INTEGER NOT NULL DEFAULT 1 CHECK (version > 0)` a `staff_member`. Asignaciones y documentos no tienen versión independiente; cada escritura incrementa la de su ficha propietaria en la misma transacción. Transferir asignación requiere las versiones de ambas fichas y aumenta ambas una vez. Bloqueos e invariantes en [diseño técnico de personal](../../specs/005-staff/technical-spec.md). Migración aditiva `202611130001_staff` preparada en backend, sin aplicar. Ver [evidencia](../../specs/005-staff/implementation.md).
+
+
+## Gastos: destinatario y comentario opcionales — 16 de noviembre de 2026
+
+payee y description se pueden omitir o enviar vacíos. Se normalizan a «Sin destinatario» y «Sin comentario» antes de persistir; las columnas NOT NULL y CHECK existentes se conservan. PATCH omitido conserva valor; vacío lo reemplaza por el predeterminado.
+
+Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../../specs/006-expense-optional-fields/spec.md). No acredita despliegue.

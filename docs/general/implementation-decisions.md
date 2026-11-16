@@ -105,3 +105,10 @@ Estado: diseño aprobado y publicación documental autorizada. Implementación d
 ## Comprobante opcional — 13 de noviembre de 2026
 
 Maxi aprueba registrar gastos sin comprobante. POST exige solo data; receipt es opcional. Las respuestas de gastos mantienen receipt, con null si no hay archivo. PUT de comprobante permite adjuntar el primero o reemplazar el existente, conserva archivo obligatorio en esa operación y versión del gasto. Sin cambios de esquema ni migraciones: la relación ya era opcional. Despliegue coordinado frontend/backend; clientes anteriores que asumen receipt no nulo requieren actualización.
+
+
+## Gastos: destinatario y comentario opcionales — 16 de noviembre de 2026
+
+payee y description se pueden omitir o enviar vacíos. Se normalizan a «Sin destinatario» y «Sin comentario» antes de persistir; las columnas NOT NULL y CHECK existentes se conservan. PATCH omitido conserva valor; vacío lo reemplaza por el predeterminado.
+
+Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/006-expense-optional-fields/spec.md). No acredita despliegue.

@@ -237,3 +237,10 @@ Maxi aprueba registrar gastos sin comprobante. POST exige solo data; receipt es 
 ## Personal: concurrencia aprobada — 13 de noviembre de 2026
 
 Versionado común de ficha, asignaciones y documentos. Reglas de transporte, transferencia y conflictos en [diseño técnico de personal](../specs/005-staff/technical-spec.md); contrato actualizado en OpenAPI. Cambio incompatible de escrituras de personal, implementado localmente en ramas para revisión; [evidencia y límites](../specs/005-staff/implementation.md). No acredita despliegue ni verificación integrada.
+
+
+## Gastos: destinatario y comentario opcionales — 16 de noviembre de 2026
+
+payee y description se pueden omitir o enviar vacíos. Se normalizan a «Sin destinatario» y «Sin comentario» antes de persistir; las columnas NOT NULL y CHECK existentes se conservan. PATCH omitido conserva valor; vacío lo reemplaza por el predeterminado.
+
+Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/006-expense-optional-fields/spec.md). No acredita despliegue.

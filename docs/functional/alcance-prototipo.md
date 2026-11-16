@@ -294,3 +294,10 @@ CLOCK continúa pendiente para una versión futura; todavía no se conoce su mec
 ## 13. Registro del cambio de ejecución — 1 de noviembre de 2026
 
 Maxi confirmó revisar los requisitos con GrillMe y luego conservar la API Node.js/Fastify, Prisma y PostgreSQL. Se eligió Oracle como infraestructura cloud y se probó una VM con Docker Compose, Fastify y consulta SQL real; la persistencia de PostgreSQL sobrevivió a recrear su contenedor. Las funciones de gastos, personal, catálogos y CSV no cambian por esta decisión. Autenticación, HTTPS, archivos del producto, respaldos, carga real y migración local aún no están implementados ni verificados. El paso 4 sigue en curso y no se marca completo.
+
+
+## Gastos: destinatario y comentario opcionales — 16 de noviembre de 2026
+
+payee y description se pueden omitir o enviar vacíos. Se normalizan a «Sin destinatario» y «Sin comentario» antes de persistir; las columnas NOT NULL y CHECK existentes se conservan. PATCH omitido conserva valor; vacío lo reemplaza por el predeterminado.
+
+Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/006-expense-optional-fields/spec.md). No acredita despliegue.
