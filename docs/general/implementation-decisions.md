@@ -2,6 +2,31 @@
 
 Fecha: 2 de noviembre de 2026. Origen: rondas GrillMe con Maxi, Q1–Q12. Estado: reglas consolidadas confirmadas expresamente por Maxi el 2 de noviembre de 2026. No acredita implementación.
 
+## Preparación del servidor local — 16 de noviembre de 2026
+
+Maxi solicita documentar el camino de migración desde Oracle y crear una skill
+interna para retomarlo. Equipo de referencia: Lenovo Tiny M910q i5-6500T,
+8 GB RAM y SSD 256 GB, Ubuntu Server 24.04 LTS AMD64 sin escritorio, hasta cinco
+personas con actividad baja y sin UPS inicialmente. No confirma compra ni
+instalación; capacidad pendiente de comprobación. No cambia las cuentas aprobadas.
+
+Camino acordado: preparación e instalación automatizable por etapas, copia de
+ensayo con restauración comprobada y corte definitivo posterior coordinado,
+conservando Oracle para recuperación. Para actualizaciones, partir de GitHub
+como constructor y descarga/activación manual en intranet, con diseño concreto
+pendiente; no requiere habilitar acceso remoto ni un runner local.
+
+El [plan de servidor local](../devops/plan-servidor-local.md) es la fuente de
+etapas, configuración, estimación preliminar y pendientes; la
+[skill kume-local](../../.agents/skills/kume-local/SKILL.md) permite retomarlo.
+La independencia cloud corresponde al núcleo administrativo: nuevas consultas
+a SoftwareClock, si se incorpora, requieren internet. Se conservan sus reglas.
+
+Estado: documentación y skill preparadas; scripts, workflows, respaldo externo,
+ensayo y ejecución pendientes. Impacto futuro en FE/BE y operación, sin cambio
+de OpenAPI ni esquema por este plan. No autoriza operaciones sobre Oracle,
+despliegue, retiro de infraestructura, commit ni push.
+
 ## Continuidad y personal — 13 de noviembre de 2026
 
 Maxi confirma que el único desarrollo funcional pendiente para la primera versión es personal: fichas, asignaciones a cursos y talleres y documentos. Esta actualización sustituye los estados históricos que todavía presentan todo el producto como pendiente; no acredita pruebas integradas, despliegue ni preparación operativa.

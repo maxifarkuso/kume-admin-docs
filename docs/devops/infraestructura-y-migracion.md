@@ -71,6 +71,13 @@ La validación básica no acredita rendimiento bajo carga, persistencia tras rei
 
 ## Migración completa a un entorno local
 
+**Continuidad — 16 de noviembre de 2026:** Maxi acuerda documentar el camino de
+preparación con Ubuntu Server CLI en una Lenovo reacondicionada de referencia,
+sin UPS inicialmente. El [plan de servidor local](plan-servidor-local.md) concreta
+etapas, automatización futura, configuración y entrega desde GitHub; la
+[skill kume-local](../../.agents/skills/kume-local/SKILL.md) permite retomarlo.
+Compra, instalación, scripts y traslado no se consideran ejecutados.
+
 La migración es una alternativa si los límites o condiciones cloud comprometen el uso. Su preparación documental es parte del MVP; ejecutar y validar el despliegue local completo corresponde al momento de decidir el traslado.
 
 ### Preparación
@@ -79,7 +86,7 @@ La migración es una alternativa si los límites o condiciones cloud comprometen
 - Reutilizar Docker Compose e imágenes compatibles; permitir despliegue local en Windows o Linux tras verificar condiciones de operación. No asumir instalaciones ya probadas.
 - Preparar almacenamiento persistente y PostgreSQL privado en red interna. Servir también el frontend dentro del instituto.
 - Establecer nombre interno, HTTPS y confianza de certificados en las computadoras usuarias, sin abrir acceso remoto a la intranet.
-- Identificar dependencias de autenticación, CDN y otros servicios externos. La operación diaria y los cambios manuales de contraseña deben funcionar sin cloud ni correo; documentar dependencias de internet para respaldos externos. Trasladar secrets de manera protegida y comprobar el acceso de Maxi y Vicky.
+- Identificar dependencias de autenticación, CDN y otros servicios externos. La operación diaria del núcleo administrativo y los cambios manuales de contraseña deben funcionar sin cloud ni correo; documentar dependencias de internet para respaldos externos y, si se incorpora, nuevas consultas de SoftwareClock según el [plan local](plan-servidor-local.md). Trasladar secrets de manera protegida y comprobar el acceso de Maxi y Vicky.
 
 ### Ensayo y traslado
 

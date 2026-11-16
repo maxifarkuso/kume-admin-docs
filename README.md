@@ -32,6 +32,7 @@ En la raíz quedan este índice, `AGENTS.md`, el contrato canónico `openapi.yam
 - [Autenticación](docs/technical/autenticacion-prototipo.md): decisiones de sesiones, credenciales y criterios de verificación.
 - [Base de datos](docs/technical/backend/database-design.md): PostgreSQL y Prisma.
 - [Infraestructura y migración](docs/devops/infraestructura-y-migracion.md).
+- [Plan de servidor local](docs/devops/plan-servidor-local.md): equipo de referencia, automatización, ensayo, corte y entrega desde GitHub; camino acordado, ejecución pendiente. Invocar la [skill interna kume-local](.agents/skills/kume-local/SKILL.md) para retomarlo.
 - [Operación instalada y resultados comprobados](docs/devops/operacion-oracle.md).
 - [Spec de revisión automática del backend](docs/specs/001-backend-revision/spec.md): mejora separada, pendiente de integración y verificación en Oracle.
 - [Administración de Oracle](docs/devops/administracion-oracle.md): recursos, Docker, rutas y estados; instalación comprobada y pasos para otra máquina.

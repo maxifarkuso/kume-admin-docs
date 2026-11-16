@@ -39,6 +39,11 @@ expresa del 7 de noviembre de 2026. Para desarrollarla u operarla leer la
 Desarrollo/pruebas locales no autorizan ejecución en Oracle, instalación o despliegue.
 Las reglas y límites operativos pertenecen a esas guías; conservar sus evidencias.
 
+Para preparar o retomar el traslado completo a intranet, usar la
+[skill kume-local](.agents/skills/kume-local/SKILL.md) y el
+[plan de servidor local](docs/devops/plan-servidor-local.md). No confundir ese
+traslado con migraciones de esquema ni con instalar la utilidad kume-admin.
+
 ## Verificación y entrega
 
 Comprobar enlaces relativos, Markdown, coherencia de decisiones y, si cambia OpenAPI, validación y compatibilidad del contrato. Describir verificaciones realizadas y límites. No inventar scripts ni afirmar que se ejecutaron controles inexistentes.

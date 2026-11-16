@@ -36,7 +36,7 @@ Oracle aloja nuestros servicios; no se sustituye PostgreSQL por Oracle Database.
 
 Mantener Docker Compose, PostgreSQL, Prisma y el almacenamiento por claves relativas. Preparar exportación y restauración consistente de base, archivos, cuentas y configuración. La implementación local completa se realizará cuando se decida migrar; no se considera probada todavía.
 
-El destino será un equipo del instituto encendido durante el uso, con acceso solo desde su intranet y sin dependencia cloud para el funcionamiento diario. Windows y Linux son alternativas a evaluar al elegir equipo y operación. Definir HTTPS, nombre interno y respaldos en el destino; el login y el cambio manual de contraseñas no requieren correo. Ver [infraestructura y migración](../devops/infraestructura-y-migracion.md).
+El destino será un equipo del instituto encendido durante el uso, con acceso solo desde su intranet. El 16 de noviembre Maxi acuerda preparar el camino con Ubuntu Server 24.04 LTS AMD64 sin entorno gráfico; equipo de referencia y pendientes en el [plan local](../devops/plan-servidor-local.md). La alternativa histórica Windows no se desarrolla en este plan. Gastos, personal y autenticación deben operar sin cloud; una futura consulta de nuevas marcas a SoftwareClock requiere internet, según sus [reglas aprobadas](../functional/registro-horas.md). Definir HTTPS, nombre interno y respaldos en el destino; el login y el cambio manual de contraseñas no requieren correo. Ver [infraestructura y migración](../devops/infraestructura-y-migracion.md).
 
 ## Estado de los repositorios y versiones
 
