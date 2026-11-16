@@ -1704,8 +1704,10 @@ components:
       required: [paymentDate, amount, currency, payee, description, categoryId]
       properties:
         dueDate:
-          type: [string, "null"]
-          format: date
+          anyOf:
+            - type: string
+              format: date
+            - type: "null"
         paymentDate:
           type: string
           format: date
@@ -1736,8 +1738,10 @@ components:
           type: integer
           minimum: 1
         dueDate:
-          type: [string, "null"]
-          format: date
+          anyOf:
+            - type: string
+              format: date
+            - type: "null"
         paymentDate:
           type: string
           format: date
@@ -1782,9 +1786,11 @@ components:
               type: integer
               minimum: 1
             dueDate:
-          type: [string, "null"]
-          format: date
-        paymentDate:
+              anyOf:
+                - type: string
+                  format: date
+                - type: "null"
+            paymentDate:
               type: string
               format: date
             amount:
@@ -1853,8 +1859,10 @@ components:
           minLength: 1
           maxLength: 30
         birthDate:
-          type: [string, "null"]
-          format: date
+          anyOf:
+            - type: string
+              format: date
+            - type: "null"
         email:
           type: [string, "null"]
           format: email
@@ -1863,8 +1871,10 @@ components:
           type: [string, "null"]
           maxLength: 500
         startDate:
-          type: [string, "null"]
-          format: date
+          anyOf:
+            - type: string
+              format: date
+            - type: "null"
         role:
           $ref: "#/components/schemas/Role"
     StaffMemberPatch:
@@ -1894,8 +1904,10 @@ components:
           minLength: 1
           maxLength: 30
         birthDate:
-          type: [string, "null"]
-          format: date
+          anyOf:
+            - type: string
+              format: date
+            - type: "null"
         email:
           type: [string, "null"]
           format: email
@@ -1904,8 +1916,10 @@ components:
           type: [string, "null"]
           maxLength: 500
         startDate:
-          type: [string, "null"]
-          format: date
+          anyOf:
+            - type: string
+              format: date
+            - type: "null"
         role:
           $ref: "#/components/schemas/Role"
     StaffMemberSummary:
@@ -1950,23 +1964,29 @@ components:
             phone:
               type: string
             birthDate:
-              type: [string, "null"]
-              format: date
+              anyOf:
+                - type: string
+                  format: date
+                - type: "null"
             email:
               type: [string, "null"]
               format: email
             address:
               type: [string, "null"]
             startDate:
-              type: [string, "null"]
-              format: date
+              anyOf:
+                - type: string
+                  format: date
+                - type: "null"
             role:
               $ref: "#/components/schemas/Role"
             isActive:
               type: boolean
             endDate:
-              type: [string, "null"]
-              format: date
+              anyOf:
+                - type: string
+                  format: date
+                - type: "null"
     StaffMemberDetail:
       allOf:
         - $ref: "#/components/schemas/StaffMember"
