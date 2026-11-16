@@ -1804,7 +1804,7 @@ components:
 
     Role:
       type: string
-      enum: [teacher, assistant, workshopInstructor]
+      enum: [teacher, cleaningAssistant, classroomAssistant, classroomLead, director, workshopInstructor]
     StaffMemberCreate:
       type: object
       additionalProperties: false

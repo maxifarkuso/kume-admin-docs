@@ -294,3 +294,10 @@ CLOCK continúa pendiente para una versión futura; todavía no se conoce su mec
 ## 13. Registro del cambio de ejecución — 1 de noviembre de 2026
 
 Maxi confirmó revisar los requisitos con GrillMe y luego conservar la API Node.js/Fastify, Prisma y PostgreSQL. Se eligió Oracle como infraestructura cloud y se probó una VM con Docker Compose, Fastify y consulta SQL real; la persistencia de PostgreSQL sobrevivió a recrear su contenedor. Las funciones de gastos, personal, catálogos y CSV no cambian por esta decisión. Autenticación, HTTPS, archivos del producto, respaldos, carga real y migración local aún no están implementados ni verificados. El paso 4 sigue en curso y no se marca completo.
+
+
+## Personal: nuevos roles — 16 de noviembre de 2026
+
+Eliminar assistant / Auxiliar. Incorporar cleaningAssistant / Auxiliar de limpieza, classroomAssistant / Auxiliar de sala, classroomLead / Encargada de sala y director / Directora. Conservar teacher y workshopInstructor. Maxi confirma que aún no existen fichas; no se requiere compatibilidad histórica ni reasignación de datos. Migración cambia CHECK, sin borrar ni modificar fichas y falla si aparecen roles retirados.
+
+Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/009-staff-roles/spec.md). No acredita despliegue.
