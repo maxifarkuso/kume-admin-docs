@@ -334,6 +334,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/PaymentDateFrom"
         - $ref: "#/components/parameters/PaymentDateTo"
+        - $ref: "#/components/parameters/DueDateFrom"
+        - $ref: "#/components/parameters/DueDateTo"
         - $ref: "#/components/parameters/CategoryFilter"
         - $ref: "#/components/parameters/ExpenseStatus"
         - $ref: "#/components/parameters/Page"
@@ -406,6 +408,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/PaymentDateFrom"
         - $ref: "#/components/parameters/PaymentDateTo"
+        - $ref: "#/components/parameters/DueDateFrom"
+        - $ref: "#/components/parameters/DueDateTo"
         - $ref: "#/components/parameters/CategoryFilter"
         - $ref: "#/components/parameters/ExpenseStatus"
       responses:
@@ -1363,6 +1367,18 @@ components:
       schema:
         type: string
         format: date
+    DueDateFrom:
+      name: dueDateFrom
+      in: query
+      schema:
+        type: string
+        format: date
+    DueDateTo:
+      name: dueDateTo
+      in: query
+      schema:
+        type: string
+        format: date
     CategoryFilter:
       name: categoryId
       in: query
@@ -1687,6 +1703,9 @@ components:
       additionalProperties: false
       required: [paymentDate, amount, currency, payee, description, categoryId]
       properties:
+        dueDate:
+          type: [string, "null"]
+          format: date
         paymentDate:
           type: string
           format: date
@@ -1716,6 +1735,9 @@ components:
         version:
           type: integer
           minimum: 1
+        dueDate:
+          type: [string, "null"]
+          format: date
         paymentDate:
           type: string
           format: date
@@ -1744,6 +1766,7 @@ components:
             - id
             - version
             - paymentDate
+            - dueDate
             - amount
             - currency
             - payee
@@ -1758,7 +1781,10 @@ components:
             version:
               type: integer
               minimum: 1
-            paymentDate:
+            dueDate:
+          type: [string, "null"]
+          format: date
+        paymentDate:
               type: string
               format: date
             amount:
