@@ -237,3 +237,10 @@ Maxi aprueba registrar gastos sin comprobante. POST exige solo data; receipt es 
 ## Personal: concurrencia aprobada — 13 de noviembre de 2026
 
 Versionado común de ficha, asignaciones y documentos. Reglas de transporte, transferencia y conflictos en [diseño técnico de personal](../specs/005-staff/technical-spec.md); contrato actualizado en OpenAPI. Cambio incompatible de escrituras de personal, implementado localmente en ramas para revisión; [evidencia y límites](../specs/005-staff/implementation.md). No acredita despliegue ni verificación integrada.
+
+
+## Personal: nuevos roles — 16 de noviembre de 2026
+
+Eliminar assistant / Auxiliar. Incorporar cleaningAssistant / Auxiliar de limpieza, classroomAssistant / Auxiliar de sala, classroomLead / Encargada de sala y director / Directora. Conservar teacher y workshopInstructor. Maxi confirma que aún no existen fichas; no se requiere compatibilidad histórica ni reasignación de datos. Migración cambia CHECK, sin borrar ni modificar fichas y falla si aparecen roles retirados.
+
+Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/009-staff-roles/spec.md). No acredita despliegue.
