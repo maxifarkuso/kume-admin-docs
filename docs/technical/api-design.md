@@ -239,6 +239,19 @@ Maxi aprueba registrar gastos sin comprobante. POST exige solo data; receipt es 
 Versionado común de ficha, asignaciones y documentos. Reglas de transporte, transferencia y conflictos en [diseño técnico de personal](../specs/005-staff/technical-spec.md); contrato actualizado en OpenAPI. Cambio incompatible de escrituras de personal, implementado localmente en ramas para revisión; [evidencia y límites](../specs/005-staff/implementation.md). No acredita despliegue ni verificación integrada.
 
 
+## Gastos: vencimiento opcional — 16 de noviembre de 2026
+
+Agregar dueDate opcional y nullable como fecha civil, sin limitarla al pasado ni relacionarla con fecha de pago. PATCH omitido conserva valor y null borra. Filtros inclusivos dueDateFrom/dueDateTo combinados con los actuales, excluyen registros sin vencimiento cuando están activos. Listado, total y CSV usan los mismos filtros. Migración aditiva nullable, sin ejecutar en producción.
+
+Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/007-expense-due-date/spec.md). No acredita despliegue.
+
+## Gastos: destinatario y comentario opcionales — 16 de noviembre de 2026
+
+payee y description se pueden omitir o enviar vacíos. Se normalizan a «Sin destinatario» y «Sin comentario» antes de persistir; las columnas NOT NULL y CHECK existentes se conservan. PATCH omitido conserva valor; vacío lo reemplaza por el predeterminado.
+
+Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/006-expense-optional-fields/spec.md). No acredita despliegue.
+
+
 ## Personal: nuevos roles — 16 de noviembre de 2026
 
 Eliminar assistant / Auxiliar. Incorporar cleaningAssistant / Auxiliar de limpieza, classroomAssistant / Auxiliar de sala, classroomLead / Encargada de sala y director / Directora. Conservar teacher y workshopInstructor. Maxi confirma que aún no existen fichas; no se requiere compatibilidad histórica ni reasignación de datos. Migración cambia CHECK, sin borrar ni modificar fichas y falla si aparecen roles retirados.

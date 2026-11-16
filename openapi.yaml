@@ -334,6 +334,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/PaymentDateFrom"
         - $ref: "#/components/parameters/PaymentDateTo"
+        - $ref: "#/components/parameters/DueDateFrom"
+        - $ref: "#/components/parameters/DueDateTo"
         - $ref: "#/components/parameters/CategoryFilter"
         - $ref: "#/components/parameters/ExpenseStatus"
         - $ref: "#/components/parameters/Page"
@@ -406,6 +408,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/PaymentDateFrom"
         - $ref: "#/components/parameters/PaymentDateTo"
+        - $ref: "#/components/parameters/DueDateFrom"
+        - $ref: "#/components/parameters/DueDateTo"
         - $ref: "#/components/parameters/CategoryFilter"
         - $ref: "#/components/parameters/ExpenseStatus"
       responses:
@@ -1363,6 +1367,18 @@ components:
       schema:
         type: string
         format: date
+    DueDateFrom:
+      name: dueDateFrom
+      in: query
+      schema:
+        type: string
+        format: date
+    DueDateTo:
+      name: dueDateTo
+      in: query
+      schema:
+        type: string
+        format: date
     CategoryFilter:
       name: categoryId
       in: query
@@ -1685,8 +1701,13 @@ components:
     ExpenseCreate:
       type: object
       additionalProperties: false
-      required: [paymentDate, amount, currency, payee, description, categoryId]
+      required: [paymentDate, amount, currency, categoryId]
       properties:
+        dueDate:
+          anyOf:
+            - type: string
+              format: date
+            - type: "null"
         paymentDate:
           type: string
           format: date
@@ -1698,11 +1719,9 @@ components:
           const: UYU
         payee:
           type: string
-          minLength: 1
           maxLength: 200
         description:
           type: string
-          minLength: 1
           maxLength: 500
         categoryId:
           type: string
@@ -1716,6 +1735,11 @@ components:
         version:
           type: integer
           minimum: 1
+        dueDate:
+          anyOf:
+            - type: string
+              format: date
+            - type: "null"
         paymentDate:
           type: string
           format: date
@@ -1727,11 +1751,9 @@ components:
           const: UYU
         payee:
           type: string
-          minLength: 1
           maxLength: 200
         description:
           type: string
-          minLength: 1
           maxLength: 500
         categoryId:
           type: string
@@ -1744,6 +1766,7 @@ components:
             - id
             - version
             - paymentDate
+            - dueDate
             - amount
             - currency
             - payee
@@ -1758,6 +1781,11 @@ components:
             version:
               type: integer
               minimum: 1
+            dueDate:
+              anyOf:
+                - type: string
+                  format: date
+                - type: "null"
             paymentDate:
               type: string
               format: date

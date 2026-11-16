@@ -296,6 +296,19 @@ CLOCK continúa pendiente para una versión futura; todavía no se conoce su mec
 Maxi confirmó revisar los requisitos con GrillMe y luego conservar la API Node.js/Fastify, Prisma y PostgreSQL. Se eligió Oracle como infraestructura cloud y se probó una VM con Docker Compose, Fastify y consulta SQL real; la persistencia de PostgreSQL sobrevivió a recrear su contenedor. Las funciones de gastos, personal, catálogos y CSV no cambian por esta decisión. Autenticación, HTTPS, archivos del producto, respaldos, carga real y migración local aún no están implementados ni verificados. El paso 4 sigue en curso y no se marca completo.
 
 
+## Gastos: vencimiento opcional — 16 de noviembre de 2026
+
+Agregar dueDate opcional y nullable como fecha civil, sin limitarla al pasado ni relacionarla con fecha de pago. PATCH omitido conserva valor y null borra. Filtros inclusivos dueDateFrom/dueDateTo combinados con los actuales, excluyen registros sin vencimiento cuando están activos. Listado, total y CSV usan los mismos filtros. Migración aditiva nullable, sin ejecutar en producción.
+
+Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/007-expense-due-date/spec.md). No acredita despliegue.
+
+## Gastos: destinatario y comentario opcionales — 16 de noviembre de 2026
+
+payee y description se pueden omitir o enviar vacíos. Se normalizan a «Sin destinatario» y «Sin comentario» antes de persistir; las columnas NOT NULL y CHECK existentes se conservan. PATCH omitido conserva valor; vacío lo reemplaza por el predeterminado.
+
+Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/006-expense-optional-fields/spec.md). No acredita despliegue.
+
+
 ## Personal: nuevos roles — 16 de noviembre de 2026
 
 Eliminar assistant / Auxiliar. Incorporar cleaningAssistant / Auxiliar de limpieza, classroomAssistant / Auxiliar de sala, classroomLead / Encargada de sala y director / Directora. Conservar teacher y workshopInstructor. Maxi confirma que aún no existen fichas; no se requiere compatibilidad histórica ni reasignación de datos. Migración cambia CHECK, sin borrar ni modificar fichas y falla si aparecen roles retirados.
