@@ -124,8 +124,31 @@ def main(arguments=None):
     parser.add_argument(
         "--inspeccion-sha256", help="SHA-256 del SQL de recuperación revisado"
     )
+    parser.add_argument("--migracion", help="Única migración fallida pendiente")
+    parser.add_argument(
+        "--verificacion-sql", type=Path, help="Nuevo SELECT final aprobado"
+    )
+    parser.add_argument(
+        "--verificacion-sha256", help="SHA-256 del nuevo verificador final"
+    )
     args = parser.parse_args(arguments)
-    if args.action == "habilitar-reintento":
+    if args.action == "recuperar-fallida":
+        if (
+            not args.migracion
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,127}", args.migracion)
+            or not args.verificacion_sql
+            or not args.verificacion_sql.is_absolute()
+            or not args.verificacion_sha256
+            or not re.fullmatch(r"[0-9a-f]{64}", args.verificacion_sha256)
+        ):
+            parser.error(
+                "recuperar-fallida requiere --migracion, --verificacion-sql absoluta y --verificacion-sha256 completo"
+            )
+    elif args.migracion or args.verificacion_sql or args.verificacion_sha256:
+        parser.error(
+            "Los argumentos de recuperación solo corresponden a recuperar-fallida"
+        )
+    if args.action in ("habilitar-reintento", "recuperar-fallida"):
         if (
             not args.inspeccion_sql
             or not args.inspeccion_sql.is_absolute()
@@ -133,10 +156,12 @@ def main(arguments=None):
             or not re.fullmatch(r"[0-9a-f]{64}", args.inspeccion_sha256)
         ):
             parser.error(
-                "habilitar-reintento requiere --inspeccion-sql y --inspeccion-sha256"
+                "La recuperación requiere --inspeccion-sql absoluta y --inspeccion-sha256 completo"
             )
     elif args.inspeccion_sql or args.inspeccion_sha256:
-        parser.error("La inspección adicional solo corresponde a habilitar-reintento")
+        parser.error(
+            "La inspección adicional solo corresponde a habilitar-reintento o recuperar-fallida"
+        )
     os.umask(0o077)
     signal.signal(signal.SIGTERM, interrupted)
     try:
@@ -147,12 +172,24 @@ def main(arguments=None):
             journal = Journal(root, args.operacion, config)
             inspection = (
                 (args.inspeccion_sql, args.inspeccion_sha256)
-                if args.action == "habilitar-reintento"
+                if args.action in ("habilitar-reintento", "recuperar-fallida")
                 else None
             )
-            Workflow(Runtime(config, journal, inspection=inspection), journal).execute(
-                args.action
+            verification = (
+                (args.verificacion_sql, args.verificacion_sha256)
+                if args.action == "recuperar-fallida"
+                else None
             )
+            Workflow(
+                Runtime(
+                    config,
+                    journal,
+                    inspection=inspection,
+                    recovery_verification=verification,
+                ),
+                journal,
+                migration=args.migracion,
+            ).execute(args.action)
         return 0
     except MigrationError as error:
         print(str(error), file=sys.stderr)

@@ -17,7 +17,7 @@ if ((u.searchParams.get('schema') || 'public') !== 'public' || u.searchParams.ha
 console.log(JSON.stringify({server:u.hostname,port:u.port||'5432',
 database:decodeURIComponent(u.pathname.slice(1)),user:decodeURIComponent(u.username)}));"""
 HISTORY_SQL = """SELECT COALESCE(json_agg(row_to_json(m)), '[]'::json)::text FROM
-(SELECT migration_name, checksum, finished_at IS NOT NULL AS finished,
+(SELECT id, migration_name, checksum, finished_at IS NOT NULL AS finished,
  rolled_back_at IS NOT NULL AS rolled_back FROM public._prisma_migrations
  ORDER BY started_at, id) m;"""
 
@@ -55,11 +55,20 @@ class Commands:
 
 
 class Runtime:
-    def __init__(self, config, journal, commands=None, *, inspection=None):
+    def __init__(
+        self,
+        config,
+        journal,
+        commands=None,
+        *,
+        inspection=None,
+        recovery_verification=None,
+    ):
         self.config = config
         self.journal = journal
         self.commands = commands or Commands()
         self.inspection = inspection
+        self.recovery_verification = recovery_verification
 
     def docker(self, *arguments, **kwargs):
         return self.commands.run(["sudo", "docker", *arguments], **kwargs)
@@ -180,6 +189,9 @@ class Runtime:
         config = self.config
         require(os.uname().nodename == config["host"], "Host incorrecto")
         private_file(Path(config["runtime_env"]))
+        approved = self.journal.value["artifacts"].get("recovery_verification")
+        if approved:
+            self._read_verification(Path(approved["path"]), approved["sha256"])
         self._verification_query("verification_sql", "verification_sha256")
         self._verification_query(
             "initial_verification_sql", "initial_verification_sha256"
@@ -507,8 +519,41 @@ for(const path of process.argv.slice(1)) fs.accessSync(path,fs.constants.R_OK);"
         require(digest(path) == backup["sha256"], "Respaldo alterado")
         self.check_backup_index(path)
 
+    def ensure_idle(self):
+        processes = self.docker("top", self.container(), "-eo", "pid,comm").splitlines()
+        rows = [line.split() for line in processes[1:]]
+        require(
+            bool(processes)
+            and processes[0].split() == ["PID", "COMMAND"]
+            and len(rows) == 1
+            and len(rows[0]) == 2
+            and rows[0][0].isdigit()
+            and int(rows[0][0]) > 0
+            and rows[0][1] == "sleep",
+            "Herramientas con procesos activos: inspeccionar antes de recuperar",
+        )
+        idle = self.sql(
+            "SELECT NOT EXISTS (SELECT 1 FROM pg_stat_activity "
+            "WHERE datname = current_database() AND pid <> pg_backend_pid() "
+            "AND (state IS DISTINCT FROM 'idle' OR xact_start IS NOT NULL));"
+        )
+        require(idle == "t", "Base con actividad: mantener ventana e inspeccionar")
+
     def verify(self):
-        self._verify_file("verification_sql", "verification_sha256")
+        approved = self.journal.value["artifacts"].get("recovery_verification")
+        if approved:
+            self._execute_verification(
+                self._read_verification(Path(approved["path"]), approved["sha256"])
+            )
+        else:
+            self._verify_file("verification_sql", "verification_sha256")
+
+    def check_recovery_verification(self):
+        require(
+            self.recovery_verification is not None, "Falta verificador final aprobado"
+        )
+        path, checksum = self.recovery_verification
+        self._read_verification(Path(path), checksum)
 
     def verify_initial(self):
         self._verify_file("initial_verification_sql", "initial_verification_sha256")

@@ -125,3 +125,32 @@ aprobado contra todos los efectos SQL del commit, no una prueba universal inferi
 por el administrador. Rollback de herramienta: recuperar la distribución anterior
 conservando journals y dumps; no revierte datos ni elimina la incertidumbre. Volver
 a una versión anterior no resuelve el acceso privado ni habilita repetir el deploy.
+
+## Recuperación de roles — 16 de noviembre de 2026
+
+Aprobada por Maxi en esta sesión. Implementación de recuperar-fallida, verificador
+adicional inmutable por hash y lectura de intentos revertidos conservando orden.
+Pasaron 68 pruebas unitarias con colaboradores controlados, incluidas cancelación,
+actividad, cambios de historial/verificador, respaldo, resolve incierto y separación
+resolve/habilitar/aplicar. Baseline previo: 53 pruebas.
+
+Además se reprodujo manualmente en un contenedor local descartable PostgreSQL 17
+con Prisma 6.19.0: ficha ficticia con assistant, vencimiento aplicado, roles fallido
+sin efectos, eliminación explícita de la ficha ficticia, inspector antes/después de
+resolve --rolled-back, nuevo deploy, registro revertido conservado, verificador final
+y lector de historial correctos. No es una prueba remota de Oracle ni del flujo de
+preflight completo; recursos/identidad/locks siguen probados con dobles. Sin cambios
+en la base de Oracle, instalación remota ni restauración. Runbook y checksums en
+[recuperación de roles](../../devops/recuperacion-roles-personal.md).
+
+### Corrección de Docker top — 16 de noviembre de 2026
+
+La salida aportada por Maxi identificó un error de la nueva comprobación:
+`docker top -eo comm` falla porque Docker exige el campo PID en la salida de ps.
+Cambiar a `-eo pid,comm` y validar encabezado, PID positivo y una única fila sleep;
+seguir rechazando procesos adicionales y respuestas vacías/malformadas.
+Pruebas de regresión reprodujeron el error antes del cambio; pasan 70 pruebas.
+La comprobación específica se probó también contra Docker local real, con un
+contenedor sleep propio y un proceso adicional. La validación de base se simuló
+en esa prueba específica; no es una ejecución en Oracle. Se mantiene la evidencia
+anterior del ciclo Prisma/PostgreSQL y no se modifica SQL ni journal operativo.

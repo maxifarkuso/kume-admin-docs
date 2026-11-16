@@ -77,3 +77,16 @@ Registrar revisión, checksum, ruta, PATH y consultas efectivamente probadas;
 distinguir documentado, instalado y comprobado. Indicar lo pendiente sin inferirlo.
 Esta SKILL es un recurso versionado del repositorio, no un plugin global instalado
 ni un servicio en Oracle; no afirmar que fue activada en otra herramienta.
+
+## Intento Prisma fallido — extensión del 16 de noviembre de 2026
+
+Para una única migración pendiente fallida usar la acción explícita
+`recuperar-fallida` de la revisión que la incorpora, según
+[la guía de recuperación](../../../docs/devops/recuperacion-roles-personal.md).
+Requiere inspector y verificador final aprobados por hash, causa corregida,
+esquema previo completo, mismo destino/operación/respaldo y confirmación con el
+ID/nombre/checksum del intento. No borra datos ni revierte SQL: solo registra
+`resolve --rolled-back`. Luego habilitar y aplicar por separado. Nunca repetir
+un resolve running/uncertain ni cambiar el journal para declararlo exitoso.
+La sesión puede autorizar recibir todos los comandos juntos en lugar de uno por vez;
+eso no elimina las comprobaciones ni las confirmaciones literales del motor.

@@ -23,3 +23,12 @@ Resultados y pendientes reales: [implementación](implementation.md).
 - [x] Incorporar recuperación explícita para deploy incierto con inspector aprobado.
 - [x] Probar límites de permisos, confirmación, evidencia y autorización de un intento.
 - [ ] Validar la distribución corregida en la VM durante la sesión guiada.
+
+## Extensión aprobada — recuperación de roles
+
+1. Agregar acción explícita, validación de argumentos y selección estricta del intento.
+2. Revalidar inspector, identidad, respaldo e inactividad antes de confirmar resolve.
+3. Registrar evidencia y comprobar el resultado exacto sin alterar eventos previos.
+4. Conservar el verificador final adicional por hash y admitir historia revertida válida.
+5. Probar negativos con dobles y reproducir el ciclo en PostgreSQL/Prisma locales.
+6. Publicar revisión y checksums; operar Oracle solo desde etapas confirmadas por Maxi.
