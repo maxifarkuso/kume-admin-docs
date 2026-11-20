@@ -334,3 +334,7 @@ Solicitud aprobada; implementación y verificación en branch separado. Ver [esp
 ## Registro de horas — ampliación en diseño, 16 de noviembre de 2026
 
 La exclusión histórica de CLOCK aplica a la implementación de Personal V1. Se aprobaron [reglas y prototipo](../../functional/registro-horas.md), pero no un esquema persistente ni migraciones. Diseñar eventos originales, ajustes locales auditables, identidad estable, concurrencia y horarios con vigencia antes de implementar; no recalcular meses pasados solo con asignaciones actuales. [Hallazgos de API externa](../softwareclock-api.md).
+
+## Personal — 20 de noviembre de 2026
+
+La restricción de roles de `staff_member` admite además `administrative`. La migración conserva todos los roles y fichas existentes.

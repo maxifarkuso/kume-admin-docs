@@ -261,3 +261,7 @@ Solicitud aprobada; implementación y verificación en branch separado. Ver [esp
 ## SoftwareClock — investigación del 16 de noviembre de 2026
 
 La [API externa de SoftwareClock](softwareclock-api.md) permite autenticación y consulta básica, comprobadas por Maxi. Las [reglas del registro de horas](../functional/registro-horas.md) y su interfaz están aprobadas para avanzar a especificaciones y conexión; ver [preparación](registro-horas-preparacion.md). No hay todavía contrato interno KUME de horas: `openapi.yaml` se conserva sin rutas nuevas. Diseñar y revisar contrato, errores, caché y concurrencia antes de implementar consumidores.
+
+## Personal — 20 de noviembre de 2026
+
+El listado de Personal incluye en cada fila un resumen de destinos y turnos. La API devuelve una lista vacía si no hay asignaciones. El campo es opcional en OpenAPI para admitir una actualización escalonada. El rol `administrative` corresponde a Administrativa.

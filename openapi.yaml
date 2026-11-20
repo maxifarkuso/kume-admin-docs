@@ -1832,7 +1832,7 @@ components:
 
     Role:
       type: string
-      enum: [teacher, cleaningAssistant, classroomAssistant, classroomLead, director, workshopInstructor]
+      enum: [teacher, cleaningAssistant, classroomAssistant, classroomLead, director, workshopInstructor, administrative]
     StaffMemberCreate:
       type: object
       additionalProperties: false
@@ -1992,7 +1992,23 @@ components:
             items:
               type: array
               items:
-                $ref: "#/components/schemas/StaffMember"
+                $ref: "#/components/schemas/StaffMemberListItem"
+    StaffMemberListItem:
+      allOf:
+        - $ref: "#/components/schemas/StaffMember"
+        - type: object
+          properties:
+            assignments:
+              type: array
+              items:
+                type: object
+                required: [targetName, shift]
+                properties:
+                  targetName:
+                    type: string
+                  shift:
+                    type: string
+                    enum: [morning, afternoon]
     StaffDeactivation:
       type: object
       additionalProperties: false
