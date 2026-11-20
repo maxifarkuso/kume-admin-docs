@@ -316,3 +316,7 @@ Solicitud aprobada; implementación y verificación en branch separado. Ver [esp
 Eliminar assistant / Auxiliar. Incorporar cleaningAssistant / Auxiliar de limpieza, classroomAssistant / Auxiliar de sala, classroomLead / Encargada de sala y director / Directora. Conservar teacher y workshopInstructor. Maxi confirma que aún no existen fichas; no se requiere compatibilidad histórica ni reasignación de datos. Migración cambia CHECK, sin borrar ni modificar fichas y falla si aparecen roles retirados.
 
 Solicitud aprobada; implementación y verificación en branch separado. Ver [especificación](../specs/009-staff-roles/spec.md). No acredita despliegue.
+
+## Personal — 20 de noviembre de 2026
+
+El listado de Personal muestra los destinos y turnos debajo del nombre. Las maestras sin destinos muestran «Sin asignación». Administrativa se agrega como rol laboral al registrar o editar una ficha.
