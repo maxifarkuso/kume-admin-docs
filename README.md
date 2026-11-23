@@ -75,10 +75,11 @@ Documentación se mantiene directamente en main. Frontend y backend usarán rama
 
 ## SoftwareClock — continuación por caso de uso
 
-[Índice de los tres casos y dependencias](docs/functional/softwareclock/README.md).
+[Índice de casos y dependencias](docs/functional/softwareclock/README.md).
 
 | Caso | Documento | Prompt para otra sesión |
 | --- | --- | --- |
+| Autenticación compartida para CU1, CU2 y CU3 | [CU0](docs/functional/softwareclock/autenticacion.md) | [Especificación y plan](docs/specs/011-softwareclock-auth/plan.md) |
 | Sincronizar workshifts / horarios laborales | [CU1](docs/functional/softwareclock/sincronizar-horarios.md) | [Prompt 1](docs/general/prompts/softwareclock/01-sincronizar-horarios.md) |
 | Sincronizar empleado con Clock | [CU2](docs/functional/softwareclock/sincronizar-empleado.md) | [Prompt 2](docs/general/prompts/softwareclock/02-sincronizar-empleado.md) |
 | Registro de horas por empleado | [CU3](docs/functional/softwareclock/registro-horas.md) | [Prompt 3](docs/general/prompts/softwareclock/03-registro-horas.md) |

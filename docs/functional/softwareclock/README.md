@@ -2,8 +2,9 @@
 
 Fecha: 23 de noviembre de 2026. Maxi solicita separar lo descubierto en tres casos de uso y preparar tres prompts para sesiones independientes. Documentación de diseño, no implementación. Las reglas Q1–Q31 permanecen aprobadas; las ampliaciones posteriores de catálogo/vinculación se distinguen de las propuestas todavía pendientes.
 
-| Caso de uso | Fuente del caso | Prompt de continuación |
+| Caso de uso | Fuente del caso | Continuación |
 | --- | --- | --- |
+| CU0 — Autenticación con SoftwareClock | [Caso de uso](autenticacion.md) | [Especificación y plan](../../specs/011-softwareclock-auth/plan.md) |
 | CU1 — Sincronizar workshifts / catálogo de horarios laborales | [Caso de uso](sincronizar-horarios.md) | [Prompt CU1](../../general/prompts/softwareclock/01-sincronizar-horarios.md) |
 | CU2 — Sincronizar empleado con Clock | [Caso de uso](sincronizar-empleado.md) | [Prompt CU2](../../general/prompts/softwareclock/02-sincronizar-empleado.md) |
 | CU3 — Registro de horas por empleado | [Caso de uso](registro-horas.md) | [Prompt CU3](../../general/prompts/softwareclock/03-registro-horas.md) |
@@ -14,7 +15,7 @@ CU1 importa referencias de turnos. CU2 vincula identidades. CU3 importa eventos 
 
 ```mermaid
 flowchart LR
-    AUTH[Conector Clock y autenticación backend compartidos] --> CU1[CU1 Catálogo workshifts]
+    AUTH[CU0 Autenticación con SoftwareClock] --> CU1[CU1 Catálogo workshifts]
     AUTH --> CU2[CU2 Vínculo de empleado]
     AUTH --> CU3[CU3 Registro de horas]
     CU2 -->|Vínculo persistente requerido para importación real| CU3
@@ -25,7 +26,7 @@ flowchart LR
 
 Orden sugerido: estudiar CU1 y CU2 en sesiones separadas; cerrar identidad y contrato de lectura de CU2 antes de importar marcas reales en CU3. CU1 no bloquea CU2 ni es requisito obligatorio de CU3. El cálculo local y pruebas con fixtures de CU3 pueden avanzar sin red.
 
-No crear tres mecanismos de autenticación ni tres clientes divergentes. La primera sesión que diseñe el conector debe dejar contrato, límites y evidencia reutilizables; las siguientes inspeccionan esa implementación y amplían lo necesario. No asumir que ya existe. Coordinar nombres de recursos, versiones y cambios en documentos compartidos para evitar pisar trabajo de otras sesiones.
+CU0 define el mecanismo compartido de autenticación y lectura que CU1, CU2 y CU3 requieren para consultar Clock. El diseño está en revisión y su implementación sigue pendiente. Cada consumidor incorporará la misma instancia de backend en su propia entrega. Coordinar nombres de recursos, versiones y cambios en documentos compartidos para evitar pisar trabajo de otras sesiones.
 
 ## Evidencia disponible
 
