@@ -64,3 +64,7 @@ La aprobación comprende la composición mensual en la ficha, filtros, resumen, 
 Quedan fuera de la UI de producto la barra Revisión visual, selector Estado de prueba, identidad/datos ficticios y avisos propios de la demostración. El reloj fijo, datos preasignados, almacenamiento en memoria, rango 0–180 y navegación deshabilitada son límites de la maqueta. No deben copiarse como reglas o arquitectura.
 
 Continuar con la [preparación de especificaciones y conexión](../../../technical/registro-horas-preparacion.md), sin repetir las decisiones ya aprobadas.
+
+## Evolución tras discovery del 23/11/2026
+
+La [iniciativa 010](../../../specs/010-time-records/spec.md) consolida Q1–Q31 cerrados. Al implementar, adaptar la maqueta para horario propio editable con herencia inicial única, originales inmutables (sin sustitución manual de marcas reales), presentación/cálculo por minutos sin segundos, saldos informativos y excepciones/egreso. Los segundos visibles en las capturas o la lógica predefinida anterior describen la demostración histórica, no prevalecen sobre las reglas posteriores. No se creó una revisión nueva de MagicPath por esta documentación.

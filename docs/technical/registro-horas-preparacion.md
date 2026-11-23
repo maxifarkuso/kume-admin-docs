@@ -1,5 +1,7 @@
 # Registro de horas — Preparación de especificaciones y conexión
 
+> **Continuación por caso de uso:** [CU1 horarios](../functional/softwareclock/sincronizar-horarios.md), [CU2 empleado](../functional/softwareclock/sincronizar-empleado.md), [CU3 horas](../functional/softwareclock/registro-horas.md). [Índice y prompts](../functional/softwareclock/README.md). La documentación anterior conserva evidencia y contexto; los turnos ya tienen muestra de respuesta documentada.
+
 Fecha: 16 de noviembre de 2026. Estado: documentación de continuidad tras aprobación de reglas e interfaz por Maxi. No es una especificación técnica terminada ni evidencia de integración implementada.
 
 ## Punto de partida
@@ -18,13 +20,13 @@ Maxi aprobó el prototipo y pidió documentar todas las decisiones para comenzar
 
 ## Decisiones cerradas que no deben reabrirse
 
-La fuente de detalle sigue siendo el documento funcional, sin duplicar aquí sus tablas o endpoints. Para el traspaso, están resueltos: revisión de asistencia sin liquidación salarial; pantalla por maestra dentro de su ficha; referencia en cursos KUME; bloques y pausas explícitos; interpretación sugerida sin inventar faltantes; margen configurable inicial de 60 minutos; revisión de ambigüedades sin descartar eventos; ajustes exclusivamente administrativos, locales a KUME, con motivo siempre opcional y auditoría; consulta al abrir/cambiar mes y actualización manual; totales separados y cómputo solo de tramos completos no ambiguos.
+La fuente de detalle sigue siendo el documento funcional, sin duplicar aquí sus tablas o endpoints. Para el traspaso, están resueltos: revisión de asistencia sin liquidación salarial; pantalla por maestra dentro de su ficha; horario laboral propio por maestra con vigencias, bloques semanales y excepciones por fecha (actualización Q1–Q8 del 23/11); bloques y pausas explícitos; interpretación sugerida sin inventar faltantes; margen configurable inicial de 60 minutos; revisión de ambigüedades sin descartar eventos; ajustes exclusivamente administrativos, locales a KUME, con motivo siempre opcional y auditoría; consulta al abrir/cambiar mes y actualización manual; totales separados y cómputo solo de tramos completos no ambiguos.
 
 La aprobación visual corresponde a la revisión `473077607060094976`, componente `473074931341623296`, proyecto MagicPath `473074895715196928`. No obliga a copiar el código de demostración al frontend ni a reproducir herramientas de revisión dentro del producto.
 
 ## Entregables de la etapa de especificación
 
-Preparar una iniciativa en `docs/specs` siguiendo la organización existente, al comenzar esa etapa. Esta guía no asigna un número de iniciativa ni crea documentos vacíos.
+Preparar una iniciativa en `docs/specs` siguiendo la organización existente, al comenzar esa etapa. Actualización del 23/11: iniciativa [010-time-records](../specs/010-time-records/spec.md) preparada con especificación funcional, propuesta técnica, plan y tareas; esta guía queda como contexto de discovery.
 
 1. **Especificación funcional:** historias, vocabulario de marca original, asignación de evento, ajuste, bloque y tramo confirmado; criterios de aceptación trazables a las decisiones aprobadas.
 2. **Especificación técnica:** ciclo de importación, adaptador de Clock, gestión backend del token, normalización temporal/documental, persistencia, auditoría, concurrencia y cálculo de estados/horas. Presentar alternativas para los pendientes que afecten reglas de negocio.
@@ -38,7 +40,7 @@ No agregar una dependencia de producción ni alterar un contrato público por in
 
 | Tema | Trabajo necesario antes de cerrar el diseño |
 | --- | --- |
-| Horarios históricos | Diseñar vigencias o snapshots compatibles con asignaciones actuales sin historial; acordar desde qué fecha se puede interpretar con certeza |
+| Horarios históricos | Q1/Q4 aprobados: horarios propios con inicio de vigencia; antes de la primera referencia no inferir. Diseñar persistencia y carga histórica explícita |
 | Bloques y margen | Definir dónde se configuran, quién los modifica dentro de administración y su alcance; no convertir el rango ficticio 0–180 en límite de negocio |
 | Interpretación ambigua | Especificar candidatos que se solapan, igualdad de horas, eventos fuera del margen, marcas excedentes y cambios de estado; no adoptar automáticamente «el más cercano» |
 | Identidad de eventos | Comprobar estabilidad y alcance de `code`; decidir clave de importación sin descartar dos eventos válidos con igual hora |
@@ -47,7 +49,7 @@ No agregar una dependencia de producción ni alterar un contrato público por in
 | Mes consultado | Confirmar límites inclusivos, cobertura, orden y posible truncamiento; una respuesta larga no demuestra integridad |
 | Token y fallos | Confirmar vencimiento, renovación, revocación y permisos; contemplar errores HTTP y errores dentro de HTTP 200 |
 | Reimportación | Diseñar idempotencia y detección de eventos modificados/tardíos; preservar auditoría y ajustes locales |
-| Conflicto con ajuste | Resolver qué se muestra al aparecer una marca original que coincide o contradice una hora manual; no sobrescribir automáticamente |
+| Conflicto con ajuste | Q3/Q5 aprobados: reemplazar hora manual por marca Clock únicamente con correspondencia inequívoca, auditar; ambigüedad conserva ajuste y exige revisión |
 | Versionado | Definir recurso propietario de la versión y rechazo de escrituras obsoletas compatible con el control optimista vigente |
 | Caché y consulta fallida | Definir unidad de caché por persona/mes, consulta concurrente, actualización atómica y antigüedad visible; preservar última consulta exitosa |
 
@@ -79,3 +81,21 @@ Primero especificar el comportamiento pendiente y validar el contrato real de Cl
 El acceso básico a Clock ya fue validado manualmente por Maxi: no reiniciar la búsqueda de API key. El mecanismo comprobado es usuario API con Basic para obtener token y Bearer para consultar asistencias, en Portal del Empleado. Las próximas pruebas se enfocan en lo todavía desconocido.
 
 Estado al entregar esta documentación: reglas e interfaz aprobadas, conectividad básica comprobada por el usuario, fuentes documentales reconciliadas; especificaciones completas, contrato interno, persistencia e integración del producto pendientes. No se marca completo el paso 4 general ni se ejecutan migraciones o despliegues por documentar esta aprobación. Maxi autorizó posteriormente commit y push de la documentación.
+
+## Discovery retomado — 23 de noviembre de 2026
+
+Q1–Q31 resueltos en conversación: las actualizaciones y ejemplos pertenecen a [reglas funcionales](../functional/registro-horas.md). Cambios principales frente al prototipo inicial: horario laboral propio con vigencias y excepciones; reemplazo automático acotado de hora manual por marca real; comparación informativa de tiempo adicional/faltante con saldo neto y parcialidad. La composición inicial sigue aprobada, pero estas ampliaciones requieren adaptación y revisión; no se modificó MagicPath ni se implementaron contratos por registrarlas.
+
+Q13–Q17 resuelven trabajo en fechas sin jornada, truncamiento al minuto y agregación por intervalos con saldo mensual neto. Q18/Q19 exigen confirmación de trabajo sin pausa conservando la referencia prevista y registrando los intervalos reales por separado. Siguen pendientes el diseño técnico de editores/configuración, el algoritmo conforme la regla inequívoca aprobada y las validaciones del proveedor. No cerrar las especificaciones mientras estos puntos estén sin resolver.
+
+Q20/Q21 fijan editor en Registro de horas y herencia de cursos exclusivamente para precarga inicial. Q22/Q25 definen confirmación de no trabajo y clasificación con causa opcional: licencia/enfermedad sin faltante, Otro con faltante confirmado. Q23 prohíbe modificar marcas Clock; Q24 mantiene meses abiertos; Q26 exige interpretación única o revisión. Detalle en la fuente funcional. Q27/Q28 resuelven margen general con vigencias y reproceso retroactivo confirmado; pendientes comprobaciones del proveedor; reglas aprobadas no acreditan contratos ni implementación.
+
+## Balance tras Q31
+
+Q27–Q31: margen global con vigencias; revisión de jornadas de maestras inactivas sin reactivación; egreso inclusivo; eventos posteriores al egreso conservados para revisión y excluidos de cálculos automáticos. Detalle propietario en reglas funcionales.
+
+Maxi confirmó expresamente el cierre del discovery funcional después de Q31. No dar por realizadas las validaciones técnicas pendientes. La siguiente etapa prepara especificación funcional, especificación técnica, plan y tareas, y diseña contratos internos y persistencia. La validación de Clock sigue abierta: filtro por documento, zona horaria, identidad estable de eventos, límites/cobertura de consulta, expiración/renovación y errores. Son hechos a investigar y probar, no decisiones a resolver por recomendaciones al usuario.
+
+## Continuación activa tras confirmación de Maxi
+
+Discovery funcional cerrado el 23/11/2026. Continuar desde [spec](../specs/010-time-records/spec.md), [diseño técnico propuesto](../specs/010-time-records/technical-spec.md), [plan](../specs/010-time-records/plan.md) y [tareas](../specs/010-time-records/tasks.md). Primero revisar propuesta contractual y validar Clock; las menciones anteriores a especificaciones aún sin crear son el estado histórico previo a esta entrega. No se implementó ni ejecutó una conexión real por preparar la documentación.

@@ -206,3 +206,7 @@ No reabras decisiones ya registradas salvo que encuentres una contradicción con
 ## Regla general de interfaz aprobada
 
 Maxi autorizó consolidar y publicar todos los acuerdos gráficos como reglas comunes de KUME Admin. [Sistema visual](sistema-visual.md) es la fuente propietaria para pantallas actuales y futuras. Gastos conserva el papel de piloto aprobado; aplicación al código, plan de extensión y cierre del paso 4 siguen siendo etapas distintas.
+
+## Registro de horas — continuidad al 23/11/2026
+
+Discovery Q1–Q31 cerrado por Maxi; [especificación](../specs/010-time-records/spec.md) y propuesta técnica/plan/tareas preparados. La maqueta de noviembre conserva su aprobación inicial. Horario laboral con vigencias/excepciones, saldos y reglas de inmutabilidad/egreso requieren adaptación del producto; no se modificó MagicPath ni se aprobó una captura nueva en esta fase. No cerrar el paso 4 general.

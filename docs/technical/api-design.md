@@ -265,3 +265,7 @@ La [API externa de SoftwareClock](softwareclock-api.md) permite autenticación y
 ## Personal — 20 de noviembre de 2026
 
 El listado de Personal incluye en cada fila un resumen de destinos y turnos. La API devuelve una lista vacía si no hay asignaciones. El campo es opcional en OpenAPI para admitir una actualización escalonada. El rol `administrative` corresponde a Administrativa.
+
+## Registro de horas — propuesta contractual del 23 de noviembre de 2026
+
+La [propuesta técnica de iniciativa 010](../specs/010-time-records/technical-spec.md) concreta consultas, importación, revisión diaria, horarios y margen con versiones. Sus rutas/schemas son propuestas fuera del contrato canónico hasta revisión/aprobación; `openapi.yaml` no cambia en esta etapa. La confirmación de cierre funcional no acredita aprobación de un cambio público de API.

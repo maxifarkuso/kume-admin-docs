@@ -158,3 +158,33 @@ Maxi aprueba las [reglas funcionales](../functional/registro-horas.md) y autoriz
 Autenticación Basic y posterior consulta Bearer de asistencias en Portal del Empleado respondieron HTTP 200 en las pruebas ejecutadas por Maxi. [Evidencia, endpoints y límites](../technical/softwareclock-api.md). El agente no realizó esas pruebas con credenciales. No se guardan secretos.
 
 Reglas principales: referencia de cursos KUME, bloques/pausas explícitos, sugerencias sin completar faltantes automáticamente, margen configurable inicial de 60 minutos, correcciones locales solo por administración, motivo siempre opcional e historial. Los contratos internos, persistencia y vigencia histórica se diseñarán antes de implementar. [Maqueta y estado](../ui/maquetas/registro-horas/README.md). Maxi aprobó visualmente la interfaz después de la entrega y solicitó consolidar la documentación para comenzar especificaciones y conexión. [Preparación de la siguiente etapa](../technical/registro-horas-preparacion.md). Contratos internos y persistencia pendientes; sin cambios de OpenAPI ni migraciones. Maxi autorizó posteriormente commit y push de esta documentación.
+
+## Registro de horas: discovery Q1–Q12 — 23 de noviembre de 2026
+
+Maxi aprobó horarios laborales por maestra con bloques semanales, vigencias y excepciones por fecha; los cursos pasan a ser contexto. Un horario retroactivo requiere vista de días afectados y confirmación de recálculo. Se permite asignación administrativa de marcas fuera del margen. Una marca real inequívoca de Clock reemplaza la hora manual usada en KUME, conservando historial; con varias candidatas se mantiene revisión.
+
+Comparación exclusivamente informativa: tiempo adicional registrado, tiempo faltante registrado y saldo neto; sin decisiones de pago. Jornadas incompletas conservan tramos confirmados, saldo pendiente y resumen mensual parcial. Motivo siempre opcional. [Fuente funcional y pendientes](../functional/registro-horas.md). Discovery todavía abierto; sin cambio de OpenAPI, base, código de producto o canvas por esta actualización documental.
+
+## Registro de horas: discovery Q13–Q18 — 23 de noviembre de 2026
+
+Maxi aprueba jornada excepcional antes de calcular saldo de días sin horario; truncar cada marca al minuto para presentación y cálculo conservando original íntegro; acumular adicional y faltante con saldo neto mensual; comparar intervalos respecto del horario previsto incluso si sus duraciones coinciden. No inferir trabajo durante la pausa por tener solo marcas de los extremos: requiere confirmación administrativa. Pendiente precisar efecto de esa confirmación sobre la referencia prevista, para no eliminar el tiempo adicional por cambiar el horario. [Fuente funcional](../functional/registro-horas.md). Sin implementación ni cambio del canvas por registrar las decisiones.
+
+## Registro de horas: discovery Q19–Q26 — 23 de noviembre de 2026
+
+Confirmación de pausa trabajada conserva jornada prevista y diferencia adicional. Editor Horario laboral en la pestaña de horas; herencia inicial editable de cursos, sin vínculo posterior. Marcas Clock inmutables; solo asignar originales y completar faltantes. Confirmación de no trabajo: Licencia / Enfermedad / Otro y causa opcional; las dos primeras no generan faltante y Otro sí. Meses abiertos y ambigüedades solo resueltas automáticamente con combinación única. [Reglas propietarias](../functional/registro-horas.md). Sin implementación, cambios contractuales o cierre del discovery por este registro.
+
+## Registro de horas: discovery Q27–Q31 — 23 de noviembre de 2026
+
+Maxi aprueba margen general con vigencias y confirmación de reproceso histórico, revisión de jornadas anteriores de fichas inactivas sin reactivación, egreso inclusivo y conservación de marcas posteriores como incidencia excluida de cálculo automático. [Reglas funcionales](../functional/registro-horas.md) y [balance para especificar](../technical/registro-horas-preparacion.md). Pendiente presentar consolidación para cierre funcional; validaciones del proveedor siguen abiertas, sin implementación acreditada.
+
+## Registro de horas: cierre funcional y especificaciones — 23 de noviembre de 2026
+
+Maxi confirma cierre de discovery Q1–Q31 y avance con especificaciones/plan, manteniendo validaciones de Clock como pendientes explícitos. [Iniciativa 010](../specs/010-time-records/spec.md), [propuesta técnica](../specs/010-time-records/technical-spec.md), [plan](../specs/010-time-records/plan.md) y [tareas](../specs/010-time-records/tasks.md) preparados. Diseño HTTP, recursos de versión y modelo persistente son propuestas revisables; no se modificó OpenAPI, ejecutó migración ni implementó el producto. No hay validación nueva de Clock ni cierre del paso 4 general por esta confirmación.
+
+## SoftwareClock: separación de casos de uso — 23 de noviembre de 2026
+
+Maxi pide documentar por separado CU1 sincronizar workshifts/horarios, CU2 sincronizar empleado y CU3 registro de horas, con prompts para sesiones independientes. [Índice y fronteras](../functional/softwareclock/README.md). CU2 es dependencia del vínculo para importación real en CU3; CU1 es catálogo descriptivo y no requisito obligatorio para calcular con horario propio. No cambia el cierre Q1–Q31 ni aprueba automáticamente plantillas externas, identidad del proveedor, contratos nuevos o implementación. Tres documentos de casos y tres prompts preparados; conservar fuentes técnicas y propuesta 010 como contexto, sin copiarlas a código por inferencia.
+
+## Publicación documental de SoftwareClock — 23 de noviembre de 2026
+
+Maxi autoriza subir toda la documentación preparada: discovery Q1–Q31, iniciativa 010, hallazgos de empleados/turnos, tres casos de uso y tres prompts. Publicación documental en main; no autoriza por sí misma implementación, cambio de contrato canónico, migraciones ni despliegue. Se verificaron enlaces relativos, Markdown y ausencia de tokens JWT en los archivos modificados.

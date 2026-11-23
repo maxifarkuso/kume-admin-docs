@@ -320,3 +320,7 @@ Solicitud aprobada; implementación y verificación en branch separado. Ver [esp
 ## Personal — 20 de noviembre de 2026
 
 El listado de Personal muestra los destinos y turnos debajo del nombre. Las maestras sin destinos muestran «Sin asignación». Administrativa se agrega como rol laboral al registrar o editar una ficha.
+
+## Registro de horas — cierre funcional del 23 de noviembre de 2026
+
+Maxi confirma Q1–Q31 y avanzar a especificaciones y plan. La [iniciativa 010](../specs/010-time-records/spec.md) amplía el alcance de diseño con horario laboral independiente (precarga inicial de cursos), vigencias/excepciones, marcas Clock inmutables, revisión histórica, diferencias informativas y egreso inclusivo. Fuente propietaria: [reglas funcionales](registro-horas.md). Se conserva la exclusión de liquidación salarial y escritura a Clock; integración real, contrato interno y persistencia todavía no implementados. No cierra el paso 4 general.

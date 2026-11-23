@@ -1,5 +1,7 @@
 # SoftwareClock — Hallazgos de integración
 
+> **Continuación por caso de uso:** [CU1 horarios](../functional/softwareclock/sincronizar-horarios.md), [CU2 empleado](../functional/softwareclock/sincronizar-empleado.md), [CU3 horas](../functional/softwareclock/registro-horas.md). [Índice y prompts](../functional/softwareclock/README.md). La documentación anterior conserva evidencia y contexto; los turnos ya tienen muestra de respuesta documentada.
+
 Fecha: 16 de noviembre de 2026. Evidencia: colección adjunta `Clock Api V.1.0.0.postman_collection.json` (actualizada el 12/10/2025), pruebas ejecutadas por Maxi y ejemplo ficticio de respuesta. No se reproducen credenciales, tokens ni datos reales. No se guardó la colección privada en el repositorio.
 
 ## Estado de validación
@@ -90,7 +92,7 @@ No ejecutar con `set -x` ni registrar respuestas de autenticación. En producto,
 | Método y ruta externa | Parámetros o utilidad | Evidencia |
 | --- | --- | --- |
 | GET `/api/Attendance/getAttendances` | `branchName`, `groupName`, `document`, `start`, `end`; fechas documentadas Y-m-d | Consulta por fechas probada por Maxi; filtros restantes pendientes |
-| GET `/api/Employees/employees` | `branchName`, `groupName` | Documentada, no probada |
+| GET `/api/Employees/employees` | `branchName`, `groupName` | Maxi aporta un registro anonimizado el 23/11; estructura exterior/cobertura y filtros pendientes |
 | GET `/api/Employees/employee-by-rut` | `document` | Documentada, no probada |
 | GET `/api/Reports/getAttendancesRecords` | `branchName`, `groupName`, `document`, `start`, `end` | Documentada, semántica de salida no examinada |
 | GET `/api/Employees/getEmployeeAbsences` | `document`, `filterFrom`, `filterTo` | Documentada, no probada; no confundir falta de marca con ausencia |
@@ -147,3 +149,15 @@ La [FAQ oficial de SoftwareClock](https://softwareclock.com/faqs/) declara marca
 ## Continuidad tras aprobación de interfaz
 
 Maxi aprobó la interfaz el 16/11/2026 y pidió consolidar decisiones para comenzar especificaciones y conexión. La [guía de preparación](registro-horas-preparacion.md) vincula validaciones del proveedor con los diseños funcional, técnico, contractual y de pruebas necesarios. Los HTTP 200 registrados siguen siendo pruebas manuales del usuario, no conexión incorporada al producto. No se necesita repetir la investigación de autenticación desde cero.
+
+## Validación pendiente para iniciativa 010
+
+El cierre funcional del 23/11/2026 no modifica las evidencias de este documento. La [matriz V01–V07](../specs/010-time-records/tasks.md) organiza validaciones reales de documento, tiempo, identidad, cobertura, token, errores y cambios tardíos. No hubo nuevas llamadas autenticadas al proveedor durante esta preparación documental.
+
+## Respuesta de empleados — 23/11/2026
+
+Maxi aporta un objeto anonimizado con `id`, `code`, `document`, nombres, `external_id` nulo y `workshiftCode`/`workShiftName`. [Mapeo propuesto, secuencias y consulta de turnos](softwareclock-employee-mapping.md). No se confirmó estabilidad/alcance de identificadores; la respuesta de turnos se registra a continuación; no confundir código de empleado con código de asistencia. El objeto individual no acredita ausencia de paginación.
+
+## Catálogo de turnos recibido — 23/11/2026
+
+Maxi comparte array de getWorkShifts con `code`, `name`, `type`, incluidos códigos vacíos para varios turnos. Tipos Fijo/Libre y referencia V4 coincidente con la muestra de empleado. No hay bloques/días/pausas/vigencias estructurados en esa respuesta. Se confirma forma de esta muestra, no estabilidad de identidad ni ausencia de endpoints adicionales. [Diseño de importación administrativa y secuencia](softwareclock-employee-mapping.md). No usar nombres como reglas de cálculo ni código vacío como clave única.

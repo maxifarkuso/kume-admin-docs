@@ -338,3 +338,7 @@ La exclusión histórica de CLOCK aplica a la implementación de Personal V1. Se
 ## Personal — 20 de noviembre de 2026
 
 La restricción de roles de `staff_member` admite además `administrative`. La migración conserva todos los roles y fichas existentes.
+
+## Registro de horas — modelo propuesto del 23 de noviembre de 2026
+
+[Iniciativa 010](../../specs/010-time-records/technical-spec.md) propone revisiones de horarios/margen, excepciones, eventos originales y sus revisiones, diarios versionados, auditoría e importaciones. No se crean tablas/migraciones por esta propuesta; identidad externa y temporal dependen de validar Clock. Debe coordinarse con Personal para cambios de documento/egreso sin pérdida histórica. Revisar modelo antes de ampliar esta fuente canónica o aplicar esquema.
