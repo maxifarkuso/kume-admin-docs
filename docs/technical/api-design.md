@@ -280,7 +280,7 @@ Maxi dio conformidad a las rutas de importación propuestas. El detalle de DTO, 
 | POST | `/api/v1/workshift-import-previews` | Leer el origen configurado y preparar una vista previa con filas, coincidencias, ambigüedades y vencimiento. |
 | POST | `/api/v1/workshift-import-previews/{previewId}/confirmation` | Confirmar altas o vinculaciones explícitas sobre la vista revisada. Devuelve el resultado de importación y admite el reenvío de decisiones idénticas. |
 
-El inicio y fin son datos opcionales de KUME y se conservan al reimportar. La operación para editar ese par por separado y su DTO aún deben definirse. La importación actualiza referencias de catálogo. El horario de una maestra se guarda con su propio flujo.
+El inicio y fin son datos opcionales de KUME y se conservan al reimportar. La edición del par usa `PATCH /api/v1/workshift-references/{referenceId}`, con ambas horas y la versión observada. La importación actualiza referencias de catálogo. El horario de una maestra se guarda con su propio flujo.
 
 ### Horario propio de una maestra
 
@@ -307,4 +307,4 @@ El inicio y fin son datos opcionales de KUME y se conservan al reimportar. La op
 | POST | `/api/v1/time-record-policy-previews` | Preparar un cambio de margen y mostrar el alcance de un eventual reproceso. |
 | POST | `/api/v1/time-record-policy-changes` | Confirmar la vigencia y el reproceso revisado, cuando corresponda. |
 
-Las rutas de horario propio, marcas, revisión y margen provienen de la [propuesta técnica de registro de horas](../specs/010-time-records/technical-spec.md#contrato-interno-propuesto-aún-fuera-de-openapi). El [índice de casos](../functional/softwareclock/README.md) describe las dependencias con autenticación y vinculación de empleados. Este apartado documenta el diseño. Para llevarlo al contrato público queda reconciliar esquemas, códigos de error y versiones en `openapi.yaml`.
+Las rutas de horario propio, marcas, revisión y margen provienen de la [propuesta técnica de registro de horas](../specs/010-time-records/technical-spec.md#contrato-interno-propuesto-aún-fuera-de-openapi). El [índice de casos](../functional/softwareclock/README.md) describe las dependencias con autenticación y vinculación de empleados. La rama CU1 incorpora catálogo, importación y edición de horas locales en `openapi.yaml`. Horario personal, marcas y margen conservan su estado de propuesta.

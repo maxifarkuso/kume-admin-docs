@@ -34,11 +34,12 @@ Si el workshift de una maestra se resuelve de forma inequívoca a una referencia
 
 Ejemplo ficticio. La primera consulta trae dos filas sin código, «Turno A» y «Turno B», ambas de tipo Fijo. Se crean dos UUID. En una segunda consulta el orden se invierte y «Turno B» pasa a «Turno B revisado». A se muestra como repetida. B queda sin correspondencia exacta hasta que administración la vincula al segundo UUID. La etiqueta local y cualquier configuración de B se conservan. Si además llegan dos copias idénticas de A, se muestra la multiplicidad y la correspondencia previa se conserva sin aplicarla a ninguna copia.
 
-## Contrato HTTP propuesto para revisión
+## Contrato HTTP de CU1
 
 | Operación candidata | Entrada y salida |
 | --- | --- |
 | GET `/api/v1/workshift-references` | Listado local con UUID, etiqueta local, horas locales opcionales, metadatos externos vigentes y versión, aunque Clock esté desconectado. |
+| PATCH `/api/v1/workshift-references/{referenceId}` | Guarda el par local y exige la versión observada. Enviar ambas horas como `HH:mm` o ambas nulas. |
 | POST `/api/v1/workshift-import-previews` | Consulta Clock desde backend para la conexión configurada. Devuelve ID de vista, vencimiento, fecha y filas con ID efímero, clasificación, motivos y candidatos. |
 | POST `/api/v1/workshift-import-previews/{previewId}/confirmation` | Recibe decisiones por ID de fila, acción `create` o `link` y, para `link`, UUID destino y versión observada. Omitir una fila elegible equivale a dejarla pendiente. Exigir al menos una decisión aplicable. Una vista sin cambios se cierra sin confirmar. Devuelve el resultado persistido con recuentos y referencias afectadas. |
 
@@ -51,3 +52,5 @@ La llamada externa termina antes de crear la vista previa. Capturar catálogo, c
 El ID de vista previa es la clave de una única confirmación. Si ya se confirmó, consultar primero el resultado, previa comprobación de autorización y propiedad. El mismo conjunto de decisiones, sin importar su orden, devuelve el resultado guardado durante su retención, incluso si la vista temporal venció. Un conjunto distinto genera conflicto. Limitar el plazo de vista, volumen y retención de confirmaciones según el uso revisado. Tras purgar la vista o su resultado, el ID no habilita una nueva confirmación.
 
 [Especificación](spec.md) · [Plan](plan.md) · [Tareas](tasks.md)
+
+El [contrato de la rama de CU1](../../../openapi.yaml) usa un máximo de 40 decisiones por confirmación, una vista vigente por 15 minutos y retención de confirmaciones de 7 días para reenvíos. Las filas externas se limitan a 1.000 por lectura y a 256 caracteres por campo. La cobertura del catálogo sigue sin demostrarse y la ausencia es solo informativa.
