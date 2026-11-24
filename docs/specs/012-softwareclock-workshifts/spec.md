@@ -4,6 +4,10 @@ Maxi solicitó Administración → Horarios laborales → Importar desde Clock. 
 
 La entrega propuesta es un catálogo descriptivo local con importación manual y vista previa. Cada referencia tiene identidad propia de KUME. Las etiquetas de Clock se presentan como texto, incluso si contienen horas. Maxi propuso un par de horas locales opcionales y su uso como precarga de una ficha sin horario propio. El flujo de edición y confirmación personal queda en revisión.
 
+## Referencia visual
+
+[Maqueta de MagicPath y copia de referencia](../../ui/maquetas/importar-horarios-clock/README.md). Permite revisar el catálogo, la selección de altas y correspondencias y el resultado de una confirmación con datos ficticios. La edición de horas locales pertenece a una revisión posterior.
+
 ## Criterios de aceptación propuestos
 
 | ID | Dado / cuando | Resultado esperado |
