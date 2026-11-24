@@ -1,17 +1,17 @@
 # SoftwareClock — Casos de uso y continuidad
 
-Fecha: 23 de noviembre de 2026. Maxi solicita separar lo descubierto en tres casos de uso y preparar tres prompts para sesiones independientes. Documentación de diseño, no implementación. Las reglas Q1–Q31 permanecen aprobadas; las ampliaciones posteriores de catálogo/vinculación se distinguen de las propuestas todavía pendientes.
+Fecha: 23 de noviembre de 2026. Maxi solicita separar lo descubierto en tres casos de uso y preparar tres prompts para sesiones independientes. Índice de diseño actualizado para CU2 el 24 de noviembre de 2026. Para el estado de implementación consultar cada caso. Las reglas Q1–Q31 permanecen aprobadas; las ampliaciones posteriores de catálogo/vinculación se distinguen de las propuestas todavía pendientes.
 
 | Caso de uso | Fuente del caso | Continuación |
 | --- | --- | --- |
 | CU0 — Autenticación con SoftwareClock | [Caso de uso](autenticacion.md) | [Especificación y plan](../../specs/011-softwareclock-auth/plan.md) |
 | CU1 — Sincronizar workshifts / catálogo de horarios laborales | [Caso de uso](sincronizar-horarios.md) | [Especificación y plan](../../specs/012-softwareclock-workshifts/plan.md) · [Prompt CU1](../../general/prompts/softwareclock/01-sincronizar-horarios.md) |
-| CU2 — Sincronizar empleado con Clock | [Caso de uso](sincronizar-empleado.md) | [Prompt CU2](../../general/prompts/softwareclock/02-sincronizar-empleado.md) |
+| CU2 — Sincronizar empleado con Clock | [Caso de uso](sincronizar-empleado.md) | [Especificación y plan](../../specs/013-softwareclock-employee/plan.md) · [Prompt CU2](../../general/prompts/softwareclock/02-sincronizar-empleado.md) |
 | CU3 — Registro de horas por empleado | [Caso de uso](registro-horas.md) | [Prompt CU3](../../general/prompts/softwareclock/03-registro-horas.md) |
 
 ## Fronteras y dependencias
 
-CU1 importa referencias de turnos. CU2 vincula identidades. CU3 importa eventos y calcula trabajo respecto de un horario KUME. Sincronizar no significa escribir datos en Clock ni mantener herencia viva.
+CU1 importa referencias de turnos. CU2 vincula identidades y copia un horario inicial editable cuando puede resolver el workshift asignado y su definición local. CU3 importa eventos y calcula trabajo respecto de un horario KUME. Sincronizar no significa escribir datos en Clock ni mantener herencia viva.
 
 ```mermaid
 flowchart LR
@@ -19,12 +19,12 @@ flowchart LR
     AUTH --> CU2[CU2 Vínculo de empleado]
     AUTH --> CU3[CU3 Registro de horas]
     CU2 -->|Vínculo persistente requerido para importación real| CU3
-    CU1 -.->|Posible plantilla inicial: propuesta pendiente| LOCAL[Horario laboral propio KUME]
-    COURSES[Cursos asignados] -->|Precarga inicial aprobada, luego independiente| LOCAL
+    CU1 -.->|Correspondencia y definición estructurada| CU2
+    CU2 -->|Copia inicial confirmada| LOCAL[Horario laboral propio KUME]
     LOCAL --> CU3
 ```
 
-Orden sugerido: estudiar CU1 y CU2 en sesiones separadas; cerrar identidad y contrato de lectura de CU2 antes de importar marcas reales en CU3. CU1 no bloquea CU2 ni es requisito obligatorio de CU3. El cálculo local y pruebas con fixtures de CU3 pueden avanzar sin red.
+Orden sugerido: estudiar CU1 y CU2 en sesiones separadas; cerrar identidad y contrato de lectura de CU2 antes de importar marcas reales en CU3. CU1 es requisito para proponer el horario inicial en CU2. La vinculación de identidad puede completarse con horario pendiente. CU3 usa el horario propio vigente. El cálculo local y pruebas con fixtures de CU3 pueden avanzar sin red.
 
 CU0 define el mecanismo compartido de autenticación y lectura que CU1, CU2 y CU3 requieren para consultar Clock. El backend revisado contiene un cliente compartido. CU1 propone reutilizar esa instancia y deja documentado el estado de verificación en su [propuesta técnica](../../specs/012-softwareclock-workshifts/technical-spec.md). Coordinar nombres de recursos, versiones y cambios en documentos compartidos para evitar pisar trabajo de otras sesiones.
 

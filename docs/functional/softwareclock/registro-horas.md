@@ -16,7 +16,7 @@ Muestra de marca: code, external_id nulo, document, full_name, group, device, is
 
 ## Reglas consolidadas que deben preservarse
 
-- Horario laboral propio por maestra, bloques semanales con vigencia y excepciones por fecha. Precarga inicial editable desde cursos, sin herencia posterior. Editor Horario laboral dentro de la pestaña. Plantillas externas son propuesta pendiente de CU1, no requisito de CU3.
+- Horario laboral propio por maestra, bloques semanales con vigencia y excepciones por fecha. Editor Horario laboral dentro de la pestaña. [CU2](sincronizar-empleado.md) usa el workshift asignado y su definición estructurada en CU1 para su propuesta inicial editable. CU3 usa la copia personal vigente.
 - Margen general de KUME inicial 60 minutos con vigencia. Reproceso retroactivo de margen/horario: vista de afectados, confirmación, auditoría y preservación de originales.
 - Solo interpretar automáticamente combinaciones inequívocas en orden sin reutilizar eventos; resto por revisar. Administración puede asignar originales fuera del margen, nunca modificar marcas Clock.
 - Completar faltantes manualmente, siempre con motivo opcional. Una marca nueva inequívoca para ese faltante reemplaza la hora manual usada, conservando historia; varias candidatas no sobrescriben silenciosamente.

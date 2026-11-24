@@ -2,7 +2,7 @@
 
 Maxi solicitó Administración → Horarios laborales → Importar desde Clock. El [caso de uso](../../functional/softwareclock/sincronizar-horarios.md) define flujo y secuencias. Esta especificación propone comportamiento verificable para revisión. Maxi confirmó acceso equivalente para Vicky y Maxi con sus cuentas KUME. El contrato HTTP, el modelo persistente y el diseño visual requieren revisión antes de implementar.
 
-La entrega propuesta es un catálogo descriptivo local con importación manual y vista previa. Cada referencia tiene identidad propia de KUME. Las etiquetas de Clock se presentan como texto, incluso si contienen horas. Maxi propuso un par de horas locales opcionales y su uso como precarga de una ficha sin horario propio. El flujo de edición y confirmación personal queda en revisión.
+La entrega propuesta es un catálogo descriptivo local con importación manual y vista previa. Cada referencia tiene identidad propia de KUME. Las etiquetas de Clock se presentan como texto, incluso si contienen horas. Maxi propuso un par de horas locales opcionales. La propuesta inicial personal pertenece a [CU2](../../functional/softwareclock/sincronizar-empleado.md) y requiere definición estructurada.
 
 ## Referencia visual
 
@@ -20,7 +20,7 @@ La entrega propuesta es un catálogo descriptivo local con importación manual y
 | CA6 | Se reenvía una confirmación idéntica tras perder la respuesta, o dos administradores confirman la misma versión | El reenvío recupera el resultado previo. La segunda operación incompatible recibe conflicto sin cambios parciales ni reintento automático. |
 | CA7 | Antes de importar existen horarios de maestras, excepciones, vigencias e historial | Tras primera importación, reimportación o fallo, sus valores y versiones son idénticos. Tampoco se emiten órdenes de recálculo. |
 | CA8 | Se confirma desde otra cuenta, con una vista previa vencida o con filas ajenas a la consulta | Se rechaza con el error correspondiente y se preserva el catálogo. El navegador no recibe token, credenciales ni errores crudos de Clock. |
-| CA9 | Se confirma una referencia sin bloques, incluso una de tipo Libre | La referencia es descriptiva. Solo las horas locales cargadas explícitamente pueden proponerse como precarga personal. |
+| CA9 | Se confirma una referencia sin bloques, incluso una de tipo Libre | La referencia es descriptiva. CU2 requiere una definición estructurada completa para proponer horario. |
 | CA10 | Una persona modifica la correspondencia de una referencia y vuelve a importar | Se conserva el historial de ambas observaciones. Solo la correspondencia vigente habilita «Ya observada»; recuperar una anterior exige revisión. |
 | CA11 | El catálogo trae código nulo u omitido, o una fila sin nombre o tipo | El código se trata como ausente para correspondencias. La fila sin nombre o tipo queda visible como pendiente y no se puede confirmar. |
 | CA12 | Una referencia tiene inicio y fin locales y se confirma una reimportación | Ambas horas quedan intactas. Las altas desde Clock las inicializan vacías. |

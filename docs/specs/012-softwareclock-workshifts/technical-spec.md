@@ -23,7 +23,7 @@ La conexión identifica la cuenta/empresa configurada, con ID interno independie
 
 Persistir inicio y fin como `TIME WITHOUT TIME ZONE` de precisión de minuto. Ambos quedan nulos al crear una referencia desde Clock. Proponer edición como un par completo o ambos vacíos, con formato `HH:mm` y fin posterior al inicio para el primer alcance de un bloque diurno. Los turnos que cruzan medianoche requieren una regla explícita antes de admitirse. La edición local usa la versión de la referencia. La confirmación de catálogo conserva ambos campos y solo escribe metadatos externos en una vinculación.
 
-Si el workshift de una maestra se resuelve de forma inequívoca a una referencia KUME con las dos horas, proponer ese par como bloque inicial editable al importar la ficha, siempre que todavía no tenga horario propio. Copiar los valores tras confirmación, sin vínculo vivo. Los días y la vigencia provienen de la configuración personal confirmada. Las pausas se completan si corresponden. Una referencia sin par completo o sin correspondencia inequívoca deja la precarga pendiente. Conservar la precarga desde cursos aprobada y revisar cómo presentar ambas fuentes si difieren. El flujo de ficha pertenece a su propia entrega y los horarios existentes se conservan.
+La decisión posterior de [CU2](../../functional/softwareclock/sincronizar-empleado.md) exige una definición local completa. El par de horas sirve como información del catálogo; la copia inicial editable requiere días, bloques y pausas explícitas. La configuración estructurada y la lectura versionada quedan por diseñar.
 
 ## Reglas de comparación
 

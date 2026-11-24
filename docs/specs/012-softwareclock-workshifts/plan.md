@@ -7,6 +7,6 @@ La primera entrega propuesta cubre el listado local y la importación manual de 
 3. Integrar navegación, listado, vista previa y estados en frontend. Verificar el flujo desde Administración con fixtures. Después, en un entorno autorizado, probar el GET ya comprobado y verificar que la confirmación solo escribe en el catálogo de KUME.
 4. Registrar evidencia y preparar la entrega. Las migraciones operativas, publicación y despliegue requieren sus autorizaciones vigentes.
 
-La investigación de detalle estructurado, cobertura e identidad externa puede continuar en paralelo. Revisar el par local de inicio y fin, su edición y la futura precarga personal como complemento de la importación de catálogo. El flujo de importación de fichas se especifica en su entrega propia.
+La investigación de detalle estructurado, cobertura e identidad externa puede continuar en paralelo. Revisar el par local de inicio y fin, su edición y el aporte del catálogo a la definición estructurada requerida por CU2. El flujo de importación de fichas se especifica en su entrega propia.
 
 [Especificación](spec.md) · [Propuesta técnica](technical-spec.md) · [Tareas](tasks.md)

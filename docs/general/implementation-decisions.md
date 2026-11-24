@@ -188,3 +188,18 @@ Maxi pide documentar por separado CU1 sincronizar workshifts/horarios, CU2 sincr
 ## Publicación documental de SoftwareClock — 23 de noviembre de 2026
 
 Maxi autoriza subir toda la documentación preparada: discovery Q1–Q31, iniciativa 010, hallazgos de empleados/turnos, tres casos de uso y tres prompts. Publicación documental en main; no autoriza por sí misma implementación, cambio de contrato canónico, migraciones ni despliegue. Se verificaron enlaces relativos, Markdown y ausencia de tokens JWT en los archivos modificados.
+
+## Fuente del horario inicial en CU2 — 24 de noviembre de 2026
+
+Maxi aprueba que CU2 use el workshift asignado en Clock y su definición estructurada en KUME para proponer el horario propio inicial. Esta decisión sustituye la precarga desde cursos para CU2. Si falta una correspondencia inequívoca o la definición está incompleta, se puede vincular la identidad con horario pendiente. Administración confirma una copia editable con vigencia y origen histórico. Las sincronizaciones posteriores solo actualizan metadata externa admitida. [Regla funcional](../functional/softwareclock/sincronizar-empleado.md) · [Propuesta de contrato y persistencia](../specs/013-softwareclock-employee/technical-spec.md).
+
+### CU2 · Alcance y habilitación acordados con Maxi
+
+- Primer hito: vinculación de identidad, persistencia de referencia externa y estado de horario pendiente. Segundo hito: propuesta editable cuando CU1 entregue una definición estructurada y KUME disponga del horario propio.
+- La confirmación con datos reales requiere evidencia de cobertura suficiente del listado y de estabilidad y unicidad del identificador dentro de la empresa. El desarrollo y las pruebas pueden avanzar con datos ficticios.
+- Un cambio de documento o una discrepancia de identidad suspende el uso del vínculo para nuevas importaciones y conserva el historial. El primer hito admite revalidar la misma identidad. Reemplazarla requiere una futura acción administrativa específica y auditada.
+- Hasta validar la conexión, ocultar la acción en el entorno real y bloquear preparación y confirmación en backend. Probar el flujo con datos ficticios.
+- Revalidar desde «Sincronizar empleado con Clock». Si una cédula corregida coincide de forma única con el mismo identificador en la misma empresa, una confirmación explícita crea una revisión. Las importaciones anteriores conservan su revisión original.
+- Maxi aprueba incorporar a OpenAPI la consulta del vínculo, la preparación y la confirmación del primer hito. La consulta respeta el acceso a la ficha. Preparar y confirmar requieren administración y ficha activa. La confirmación verifica versiones y guarda vínculo y auditoría en una transacción. El contrato de horario editable corresponde al segundo hito.
+- El token de CU0 determina la empresa. KUME usa una conexión lógica estable y no ofrece seleccionar ni cambiar de empresa en CU2.
+- La vista previa vence a los 15 minutos. Cambios de ficha, vínculo o conexión requieren una vista nueva. La repetición de una confirmación aplicada recupera su resultado sin duplicar la auditoría.

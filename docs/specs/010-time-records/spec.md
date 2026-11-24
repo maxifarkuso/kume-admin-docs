@@ -31,7 +31,7 @@ Se incluyen horario laboral propio con vigencias, excepciones por fecha, importa
 | ID | Comportamiento verificable | Discovery |
 | --- | --- | --- |
 | AC01 | Mes por defecto actual del negocio America/Montevideo; una fila por día, bloques, marcas y estado; conservar contexto al revisar | Vista aprobada |
-| AC02 | Botón Horario laboral precarga cursos asignados solo antes de definir el horario; permite editar antes de guardar; no mantiene vínculo ni propone actualizaciones posteriores | Q2, Q4, Q20–Q21 |
+| AC02 | El horario propio se puede editar antes de guardar y queda independiente. En [CU2](../../functional/softwareclock/sincronizar-empleado.md) la precarga inicial usa la definición estructurada del workshift asignado | Q2, Q4, Q20–Q21 |
 | AC03 | Bloques por día de semana y vigencia; antes de la primera referencia, importar sin inferir; permitir carga histórica explícita | Q1, Q4 |
 | AC04 | Excepción por maestra/fecha para licencia, enfermedad, feriado o jornada especial, con causa opcional; mantener horario semanal histórico | Q8, Q22, Q25 |
 | AC05 | Cambio retroactivo de horario muestra afectados y exige confirmación; conserva originales e historial y deja ajustes incompatibles por revisar | Q7 |
