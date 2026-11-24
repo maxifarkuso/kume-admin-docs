@@ -260,12 +260,51 @@ Solicitud aprobada; implementación y verificación en branch separado. Ver [esp
 
 ## SoftwareClock — investigación del 16 de noviembre de 2026
 
-La [API externa de SoftwareClock](softwareclock-api.md) permite autenticación y consulta básica, comprobadas por Maxi. Las [reglas del registro de horas](../functional/registro-horas.md) y su interfaz están aprobadas para avanzar a especificaciones y conexión; ver [preparación](registro-horas-preparacion.md). No hay todavía contrato interno KUME de horas: `openapi.yaml` se conserva sin rutas nuevas. Diseñar y revisar contrato, errores, caché y concurrencia antes de implementar consumidores.
+La [API externa de SoftwareClock](softwareclock-api.md) permite autenticación y consulta básica, comprobadas por Maxi. Las [reglas del registro de horas](../functional/registro-horas.md) y su interfaz están aprobadas para avanzar a especificaciones y conexión; ver [preparación](registro-horas-preparacion.md). El [diseño de API de horas](#horarios-laborales-y-registro-de-horas) reúne las rutas internas propuestas.
 
 ## Personal — 20 de noviembre de 2026
 
 El listado de Personal incluye en cada fila un resumen de destinos y turnos. La API devuelve una lista vacía si no hay asignaciones. El campo es opcional en OpenAPI para admitir una actualización escalonada. El rol `administrative` corresponde a Administrativa.
 
-## Registro de horas — propuesta contractual del 23 de noviembre de 2026
+## Horarios laborales y registro de horas
 
-La [propuesta técnica de iniciativa 010](../specs/010-time-records/technical-spec.md) concreta consultas, importación, revisión diaria, horarios y margen con versiones. Sus rutas/schemas son propuestas fuera del contrato canónico hasta revisión/aprobación; `openapi.yaml` no cambia en esta etapa. La confirmación de cierre funcional no acredita aprobación de un cambio público de API.
+La API de KUME expone referencias de horarios, horarios propios de cada maestra, registros diarios y políticas. Las rutas identifican recursos de KUME. El backend selecciona la conexión de origen configurada y usa el conector compartido para las lecturas externas. El navegador trabaja con identificadores y sesiones KUME. Todas las operaciones requieren sesión y las escrituras usan las guardas de mutación vigentes.
+
+### Catálogo e importación de turnos
+
+Maxi dio conformidad a las rutas de importación propuestas. El detalle de DTO, errores y persistencia se revisa en la [especificación técnica de CU1](../specs/012-softwareclock-workshifts/technical-spec.md).
+
+| Método | Ruta | Propósito |
+| --- | --- | --- |
+| GET | `/api/v1/workshift-references` | Listar referencias locales con UUID, etiqueta, horas locales opcionales, metadatos de origen y versión. Disponible aunque el origen esté desconectado. |
+| POST | `/api/v1/workshift-import-previews` | Leer el origen configurado y preparar una vista previa con filas, coincidencias, ambigüedades y vencimiento. |
+| POST | `/api/v1/workshift-import-previews/{previewId}/confirmation` | Confirmar altas o vinculaciones explícitas sobre la vista revisada. Devuelve el resultado de importación y admite el reenvío de decisiones idénticas. |
+
+El inicio y fin son datos opcionales de KUME y se conservan al reimportar. La operación para editar ese par por separado y su DTO aún deben definirse. La importación actualiza referencias de catálogo. El horario de una maestra se guarda con su propio flujo.
+
+### Horario propio de una maestra
+
+| Método | Ruta propuesta | Propósito |
+| --- | --- | --- |
+| GET | `/api/v1/staff-members/{staffMemberId}/labor-schedules` | Consultar horarios propios con sus vigencias y excepciones. |
+| POST | `/api/v1/staff-members/{staffMemberId}/labor-schedule-previews` | Validar un borrador y mostrar los días afectados antes de confirmar. |
+| POST | `/api/v1/staff-members/{staffMemberId}/labor-schedule-changes` | Confirmar el cambio sobre una vista previa vigente. |
+
+### Registro de horas, importación de marcas y revisión
+
+| Método | Ruta propuesta | Propósito |
+| --- | --- | --- |
+| GET | `/api/v1/staff-members/{staffMemberId}/time-records?month=YYYY-MM` | Consultar el mes, sus estados, totales, parcialidad y última actualización. |
+| POST | `/api/v1/staff-members/{staffMemberId}/time-record-imports` | Actualizar las marcas del mes consultando el origen asociado. Un fallo conserva el último estado local. |
+| PUT | `/api/v1/staff-members/{staffMemberId}/time-records/{date}` | Guardar la revisión del día con control de versión. |
+| GET | `/api/v1/staff-members/{staffMemberId}/time-records/{date}/history` | Consultar el historial de revisión del día. |
+
+### Política general de margen
+
+| Método | Ruta propuesta | Propósito |
+| --- | --- | --- |
+| GET | `/api/v1/time-record-policies` | Consultar el margen general y sus vigencias. |
+| POST | `/api/v1/time-record-policy-previews` | Preparar un cambio de margen y mostrar el alcance de un eventual reproceso. |
+| POST | `/api/v1/time-record-policy-changes` | Confirmar la vigencia y el reproceso revisado, cuando corresponda. |
+
+Las rutas de horario propio, marcas, revisión y margen provienen de la [propuesta técnica de registro de horas](../specs/010-time-records/technical-spec.md#contrato-interno-propuesto-aún-fuera-de-openapi). El [índice de casos](../functional/softwareclock/README.md) describe las dependencias con autenticación y vinculación de empleados. Este apartado documenta el diseño. Para llevarlo al contrato público queda reconciliar esquemas, códigos de error y versiones en `openapi.yaml`.
