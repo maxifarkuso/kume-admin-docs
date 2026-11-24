@@ -692,6 +692,124 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /api/v1/staff-members/{staffMemberId}/clock-link:
+    parameters:
+      - $ref: "#/components/parameters/StaffMemberId"
+    get:
+      tags: [Staff members]
+      operationId: getStaffClockLink
+      responses:
+        "200":
+          description: Resultado de CU2
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffClockLink"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/staff-members/{staffMemberId}/clock-sync-previews:
+    parameters:
+      - $ref: "#/components/parameters/StaffMemberId"
+    post:
+      tags: [Staff members]
+      operationId: prepareStaffClockLink
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StaffClockVersion"
+      responses:
+        "201":
+          description: Resultado de CU2
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffClockPreview"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "502":
+          description: No se pudo completar la sincronización
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: No se pudo completar la sincronización
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "504":
+          description: No se pudo completar la sincronización
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
+  /api/v1/staff-members/{staffMemberId}/clock-sync-previews/{previewId}/confirmation:
+    parameters:
+      - $ref: "#/components/parameters/StaffMemberId"
+      - in: path
+        name: previewId
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags: [Staff members]
+      operationId: confirmStaffClockLink
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StaffClockVersion"
+      responses:
+        "200":
+          description: Resultado de CU2
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffClockConfirmation"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "410":
+          description: No se pudo completar la sincronización
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: No se pudo completar la sincronización
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
   /api/v1/staff-members/{staffMemberId}/deactivation:
     parameters:
       - $ref: "#/components/parameters/StaffMemberId"
@@ -2310,6 +2428,96 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Workshop"
+
+    StaffClockVersion:
+      type: object
+      additionalProperties: false
+      required: [staffVersion]
+      properties:
+        staffVersion:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+
+    StaffClockObservation:
+      type: object
+      required: [version, observedAt, workshiftCode, workShiftName]
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        observedAt:
+          type: string
+          format: date-time
+        workshiftCode:
+          type: [string, "null"]
+        workShiftName:
+          type: [string, "null"]
+
+    StaffClockLink:
+      type: object
+      required: [available, state, observation]
+      properties:
+        available:
+          type: boolean
+          description: La conexión validada y la ficha activa permiten preparar la sincronización.
+        state:
+          type: string
+          enum: [unlinked, linked, needsReview]
+        observation:
+          oneOf:
+            - $ref: "#/components/schemas/StaffClockObservation"
+            - type: "null"
+
+    StaffClockPreview:
+      oneOf:
+        - type: object
+          required: [status, previewId, expiresAt, candidate, revalidation]
+          properties:
+            status:
+              type: string
+              enum: [ready]
+            previewId:
+              type: string
+              format: uuid
+            expiresAt:
+              type: string
+              format: date-time
+            revalidation:
+              type: boolean
+            candidate:
+              type: object
+              required: [firstName, lastName, document, workshiftCode, workShiftName]
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                document:
+                  type: string
+                workshiftCode:
+                  type: [string, "null"]
+                workShiftName:
+                  type: [string, "null"]
+        - type: object
+          required: [status, reason]
+          properties:
+            status:
+              type: string
+              enum: [needsReview]
+            reason:
+              type: string
+              enum: [noMatch, duplicate, identityMismatch]
+
+    StaffClockConfirmation:
+      type: object
+      required: [staffVersion, observation]
+      properties:
+        staffVersion:
+          type: integer
+          minimum: 1
+        observation:
+          $ref: "#/components/schemas/StaffClockObservation"
 
     FieldError:
       type: object
