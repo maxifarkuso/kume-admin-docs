@@ -199,3 +199,7 @@ En la prueba del 23/11/2026, Maxi llamó al GET con el Bearer generado para su c
 El `code: 0` de los ejemplos generados de Swagger aparece tanto en el 200 como en los errores. CU1 toma como criterio de éxito conservador el par observado HTTP 200 y `code: 200` con un catálogo válido. El 401 genérico tampoco acredita una señal de expiración apta para renovar.
 
 **Resultado:** el envoltorio y la llamada sin parámetros quedaron comprobados para esa conexión. Cada turno observado contiene solo `code`, `name` y `type`. Días, bloques, pausas y vigencias siguen sin verificarse en una lectura de detalle. Quedan pendientes cobertura, paginación, estabilidad de códigos y semántica de respuestas distintas. La llamada autenticada fue realizada por Maxi. [Tareas CU1](../specs/012-softwareclock-workshifts/tasks.md).
+
+## Uso de referencias en CU2 — 24/11/2026
+
+[CU2](../functional/softwareclock/sincronizar-empleado.md) propone el horario inicial desde la definición estructurada que KUME asocia con el workshift asignado. La evidencia del proveedor se limita a la asignación y al catálogo descriptivo. La cobertura del listado de empleados, identidad estable y eficacia del filtro de asistencias por documento siguen pendientes de validación.

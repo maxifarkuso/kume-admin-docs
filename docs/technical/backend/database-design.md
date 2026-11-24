@@ -342,3 +342,7 @@ La restricción de roles de `staff_member` admite además `administrative`. La m
 ## Registro de horas — modelo propuesto del 23 de noviembre de 2026
 
 [Iniciativa 010](../../specs/010-time-records/technical-spec.md) propone revisiones de horarios/margen, excepciones, eventos originales y sus revisiones, diarios versionados, auditoría e importaciones. No se crean tablas/migraciones por esta propuesta; identidad externa y temporal dependen de validar Clock. Debe coordinarse con Personal para cambios de documento/egreso sin pérdida histórica. Revisar modelo antes de ampliar esta fuente canónica o aplicar esquema.
+
+## Vínculo de empleado con Clock
+
+[CU2 propone](../../specs/013-softwareclock-employee/technical-spec.md#persistencia-versiones-y-auditoría) separar identidad versionada, turno observado y origen histórico del horario personal, con confirmación transaccional y auditoría. El primer hito incorpora una migración aditiva verificada localmente sobre PGlite. Su ejecución operativa requiere autorización.

@@ -37,7 +37,7 @@ Bloqueos: V01/V02/V03/V04 determinan vínculo, tiempo, unicidad e integridad de 
 - [x] Inspeccionar muestra de respuesta getWorkShifts: array code/name/type, sin bloques estructurados y con códigos vacíos repetidos.
 - [ ] Confirmar identidad/alcance de turnos y posible endpoint de detalle; relación V4 observada no prueba unicidad.
 - [ ] Diseñar botón Sincronizar empleado con Clock y vista administrativa de importación, códigos ambiguos, reimportación y configuración local sin alterar horarios definidos.
-- [ ] Si se propone precarga desde Clock, presentar alternativa concreta sin modificar la regla aprobada de herencia inicial de cursos por inferencia.
+- [ ] Coordinar con CU2 la copia inicial desde el workshift estructurado y la lectura del vínculo validado.
 
 ## Backend
 
@@ -76,7 +76,7 @@ Bloqueos: V01/V02/V03/V04 determinan vínculo, tiempo, unicidad e integridad de 
 - Comprobación local de 14 documentos Markdown modificados/nuevos: bloques de código cerrados, sin marcadores de conflicto ni tokens JWT; 191 enlaces relativos existentes.
 - Criterios AC01–AC24 presentes sin omisiones; ejemplos numéricos trazados a las decisiones funcionales.
 - `openapi.yaml` sin cambios: la tabla de rutas es una propuesta revisable, no un contrato implementado.
-- Revisión documental de coherencia: segundos solo en ejemplos de entrada original, interfaz y cálculos por minutos; curso solo precarga inicial; ausencia no deducida; originales no editables; pausas confirmadas mantienen referencia prevista.
+- Revisión documental de coherencia: segundos solo en ejemplos de entrada original, interfaz y cálculos por minutos; la precarga original desde cursos se sustituye para CU2 según decisión del 24/11; ausencia no deducida; originales no editables; pausas confirmadas mantienen referencia prevista.
 
 No se ejecutaron tests de FE/BE, simulaciones de PostgreSQL ni llamadas autenticadas a Clock por escribir estos archivos. Las verificaciones anteriores son documentales, no evidencia de funcionamiento del producto. No hubo commit/push, migraciones ni despliegue en esta preparación.
 

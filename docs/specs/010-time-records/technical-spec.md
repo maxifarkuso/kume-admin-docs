@@ -6,7 +6,7 @@ Fecha: 23 de noviembre de 2026. **Propuesta para revisión**, basada en [spec.md
 
 Conservar React/TypeScript/Vite, Fastify, PostgreSQL y Prisma. Backend: módulo `time-records` con dominio puro para horarios, intervalos e interpretación; aplicación para casos de uso; puertos de proveedor, almacenamiento, reloj y transacción; adaptadores Clock/Prisma; HTTP con TypeBox. Composición inyecta todo. Dominio y aplicación no importan HTTP, ORM ni variables de entorno.
 
-Personal expone lectura de identidad/documento, estado/egreso y asignaciones por un contrato de aplicación; no consultar sus tablas desde HTTP ni crear ciclos. Cursos aportan solo la sugerencia inicial; una vez guardada, ninguna lectura mensual depende del horario actual de cursos. Módulo propio en frontend `features/time-records`, integrado en la ficha mediante composición y componentes compartidos.
+Personal expone lectura de identidad/documento, estado/egreso y asignaciones por un contrato de aplicación; no consultar sus tablas desde HTTP ni crear ciclos. La lectura mensual usa el horario propio vigente. La propuesta inicial en CU2 proviene del workshift y su definición estructurada. Módulo propio en frontend `features/time-records`, integrado en la ficha mediante composición y componentes compartidos.
 
 ## Representación temporal y cálculo
 
@@ -25,7 +25,7 @@ Límites de la primera implementación propuestos: bloques dentro de una fecha c
 
 Horario laboral por maestra: revisiones semanales con `effectiveFrom`; resolver la última vigente para cada fecha, más excepción específica. No editar una revisión usada destruyendo su historia. Margen general de KUME igualmente versionado por vigencia; valor inicial 60. Validar entero no negativo; el límite superior se define con contrato, sin copiar 180 de la maqueta.
 
-Carga inicial: obtener sugerencia de cursos mediante lectura consistente, mostrarla, permitir editar y guardar con vigencia explícita. Si la unión trae solapamientos, no guardar automáticamente bloques inválidos. Persistir copia, no vínculo vivo.
+La [carga inicial de CU2](../../functional/softwareclock/sincronizar-empleado.md) propone la definición estructurada del workshift y permite editar y guardar una copia con vigencia explícita. Validar los bloques editados antes de guardar.
 
 Cambio que afecte fechas anteriores: crear propuesta y vista previa con fechas/personas, interpretaciones y ajustes afectados, versiones de horario/margen/diarios y de la ficha. Confirmación vuelve a validar esas versiones dentro de transacción; si cambió algún recurso, 409 y nueva vista previa. Aplicar propuesta y recálculos atómicamente, conservando auditoría; ajustes incompatibles quedan pendientes. Una vista previa de margen global incluye todas las maestras afectadas, no solo la ficha abierta.
 
@@ -108,7 +108,7 @@ No declarar probado un comportamiento de Clock mediante un servidor simulado; la
 
 ## Prioridad de investigación de endpoints y vínculo persistente
 
-Por indicación de Maxi, cerrar primero el [mapeo KUME–Clock y sus secuencias](../../technical/softwareclock-employee-mapping.md). El vínculo persistido evita volver a descubrir empleados al consultar el mes. `document` es el filtro documentado de asistencias; `id`/`code` del empleado no habilitan por sí mismos un filtro alternativo. La referencia de turno se evalúa antes de decidir si aporta una opción adicional de carga inicial; no sustituye automáticamente el horario propio aprobado. Sin migración/contrato nuevo por este diseño.
+Por indicación de Maxi, cerrar primero el [mapeo KUME–Clock y sus secuencias](../../technical/softwareclock-employee-mapping.md). El vínculo persistido evita volver a descubrir empleados al consultar el mes. `document` es el filtro documentado de asistencias; `id`/`code` del empleado no habilitan por sí mismos un filtro alternativo. El workshift es la fuente de la propuesta inicial de CU2 cuando existe una definición local inequívoca. El horario ya confirmado se mantiene independiente. Sin migración/contrato nuevo por este diseño.
 
 ## Ampliación posterior: catálogo administrativo Clock
 

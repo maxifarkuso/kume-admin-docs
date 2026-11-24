@@ -31,6 +31,8 @@ tags:
   - name: Courses
   - name: Workshops
 
+  - name: Workshifts
+
 paths:
   /api/v1/auth/login:
     post:
@@ -692,6 +694,124 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /api/v1/staff-members/{staffMemberId}/clock-link:
+    parameters:
+      - $ref: "#/components/parameters/StaffMemberId"
+    get:
+      tags: [Staff members]
+      operationId: getStaffClockLink
+      responses:
+        "200":
+          description: Resultado de CU2
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffClockLink"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/staff-members/{staffMemberId}/clock-sync-previews:
+    parameters:
+      - $ref: "#/components/parameters/StaffMemberId"
+    post:
+      tags: [Staff members]
+      operationId: prepareStaffClockLink
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StaffClockVersion"
+      responses:
+        "201":
+          description: Resultado de CU2
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffClockPreview"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "502":
+          description: No se pudo completar la sincronización
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: No se pudo completar la sincronización
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "504":
+          description: No se pudo completar la sincronización
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
+  /api/v1/staff-members/{staffMemberId}/clock-sync-previews/{previewId}/confirmation:
+    parameters:
+      - $ref: "#/components/parameters/StaffMemberId"
+      - in: path
+        name: previewId
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags: [Staff members]
+      operationId: confirmStaffClockLink
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StaffClockVersion"
+      responses:
+        "200":
+          description: Resultado de CU2
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffClockConfirmation"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "410":
+          description: No se pudo completar la sincronización
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: No se pudo completar la sincronización
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+
   /api/v1/staff-members/{staffMemberId}/deactivation:
     parameters:
       - $ref: "#/components/parameters/StaffMemberId"
@@ -1303,6 +1423,205 @@ paths:
         "409":
           $ref: "#/components/responses/Conflict"
 
+  /api/v1/workshift-references:
+    get:
+      tags:
+        - Workshifts
+      operationId: listWorkshiftReferences
+      responses:
+        "200":
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkshiftCatalog"
+        "401":
+          description: Sesión requerida
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/v1/workshift-references/{referenceId}:
+    patch:
+      tags:
+        - Workshifts
+      operationId: updateWorkshiftReferenceHours
+      responses:
+        "200":
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkshiftReference"
+        "400":
+          description: Solicitud inválida
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Sesión requerida
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Solicitud no autorizada
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Recurso no encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflicto de revisión
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422":
+          description: Decisión u horas inválidas
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      parameters:
+        - name: referenceId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+        - $ref: "#/components/parameters/KumeRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkshiftHoursChange"
+  /api/v1/workshift-import-previews:
+    post:
+      tags:
+        - Workshifts
+      operationId: prepareWorkshiftImport
+      responses:
+        "201":
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkshiftImportPreview"
+        "400":
+          description: Solicitud inválida
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Sesión requerida
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Solicitud no autorizada
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Fallo de lectura externa
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: Origen no disponible
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "504":
+          description: Tiempo de espera agotado
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      parameters:
+        - $ref: "#/components/parameters/KumeRequest"
+  /api/v1/workshift-import-previews/{previewId}/confirmation:
+    post:
+      tags:
+        - Workshifts
+      operationId: confirmWorkshiftImport
+      responses:
+        "200":
+          description: Operación completada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkshiftImportResult"
+        "400":
+          description: Solicitud inválida
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Sesión requerida
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Solicitud no autorizada
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Recurso no encontrado
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflicto de revisión
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "410":
+          description: Vista previa vencida
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422":
+          description: Decisión u horas inválidas
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      parameters:
+        - name: previewId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+        - $ref: "#/components/parameters/KumeRequest"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkshiftImportConfirmation"
+
 components:
   securitySchemes:
     SessionCookie:
@@ -1527,6 +1846,230 @@ components:
             format: binary
 
   schemas:
+    WorkshiftObservation:
+      type: object
+      additionalProperties: false
+      required: []
+      properties:
+        code:
+          type:
+            - string
+            - "null"
+          maxLength: 256
+        name:
+          type:
+            - string
+            - "null"
+          maxLength: 256
+        type:
+          type:
+            - string
+            - "null"
+          maxLength: 256
+    WorkshiftReference:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - label
+        - external
+        - localStartTime
+        - localEndTime
+        - version
+      properties:
+        id:
+          type: string
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+        label:
+          type: string
+        external:
+          $ref: "#/components/schemas/WorkshiftObservation"
+        localStartTime:
+          anyOf:
+            - type: string
+              pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+            - type: "null"
+        localEndTime:
+          anyOf:
+            - type: string
+              pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+            - type: "null"
+        version:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+    WorkshiftHoursChange:
+      type: object
+      additionalProperties: false
+      required:
+        - localStartTime
+        - localEndTime
+        - version
+      properties:
+        localStartTime:
+          anyOf:
+            - type: string
+              pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+            - type: "null"
+        localEndTime:
+          anyOf:
+            - type: string
+              pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+            - type: "null"
+        version:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+    WorkshiftPreviewRow:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - observation
+        - count
+        - duplicateCode
+        - status
+      properties:
+        id:
+          type: string
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+        observation:
+          $ref: "#/components/schemas/WorkshiftObservation"
+        count:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        duplicateCode:
+          type: boolean
+        status:
+          type: string
+          enum:
+            - indistinguishable
+            - incomplete
+            - observed
+            - review
+            - new
+        referenceId:
+          type: string
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+    WorkshiftImportPreview:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - queriedAt
+        - expiresAt
+        - rows
+        - missingReferenceIds
+      properties:
+        id:
+          type: string
+          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+        queriedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkshiftPreviewRow"
+        missingReferenceIds:
+          type: array
+          items:
+            type: string
+            pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+    WorkshiftImportConfirmation:
+      type: object
+      additionalProperties: false
+      required:
+        - decisions
+      properties:
+        decisions:
+          type: array
+          items:
+            oneOf:
+              - type: object
+                additionalProperties: false
+                required:
+                  - rowId
+                  - action
+                properties:
+                  rowId:
+                    type: string
+                    pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+                  action:
+                    const: create
+              - type: object
+                additionalProperties: false
+                required:
+                  - rowId
+                  - action
+                  - referenceId
+                  - version
+                properties:
+                  rowId:
+                    type: string
+                    pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+                  action:
+                    const: link
+                  referenceId:
+                    type: string
+                    pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+                  version:
+                    type: integer
+                    minimum: 1
+                    maximum: 2147483647
+          minItems: 1
+          maxItems: 40
+    WorkshiftImportResult:
+      type: object
+      additionalProperties: false
+      required:
+        - created
+        - updated
+        - repeated
+        - pending
+        - confirmedAt
+        - references
+      properties:
+        created:
+          type: integer
+          minimum: 0
+        updated:
+          type: integer
+          minimum: 0
+        repeated:
+          type: integer
+          minimum: 0
+        pending:
+          type: integer
+          minimum: 0
+        confirmedAt:
+          type: string
+          format: date-time
+        references:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkshiftReference"
+    WorkshiftCatalog:
+      type: object
+      additionalProperties: false
+      required:
+        - references
+        - lastConfirmedAt
+      properties:
+        references:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkshiftReference"
+        lastConfirmedAt:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+
     LoginRequest:
       type: object
       additionalProperties: false
@@ -2310,6 +2853,96 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Workshop"
+
+    StaffClockVersion:
+      type: object
+      additionalProperties: false
+      required: [staffVersion]
+      properties:
+        staffVersion:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+
+    StaffClockObservation:
+      type: object
+      required: [version, observedAt, workshiftCode, workShiftName]
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        observedAt:
+          type: string
+          format: date-time
+        workshiftCode:
+          type: [string, "null"]
+        workShiftName:
+          type: [string, "null"]
+
+    StaffClockLink:
+      type: object
+      required: [available, state, observation]
+      properties:
+        available:
+          type: boolean
+          description: La conexión validada y la ficha activa permiten preparar la sincronización.
+        state:
+          type: string
+          enum: [unlinked, linked, needsReview]
+        observation:
+          oneOf:
+            - $ref: "#/components/schemas/StaffClockObservation"
+            - type: "null"
+
+    StaffClockPreview:
+      oneOf:
+        - type: object
+          required: [status, previewId, expiresAt, candidate, revalidation]
+          properties:
+            status:
+              type: string
+              enum: [ready]
+            previewId:
+              type: string
+              format: uuid
+            expiresAt:
+              type: string
+              format: date-time
+            revalidation:
+              type: boolean
+            candidate:
+              type: object
+              required: [firstName, lastName, document, workshiftCode, workShiftName]
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                document:
+                  type: string
+                workshiftCode:
+                  type: [string, "null"]
+                workShiftName:
+                  type: [string, "null"]
+        - type: object
+          required: [status, reason]
+          properties:
+            status:
+              type: string
+              enum: [needsReview]
+            reason:
+              type: string
+              enum: [noMatch, duplicate, identityMismatch]
+
+    StaffClockConfirmation:
+      type: object
+      required: [staffVersion, observation]
+      properties:
+        staffVersion:
+          type: integer
+          minimum: 1
+        observation:
+          $ref: "#/components/schemas/StaffClockObservation"
 
     FieldError:
       type: object

@@ -71,7 +71,7 @@ Documentación se mantiene directamente en main. Frontend y backend usarán rama
 
 - [Registro de horas — iniciativa 010](docs/specs/010-time-records/spec.md): discovery funcional cerrado el 23/11; [diseño técnico propuesto](docs/specs/010-time-records/technical-spec.md), [plan](docs/specs/010-time-records/plan.md) y [tareas](docs/specs/010-time-records/tasks.md). Contrato e integración pendientes de revisión/validación, sin implementación acreditada.
 
-- [SoftwareClock: vinculación de empleados y turnos](docs/technical/softwareclock-employee-mapping.md): propuesta con diagramas Mermaid, campos observados y consultas pendientes.
+- [SoftwareClock: vinculación de empleados y turnos](docs/technical/softwareclock-employee-mapping.md): diagramas Mermaid de CU2 y enlaces a evidencia y contrato propuesto.
 
 ## SoftwareClock — continuación por caso de uso
 
@@ -81,5 +81,5 @@ Documentación se mantiene directamente en main. Frontend y backend usarán rama
 | --- | --- | --- |
 | Autenticación compartida para CU1, CU2 y CU3 | [CU0](docs/functional/softwareclock/autenticacion.md) | [Especificación y plan](docs/specs/011-softwareclock-auth/plan.md) |
 | Sincronizar workshifts / horarios laborales | [CU1](docs/functional/softwareclock/sincronizar-horarios.md) | [Especificación y plan](docs/specs/012-softwareclock-workshifts/plan.md) · [Prompt 1](docs/general/prompts/softwareclock/01-sincronizar-horarios.md) |
-| Sincronizar empleado con Clock | [CU2](docs/functional/softwareclock/sincronizar-empleado.md) | [Prompt 2](docs/general/prompts/softwareclock/02-sincronizar-empleado.md) |
+| Sincronizar empleado con Clock | [CU2](docs/functional/softwareclock/sincronizar-empleado.md) | [Especificación y plan](docs/specs/013-softwareclock-employee/plan.md) · [Prompt 2](docs/general/prompts/softwareclock/02-sincronizar-empleado.md) |
 | Registro de horas por empleado | [CU3](docs/functional/softwareclock/registro-horas.md) | [Prompt 3](docs/general/prompts/softwareclock/03-registro-horas.md) |

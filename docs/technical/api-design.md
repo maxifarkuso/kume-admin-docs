@@ -308,3 +308,7 @@ El inicio y fin son datos opcionales de KUME y se conservan al reimportar. La op
 | POST | `/api/v1/time-record-policy-changes` | Confirmar la vigencia y el reproceso revisado, cuando corresponda. |
 
 Las rutas de horario propio, marcas, revisión y margen provienen de la [propuesta técnica de registro de horas](../specs/010-time-records/technical-spec.md#contrato-interno-propuesto-aún-fuera-de-openapi). El [índice de casos](../functional/softwareclock/README.md) describe las dependencias con autenticación y vinculación de empleados. Este apartado documenta el diseño. Para llevarlo al contrato público queda reconciliar esquemas, códigos de error y versiones en `openapi.yaml`.
+
+### Vinculación de empleado con Clock
+
+El [contrato aprobado del primer hito de CU2](../specs/013-softwareclock-employee/technical-spec.md#contrato-del-primer-hito-aprobado) incorpora lectura, vista previa y confirmación sobre una ficha en OpenAPI. El segundo hito amplía el contrato para la propuesta inicial de horario.

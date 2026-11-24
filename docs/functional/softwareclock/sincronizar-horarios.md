@@ -1,6 +1,6 @@
 # CU1 — Sincronizar workshifts / horarios laborales
 
-Fecha: 23/11/2026. Actor: administración. Entrada UX solicitada por Maxi: Administración → Horarios laborales → Importar desde Clock. Estado: caso identificado y solicitud de importación aprobada; diseño detallado de UI, correspondencia y uso como plantillas todavía propuesto. Sin implementación.
+Fecha: 23/11/2026. Actor: administración. Entrada UX solicitada por Maxi: Administración → Horarios laborales → Importar desde Clock. Estado al 24/11/2026: catálogo y edición del par local integrados en FE y BE. La definición estructurada requerida por CU2 queda pendiente.
 
 ## Objetivo y límite
 
@@ -80,6 +80,6 @@ sequenceDiagram
 
 ## Decisiones pendientes
 
-Maxi propuso guardar un inicio y un fin opcionales en cada referencia de KUME. Se completan localmente y se conservan al reimportar. Si el turno de una maestra tiene una correspondencia inequívoca, esas horas podrán proponerse como bloque inicial en una ficha todavía sin horario. La precarga se confirma y se copia al horario propio. El par de horas necesita días y vigencia confirmados para definir un horario laboral calculable. Quedan por revisar el editor, las pausas, los turnos nocturnos y la convivencia con la precarga aprobada desde cursos. Ninguna importación puede alterar horarios personales ya definidos ni provocar recálculos de historia.
+El catálogo implementado incluye un par opcional de inicio y fin. [CU2](sincronizar-empleado.md) requiere además correspondencia inequívoca y definición versionada de días, bloques y pausas explícitas. Queda por diseñar la configuración estructurada. Las importaciones actualizan el catálogo y conservan los horarios personales existentes.
 
 [Especificación y aceptación](../../specs/012-softwareclock-workshifts/spec.md) · [Propuesta técnica](../../specs/012-softwareclock-workshifts/technical-spec.md) · [Plan](../../specs/012-softwareclock-workshifts/plan.md) · [Tareas](../../specs/012-softwareclock-workshifts/tasks.md)

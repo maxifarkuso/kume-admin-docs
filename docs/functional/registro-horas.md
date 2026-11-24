@@ -52,7 +52,7 @@ La jornada muestra entrada, salida a almuerzo, regreso y salida final cuando exi
 
 ## Horario, ausencias y ambigüedad — Q20 a Q26, 23/11/2026
 
-- Q20/Q21: botón «Horario laboral» dentro de Registro de horas. Precargar los horarios de los cursos asignados exclusivamente para facilitar la carga inicial; administración puede editarlos antes de guardar. Una vez definido, el horario laboral queda independiente: cambios de cursos/asignaciones no lo actualizan ni generan propuestas de actualización. Conservar vigencias al editar posteriormente.
+- Q20/Q21: botón «Horario laboral» dentro de Registro de horas. Precargar los horarios de los cursos asignados exclusivamente para facilitar la carga inicial; administración puede editarlos antes de guardar. Una vez definido, el horario laboral queda independiente: cambios de cursos/asignaciones no lo actualizan ni generan propuestas de actualización. Conservar vigencias al editar posteriormente. Para [CU2](softwareclock/sincronizar-empleado.md), la decisión posterior del 24/11 sustituye esta fuente inicial por el workshift asignado y su definición estructurada en KUME.
 - Q22/Q25: permitir «Confirmar que no trabajó» con clasificación Licencia / Enfermedad / Otro y causa de texto libre. Motivo/causa sigue opcional; auditar confirmación. Sin confirmación, ausencia de marcas sigue pendiente y no acredita ausencia.
 - Licencia y enfermedad justifican el día sin generar tiempo faltante. «Otro» conserva las horas previstas y registra cero trabajado y el faltante confirmado (ejemplo: ocho horas previstas → ocho faltantes). No determina consecuencias de pago.
 - Q24: meses abiertos en esta versión, sin cierre/reapertura ni bloqueo mensual; mantener historial y confirmaciones de cambios retroactivos.

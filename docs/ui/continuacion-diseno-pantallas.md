@@ -210,3 +210,7 @@ Maxi autorizó consolidar y publicar todos los acuerdos gráficos como reglas co
 ## Registro de horas — continuidad al 23/11/2026
 
 Discovery Q1–Q31 cerrado por Maxi; [especificación](../specs/010-time-records/spec.md) y propuesta técnica/plan/tareas preparados. La maqueta de noviembre conserva su aprobación inicial. Horario laboral con vigencias/excepciones, saldos y reglas de inmutabilidad/egreso requieren adaptación del producto; no se modificó MagicPath ni se aprobó una captura nueva en esta fase. No cerrar el paso 4 general.
+
+## CU2 en la ficha de Personal — 24 de noviembre de 2026
+
+Maxi solicita «Sincronizar empleado con Clock». La [propuesta de estados y aceptación](../specs/013-softwareclock-employee/spec.md) incluye confirmación de identidad, horario editable o pendiente y resincro. La revisión UX de esta ampliación sigue pendiente.
