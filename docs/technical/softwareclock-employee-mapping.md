@@ -107,7 +107,7 @@ sequenceDiagram
 
 El registro aporta `workshiftCode` y `workShiftName`. Interpretación candidata: referencia y etiqueta del turno asignado en Clock. No acredita que exista horario semanal completo, pausas, excepciones, vigencias o tareas anticipadas. El texto Vespertino 13-17 tampoco prueba que la persona efectivamente ingrese a las 13:00 todos los días.
 
-La colección examinada en la primera sesión incluye GET `/api/EmployeesWorkShifts/getWorkShifts` y POST `/api/EmployeesWorkShifts/assignMotherWorkShiftToEmployee`. El segundo es de escritura y queda fuera del alcance. Los parámetros específicos del GET no quedaron detallados en la documentación conservada; el adjunto original no pudo recuperarse en esta sesión. Por ello la llamada sin parámetros siguiente es exploratoria, no una garantía de que el endpoint no exija otros campos. No inventar un filtro por `id`, `document` o `workshiftCode`.
+La colección examinada en la primera sesión incluye GET `/api/EmployeesWorkShifts/getWorkShifts` y POST `/api/EmployeesWorkShifts/assignMotherWorkShiftToEmployee`. El segundo es de escritura y queda fuera del alcance. La [ficha Swagger](softwareclock-api.md#ficha-swagger-de-getworkshifts-aportada-por-maxi) declara el GET sin parámetros. La [lectura real de Maxi](softwareclock-api.md#lectura-real-de-catálogo-aportada-por-maxi) devolvió el catálogo esperado usando el Bearer de su conexión sin enviar nombre de empresa.
 
 ```bash
 curl --request GET \
@@ -127,39 +127,6 @@ Maxi aporta la respuesta de getWorkShifts: un array de objetos `code`, `name`, `
 
 Maxi solicita botón «Sincronizar empleado con Clock» en la ficha y un apartado administrativo para importar horarios. Son ampliaciones explícitas posteriores al cierre Q1–Q31; no equivalen a autorización de sobrescribir ficha u horario laboral. La sincronización solicita/valida catálogo de empleados, propone coincidencia por documento y persiste identidad/metadata tras confirmación. Si ya existe vínculo, actualizar metadata comprobada sin reasignar por nombre, borrar auditoría, modificar datos personales KUME ni cambiar horario definido. Una discrepancia de identidad queda pendiente de revisión.
 
-### Importación administrativa propuesta
+### Importación administrativa
 
-Ruta de navegación solicitada: Administración → Horarios laborales; acción Importar desde Clock. Vista previa con código, nombre, tipo, estado local y coincidencias; confirmar importación a catálogo local con identificador KUME propio. No interpretar nombre como horario calculable.
-
-Estados propuestos: Importado · Pendiente de configurar / Configurado / Requiere revisión. Para hacerlo calculable, administración completa días y bloques con pausas explícitas. Ejemplo: «Horario Completo 8 a 17 c/1 descanso» no indica cuándo ocurre el descanso; «Libre 0:00 a 24:00Hs.» no acredita 24 horas trabajadas ni previstas.
-
-Códigos vacíos o duplicados no son claves externas válidas. Conservar registros distintos, usar UUID local y exigir revisión de la correspondencia al reimportar. Ni nombre ni posición en el array son identificadores estables; una coincidencia exacta de contenido puede servir para detectar una observación repetida, sin probar identidad externa. No crear un vínculo global por `code = ""` ni duplicar automáticamente registros en cada importación.
-
-Las definiciones locales configuradas podrían servir como plantillas para completar la carga inicial de maestras. Esa alternativa a la precarga de cursos debe confirmarse explícitamente antes de incorporarla al comportamiento canónico. En cualquier caso, copiar bloques al horario laboral, no mantener herencia viva. Reimportar catálogo nunca modifica horarios laborales ya definidos ni recalcula historia silenciosamente. Igualar nombres/referencias entre sistemas no garantiza que ambos contengan la misma jornada calculable.
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor A as Administración
-    participant UI as KUME UI
-    participant BE as KUME Backend
-    participant C as API Clock
-    participant DB as Base KUME
-    A->>UI: Horarios laborales → Importar desde Clock
-    UI->>BE: Preparar importación de catálogo
-    BE->>C: GET /api/EmployeesWorkShifts/getWorkShifts
-    C-->>BE: Array de code, name y type
-    BE->>DB: Leer correspondencias locales existentes
-    DB-->>BE: Catálogo y vínculos
-    BE-->>UI: Vista previa, novedades y códigos ambiguos
-    A->>UI: Confirmar importación revisada
-    UI->>BE: Guardar selección y correspondencias
-    BE->>DB: Guardar referencias con identidad local y auditoría
-    BE-->>UI: Importado; pendientes de configurar visibles
-    A->>UI: Completar días, bloques y pausas de una referencia
-    UI->>BE: Guardar definición local validada
-    BE->>DB: Persistir definición estructurada
-    Note over DB: No cambiar horarios de maestras ya definidos
-```
-
-Pendiente validar actualización del catálogo, estabilidad de códigos no vacíos y un posible endpoint de detalle antes de decidir que la configuración manual es el único camino. Diseño administrativo y estados nuevos requieren revisión visual; no se modificó MagicPath por este registro.
+El [caso CU1](../functional/softwareclock/sincronizar-horarios.md) desarrolla la vista previa, las correspondencias y las secuencias de primera importación y reimportación. Los [hallazgos de API](softwareclock-api.md#investigación-de-detalle-estructurado-de-turnos--23112026) registran la búsqueda de detalle estructurado. La referencia externa observada en el empleado sigue siendo informativa y no asigna ni modifica su horario en KUME.

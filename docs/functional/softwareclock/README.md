@@ -5,7 +5,7 @@ Fecha: 23 de noviembre de 2026. Maxi solicita separar lo descubierto en tres cas
 | Caso de uso | Fuente del caso | Continuación |
 | --- | --- | --- |
 | CU0 — Autenticación con SoftwareClock | [Caso de uso](autenticacion.md) | [Especificación y plan](../../specs/011-softwareclock-auth/plan.md) |
-| CU1 — Sincronizar workshifts / catálogo de horarios laborales | [Caso de uso](sincronizar-horarios.md) | [Prompt CU1](../../general/prompts/softwareclock/01-sincronizar-horarios.md) |
+| CU1 — Sincronizar workshifts / catálogo de horarios laborales | [Caso de uso](sincronizar-horarios.md) | [Especificación y plan](../../specs/012-softwareclock-workshifts/plan.md) · [Prompt CU1](../../general/prompts/softwareclock/01-sincronizar-horarios.md) |
 | CU2 — Sincronizar empleado con Clock | [Caso de uso](sincronizar-empleado.md) | [Prompt CU2](../../general/prompts/softwareclock/02-sincronizar-empleado.md) |
 | CU3 — Registro de horas por empleado | [Caso de uso](registro-horas.md) | [Prompt CU3](../../general/prompts/softwareclock/03-registro-horas.md) |
 
@@ -26,7 +26,7 @@ flowchart LR
 
 Orden sugerido: estudiar CU1 y CU2 en sesiones separadas; cerrar identidad y contrato de lectura de CU2 antes de importar marcas reales en CU3. CU1 no bloquea CU2 ni es requisito obligatorio de CU3. El cálculo local y pruebas con fixtures de CU3 pueden avanzar sin red.
 
-CU0 define el mecanismo compartido de autenticación y lectura que CU1, CU2 y CU3 requieren para consultar Clock. El diseño está en revisión y su implementación sigue pendiente. Cada consumidor incorporará la misma instancia de backend en su propia entrega. Coordinar nombres de recursos, versiones y cambios en documentos compartidos para evitar pisar trabajo de otras sesiones.
+CU0 define el mecanismo compartido de autenticación y lectura que CU1, CU2 y CU3 requieren para consultar Clock. El backend revisado contiene un cliente compartido. CU1 propone reutilizar esa instancia y deja documentado el estado de verificación en su [propuesta técnica](../../specs/012-softwareclock-workshifts/technical-spec.md). Coordinar nombres de recursos, versiones y cambios en documentos compartidos para evitar pisar trabajo de otras sesiones.
 
 ## Evidencia disponible
 

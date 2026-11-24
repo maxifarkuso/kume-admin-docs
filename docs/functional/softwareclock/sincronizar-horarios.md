@@ -6,64 +6,80 @@ Fecha: 23/11/2026. Actor: administración. Entrada UX solicitada por Maxi: Admin
 
 Importar a KUME el catálogo de turnos de Clock para alinear referencias/nombres y administrarlos localmente. Un workshift externo no equivale por sí solo al horario semanal efectivo de una maestra. Este caso no vincula empleados ni importa marcas y no escribe en Clock.
 
-Endpoint documentado y respuesta aportada: GET `/api/EmployeesWorkShifts/getWorkShifts`, base `https://api.portalempleado.softwareclock.com/`, autenticación Bearer obtenida con usuario API. Detalles de parámetros del formulario Postman no recuperados; no inventar filtros. Existe POST `assignMotherWorkShiftToEmployee` en la colección histórica, fuera de alcance por ser escritura.
+Endpoint documentado y respuesta aportada: GET `/api/EmployeesWorkShifts/getWorkShifts`, base `https://api.portalempleado.softwareclock.com/`, autenticación Bearer obtenida con usuario API. Swagger declara la operación sin parámetros y documenta la lista dentro de `work_shifts`. En la prueba de Maxi, el Bearer de su conexión devolvió el catálogo de su backoffice sin enviar nombre de empresa. Existe POST `assignMotherWorkShiftToEmployee` en la colección histórica, fuera de alcance por ser escritura.
 
-## Catálogo de ejemplo aportado por Maxi
+## Lectura de la respuesta
 
-Cada elemento solo contiene `code`, `name`, `type`:
+La [evidencia de API](../../technical/softwareclock-api.md#catálogo-de-turnos-recibido--23112026) registra el catálogo observado. Las etiquetas que mencionan horas o descansos se muestran como texto del proveedor. «Libre» tampoco define una jornada prevista. Cada fila se conserva en la consulta, incluso cuando varias llegan sin código.
 
-| code | name | type |
-| --- | --- | --- |
-| HC81 | Horario Completo 8 a 17 c/1 descanso | Fijo |
-| HC82 | Horario Completo 9 - 18 c/1 descanso | Fijo |
-| 9999 | Libre 0:00 a 24:00Hs. | Libre |
-| vacío | Matutino 8 - 12 | Fijo |
-| M5 | Matutino 8 - 13 | Fijo |
-| vacío | Matutino 8.45 - 12.45 | Fijo |
-| vacío | Matutuno 09 - 15 | Fijo |
-| vacío | TALLER ED FIS | Fijo |
-| V5 | Vespertino 12-17 - Sin Descanso | Fijo |
-| V4 | Vespertino 13-17 | Fijo |
+## Flujo propuesto
 
-No hay días, horas estructuradas, ubicación del descanso ni vigencias. Los nombres no son reglas de cálculo ni claves estables. Libre no implica 24 horas de trabajo previsto. Las filas con código vacío son referencias distintas; nunca unirlas por vacío.
+1. En Administración → Horarios laborales se muestra el catálogo local aunque Clock esté indisponible. «Importar desde Clock» consulta y abre una vista previa con código (o «Sin código»), nombre, tipo, correspondencia local, acción y motivo. Mostrar fecha de consulta, de última confirmación y recuentos por resultado.
+2. Para cada referencia nueva o modificada, administración puede «Crear referencia», «Vincular a referencia existente» o «Dejar pendiente». Mostrar los valores actuales y propuestos antes de vincular o sustituir una correspondencia. Una coincidencia exacta y previamente confirmada puede presentarse como «Ya observada», sin cambio. Una fila con código duplicado lleva una alerta. Las filas totalmente indistinguibles se muestran con cantidad y quedan pendientes, pues elegir una por posición inventaría identidad.
+3. Confirmar aplica únicamente las decisiones seleccionadas. Cancelar vuelve al catálogo. Ante error de consulta se mantiene la última información local. Si otra confirmación cambió el catálogo, se pide preparar una vista previa nueva y revisar de nuevo. El resultado separa altas, actualizaciones de metadatos externos, observaciones repetidas y pendientes.
+4. Una referencia previa que no aparece en una consulta comparable se informa como «No observada en esta consulta», sin baja ni inferencia sobre la integridad de Clock. Una consulta vacía informa «Clock no devolvió filas» y conserva el catálogo. Un alcance distinto o desconocido impide interpretar ausencias.
 
-## Flujo y diseño propuestos
+### Controles de la vista previa propuestos
+
+Al abrir la vista previa, las altas y vinculaciones quedan sin seleccionar. Las filas «Ya observada» y «No observada en esta consulta» son informativas. Para confirmar, debe haber al menos una decisión aplicable. En una vinculación, el control de destino muestra la etiqueta local y la descripción externa vigente, si existe. Al guardar, se muestran los recuentos de altas, actualizaciones, repeticiones y pendientes, y un acceso para volver al catálogo. Si la vista quedó obsoleta, se vuelve a consultar y se revisan las decisiones sobre los datos actuales.
+
+### Primera importación
 
 ```mermaid
 sequenceDiagram
     actor A as Administración
     participant UI as KUME UI
-    participant BE as Backend KUME
+    participant BE as CU1 Backend
+    participant CC as Conector compartido CU0
     participant C as API Clock
     participant DB as Base KUME
     A->>UI: Importar desde Clock
-    UI->>BE: Preparar consulta de catálogo
-    BE->>C: GET /api/EmployeesWorkShifts/getWorkShifts
-    C-->>BE: code, name, type
-    BE->>DB: Leer catálogo y correspondencias locales
-    DB-->>BE: Estado local
-    BE-->>UI: Vista previa y coincidencias ambiguas
-    A->>UI: Confirmar selección revisada
-    UI->>BE: Guardar importación con versiones
-    BE->>DB: Referencias locales e historial
-    BE-->>UI: Importadas y pendientes de configurar
-    Note over BE,DB: Ningún horario de maestra se actualiza por importar
+    UI->>BE: Preparar vista previa
+    BE->>CC: Solicitar catálogo
+    CC->>C: GET getWorkShifts con Bearer
+    C-->>CC: Respuesta externa
+    alt Respuesta válida
+        CC-->>BE: Filas descriptivas
+        BE->>DB: Leer catálogo y versiones, registrar vista previa temporal
+        BE-->>UI: Filas y acciones propuestas
+        A->>UI: Revisar y confirmar selección
+        UI->>BE: Confirmar decisiones sobre vista previa
+        BE->>DB: Guardar referencias y auditoría en una transacción
+        BE-->>UI: Resultado de confirmación
+    else Clock no disponible o respuesta inválida
+        CC-->>BE: Fallo clasificado
+        BE-->>UI: Mantener catálogo local y mostrar error
+    end
 ```
 
-Propuesta: UUID KUME por referencia, conexión externa, datos originales y correspondencia validada; estados Importado pendiente de configurar / Configurado / Requiere revisión. Reimportación conserva definiciones locales y auditoría. Ausencia en un catálogo nuevo no justifica borrado. Coincidencia de contenido permite detectar observaciones repetidas, pero no prueba identidad. Con códigos vacíos/duplicados o renombre ambiguo, presentar revisión; no inventar unicidad ni duplicar todos los registros en cada consulta.
+### Reimportación
 
-Si no existe endpoint con bloques estructurados, proponer editor local de días/bloques/pausas. Usar definiciones configuradas como plantillas adicionales para la carga inicial de maestras sigue pendiente de confirmación; la última pregunta al usuario sobre esa alternativa no recibió respuesta explícita. La precarga inicial desde cursos y posterior independencia sí está aprobada. Aplicar una plantilla, si se aprueba, copiaría bloques sin vínculo vivo.
+```mermaid
+sequenceDiagram
+    actor A as Administración
+    participant UI as KUME UI
+    participant BE as CU1 Backend
+    participant CC as Conector compartido CU0
+    participant DB as Base KUME
+    A->>UI: Volver a importar desde Clock
+    UI->>BE: Preparar nueva vista previa
+    BE->>CC: Leer catálogo
+    CC-->>BE: Filas descriptivas validadas
+    BE->>DB: Comparar observaciones con correspondencias vigentes
+    BE-->>UI: Repeticiones, cambios y casos ambiguos
+    A->>UI: Resolver o dejar pendientes
+    UI->>BE: Confirmar decisiones sobre la consulta
+    alt Vista previa vigente
+        BE->>DB: Actualizar solo referencias externas seleccionadas y auditoría
+        BE-->>UI: Resultado guardado
+    else Versión obsoleta
+        BE-->>UI: Solicitar una nueva vista previa
+    end
+    Note over BE,DB: Los horarios personales quedan fuera de las escrituras de CU1
+```
 
-## Pendientes propios
+## Decisiones pendientes
 
-1. Confirmar parámetros, cobertura y actualizaciones reales; investigar detalle estructurado adicional sin asumir que existe.
-2. Validar estabilidad/alcance de códigos no vacíos; resolver identidad local, duplicados y reimportación de vacíos/renombres.
-3. Especificar qué metadata actualiza una reimportación y qué requiere confirmación, conservando modificaciones locales.
-4. Revisar UI administrativa, configuración estructurada y eventual uso como plantilla; no interpretar el cierre Q1–Q31 como aprobación de estas ampliaciones.
-5. Proponer contrato, persistencia, versiones, errores y pruebas; no modificar el contrato canónico por inferencia.
+Maxi propuso guardar un inicio y un fin opcionales en cada referencia de KUME. Se completan localmente y se conservan al reimportar. Si el turno de una maestra tiene una correspondencia inequívoca, esas horas podrán proponerse como bloque inicial en una ficha todavía sin horario. La precarga se confirma y se copia al horario propio. El par de horas necesita días y vigencia confirmados para definir un horario laboral calculable. Quedan por revisar el editor, las pausas, los turnos nocturnos y la convivencia con la precarga aprobada desde cursos. Ninguna importación puede alterar horarios personales ya definidos ni provocar recálculos de historia.
 
-Criterios de salida del diseño: ejemplo de reimportación sin duplicar ni borrar definiciones; códigos vacíos distintos conservados; error externo conserva catálogo previo; ninguna importación cambia horarios personales; decisiones pendientes claramente resueltas o bloqueadas.
-
-## Continuación
-
-[Prompt de esta sesión](../../general/prompts/softwareclock/01-sincronizar-horarios.md). [Índice y dependencias](README.md). El [mapeo técnico](../../technical/softwareclock-employee-mapping.md) conserva el detalle histórico; actualizarlo si se confirma información nueva. No cambiar las reglas de CU3 por editar este catálogo.
+[Especificación y aceptación](../../specs/012-softwareclock-workshifts/spec.md) · [Propuesta técnica](../../specs/012-softwareclock-workshifts/technical-spec.md) · [Plan](../../specs/012-softwareclock-workshifts/plan.md) · [Tareas](../../specs/012-softwareclock-workshifts/tasks.md)

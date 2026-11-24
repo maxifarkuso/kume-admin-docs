@@ -96,7 +96,7 @@ No ejecutar con `set -x` ni registrar respuestas de autenticación. En producto,
 | GET `/api/Employees/employee-by-rut` | `document` | Documentada, no probada |
 | GET `/api/Reports/getAttendancesRecords` | `branchName`, `groupName`, `document`, `start`, `end` | Documentada, semántica de salida no examinada |
 | GET `/api/Employees/getEmployeeAbsences` | `document`, `filterFrom`, `filterTo` | Documentada, no probada; no confundir falta de marca con ausencia |
-| GET `/api/EmployeesWorkShifts/getWorkShifts` | Turnos de Clock | Documentada, no probada; no es la referencia funcional elegida |
+| GET `/api/EmployeesWorkShifts/getWorkShifts` | Turnos de Clock | Maxi comprobó GET sin parámetros con Bearer, HTTP 200 y `code: 200`; cobertura e identidad pendientes |
 | GET `/api/Branches/branches` y `/api/Groups/groups` | Sucursales y grupos | Documentadas, no probadas |
 | POST `/api/Attendance/add` | Escritura de asistencia | Existe en colección; fuera de esta etapa, no se ejecutó |
 
@@ -160,4 +160,42 @@ Maxi aporta un objeto anonimizado con `id`, `code`, `document`, nombres, `extern
 
 ## Catálogo de turnos recibido — 23/11/2026
 
-Maxi comparte array de getWorkShifts con `code`, `name`, `type`, incluidos códigos vacíos para varios turnos. Tipos Fijo/Libre y referencia V4 coincidente con la muestra de empleado. No hay bloques/días/pausas/vigencias estructurados en esa respuesta. Se confirma forma de esta muestra, no estabilidad de identidad ni ausencia de endpoints adicionales. [Diseño de importación administrativa y secuencia](softwareclock-employee-mapping.md). No usar nombres como reglas de cálculo ni código vacío como clave única.
+Maxi comparte array de getWorkShifts con `code`, `name`, `type`, incluidos códigos vacíos para varios turnos. Tipos Fijo/Libre y referencia V4 coincidente con la muestra de empleado. No hay bloques/días/pausas/vigencias estructurados en esa respuesta. Se confirma forma de esta muestra, no estabilidad de identidad ni ausencia de endpoints adicionales. [Diseño de importación administrativa y secuencias](../functional/softwareclock/sincronizar-horarios.md). No usar nombres como reglas de cálculo ni código vacío como clave única.
+
+## Investigación de detalle estructurado de turnos — 23/11/2026
+
+- La colección histórica documentada en este repositorio registra el GET de catálogo y una operación de asignación de escritura. El adjunto privado no estaba disponible para revisar parámetros ni el inventario completo. La muestra del GET acredita solo un catálogo descriptivo.
+- La portada pública apunta a `/swagger/v1/swagger.json`. La lectura directa de ese documento devolvió HTTP 403 desde este entorno y la herramienta web tampoco accedió al JSON. La leyenda «No operations defined in spec!» de la portada indexada no permite concluir que la API carece de operaciones. [Swagger UI del proveedor](https://api.portalempleado.softwareclock.com/) · [Documento Swagger](https://api.portalempleado.softwareclock.com/swagger/v1/swagger.json).
+- La búsqueda de `getWorkShifts` y de detalle de horarios y planificación en el sitio oficial no aportó un contrato público adicional. SoftwareClock describe planificación y edición de horarios en el producto. Esa funcionalidad de interfaz no acredita que la API exponga los datos. [FAQ oficial](https://softwareclock.com/faqs/).
+
+### OpenAPI aportado por Maxi
+
+El adjunto «Texto pegado.txt» es un JSON de OpenAPI 3.0.1, título `Clock API`, versión `v1`. En `paths` solo aparece GET `/api/ClockApiUser`. El documento incluye componentes de turnos, pero no los vincula a una operación de catálogo o detalle.
+
+| Componente | Datos documentados |
+| --- | --- |
+| `GetWorkShiftsDto` | Objeto con `code` entero, `message` de texto anulable y `work_shifts` como array anulable de `WorkShiftGetAllDto`. |
+| `WorkShiftGetAllDto` | `code`, `name` y `type` de texto anulable. Sin identificador adicional, días, bloques, pausas ni vigencias. |
+| `EmployeeDailyReportDto` | Incluye `shift_start`, `shift_end` y campos de pausas en un DTO diario. El adjunto no documenta una operación que lo devuelva ni una relación con los turnos del catálogo. |
+
+Los dos componentes de catálogo carecen de lista `required`. El `code` entero del envoltorio es distinto del `code` descriptivo de cada turno.
+
+### Ficha Swagger de getWorkShifts aportada por Maxi
+
+La operación se describe como un listado de turnos por nombre de empresa. Swagger indica «No parameters». No especifica cómo se resuelve la empresa. No agregar un parámetro o cabecera de empresa por inferencia ni dar por hecho que el Bearer es el único dato que determina el alcance.
+
+| HTTP | Interpretación documentada |
+| --- | --- |
+| 200 | Objeto con `code`, `message` y `work_shifts`. Cada turno incluye `code`, `name` y `type`. |
+| 400 | Falta el nombre de empresa. |
+| 401 | Falta el token o la llamada no está autorizada. |
+| 404 | Empresa o servidor de empresa no encontrado. |
+| 500 | Error interno del proveedor. |
+
+### Lectura real de catálogo aportada por Maxi
+
+En la prueba del 23/11/2026, Maxi llamó al GET con el Bearer generado para su cuenta, sin enviar nombre de empresa. Recibió HTTP 200 con JSON que contiene `code: 200`, `message: null` y `work_shifts` con diez filas, cuatro con código de turno vacío. Los turnos coincidieron con su backoffice. Se comprobó el alcance para esa conexión. La vinculación de empresa con la credencial es consistente con el resultado, y queda por confirmar su comportamiento con otras cuentas o permisos. Se registra evidencia resumida sin copiar el catálogo real.
+
+El `code: 0` de los ejemplos generados de Swagger aparece tanto en el 200 como en los errores. CU1 toma como criterio de éxito conservador el par observado HTTP 200 y `code: 200` con un catálogo válido. El 401 genérico tampoco acredita una señal de expiración apta para renovar.
+
+**Resultado:** el envoltorio y la llamada sin parámetros quedaron comprobados para esa conexión. Cada turno observado contiene solo `code`, `name` y `type`. Días, bloques, pausas y vigencias siguen sin verificarse en una lectura de detalle. Quedan pendientes cobertura, paginación, estabilidad de códigos y semántica de respuestas distintas. La llamada autenticada fue realizada por Maxi. [Tareas CU1](../specs/012-softwareclock-workshifts/tasks.md).
