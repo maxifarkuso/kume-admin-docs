@@ -9,7 +9,8 @@ Fecha: 23 de noviembre de 2026. Funcional cerrado; diseño técnico propuesto; p
 - [x] Especificación funcional con AC01–AC24 y ejemplos preparada.
 - [x] Propuesta técnica y plan preparados, con contratos/esquema aún no canónicos.
 - [ ] Revisar formalización del algoritmo, recurso de versión, protocolo de vista previa y propuesta HTTP/base.
-- [ ] Aprobar ampliación concreta de contrato público; reconciliar OpenAPI y validar compatibilidad antes de generar consumidores.
+- [x] Autorización expresa del contrato local el 25/11 y ampliación aditiva de OpenAPI.
+- [ ] Publicar revisión inmutable y fijarla en ambos consumidores; generación local de prueba no sustituye el paso de publicación.
 
 ## Validación externa de Clock
 
@@ -32,7 +33,7 @@ Bloqueos: V01/V02/V03/V04 determinan vínculo, tiempo, unicidad e integridad de 
 - [x] Registro de empleado anonimizado inspeccionado: identificadores, documento y referencia de turno documentados; sin datos reales ni token guardados.
 - [x] Diseño propuesto de vínculo persistente y diagramas de secuencia preparados en [mapeo](../../technical/softwareclock-employee-mapping.md).
 - [ ] Validar estructura exterior/cobertura de Employees y estabilidad/alcance de id y code.
-- [ ] Revisar y aprobar confirmación de vínculo, unicidad, revalidación de cambios de documento y auditoría.
+- [x] Primer hito CU2 para vínculo y revalidación aprobado y presente en los checkouts FE/BE; la inicialización de horario es un hito distinto.
 - [ ] Probar filtro document de asistencias con la identidad vinculada; no asumir filtro por id.
 - [x] Inspeccionar muestra de respuesta getWorkShifts: array code/name/type, sin bloques estructurados y con códigos vacíos repetidos.
 - [ ] Confirmar identidad/alcance de turnos y posible endpoint de detalle; relación V4 observada no prueba unicidad.
@@ -87,3 +88,29 @@ Ver [índice y prompts de sesiones](../../functional/softwareclock/README.md). L
 ## Publicación documental solicitada — 23/11/2026
 
 Maxi pidió subir toda la documentación de esta conversación, incluidos tres casos de uso y prompts. Se prepara publicación en main; las menciones anteriores a ausencia de commit/push describen la etapa de preparación. No cambia el estado pendiente de contratos, validaciones reales del proveedor o implementación.
+
+## Continuación del 25/11/2026
+
+| Estado | Alcance |
+| --- | --- |
+| Aprobado | Q1–Q31, AC25–AC28 y contrato local de las rutas de CU3. El ID de empleado se trata como estable para CU2. |
+| Implementado localmente | Navegación de la ficha usando el contrato de CU2 y actualización de caché al confirmar. Cálculo de intervalos por minuto, resumen diario/mensual y resolución de la referencia vigente por fecha como dominio puro, prototipo de matching de cardinalidad máxima y transporte CU0 preparado con decodificador inyectable. El matching y el transporte se ejecutan solo en pruebas. |
+| Pendiente | Ruta, consulta mensual e historial persistido, actualización, integración del matching, edición y persistencia de horarios/vigencias y excepciones, auditoría, previsualización, pruebas de concurrencia y migración. La vista actual informa que la consulta aún no está disponible. |
+
+La revisión de V01–V07 mantiene todas las validaciones externas pendientes.
+CU0 admite la ruta de asistencia y aporta autenticación compartida,
+límite de respuesta, pausa y reintento acotado cuando su contrato reconoce
+el rechazo del token. Esa capacidad no establece todavía la señal real de
+expiración para asistencias. Los dos resultados por fechas del 16/11 siguen
+siendo la evidencia disponible. No se hizo una nueva llamada autenticada
+ni se usaron secretos o personas reales.
+
+Verificación local del 25/11: 75 pruebas FE y 159 BE; tipos, lint y
+build en ambos. Las pruebas FE verifican la habilitación desde la
+confirmación y el acceso a la pestaña durante revalidación. No cubren
+lectura de un historial persistido. Los `contract:check` de los
+consumidores siguen verificando su referencia fijada anterior. El OpenAPI
+local de CU3 se validó por separado con Swagger Parser y generó tipos de
+prueba con openapi-typescript; sus diez rutas son aditivas y las 36
+existentes conservan su definición. También se revisaron los enlaces
+relativos y cercas de los documentos editados.

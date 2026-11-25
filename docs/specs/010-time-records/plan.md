@@ -4,10 +4,10 @@ Fecha: 23 de noviembre de 2026. Plan propuesto tras cierre funcional; no acredit
 
 | Orden | Hito | Condición de salida |
 | --- | --- | --- |
-| 1 | Cierre funcional y documentación | Q1–Q31 registrados, AC01–AC24 y ejemplos revisables; cierre confirmado por Maxi |
+| 1 | Cierre funcional y documentación | Q1–Q31 registrados, AC01–AC28 y ejemplos revisables; cierre confirmado por Maxi |
 | 2 | Validar endpoints, vinculación y proveedor | Resolver matriz V01–V07 de tareas o documentar con precisión qué bloquea al adaptador; sin secretos en evidencias |
-| 3 | Revisar propuesta técnica y contrato | Recursos/versiones, matching, snapshots, esquema y errores concretos revisados; aprobación para cambio de contrato público antes de editar OpenAPI |
-| 4 | Preparar consumidores | Contrato canónico ampliado y validado, revisión inmutable publicada cuando se autorice, FE/BE fijados a la misma revisión y DTO generados |
+| 3 | Revisar propuesta técnica y contrato | Recursos/versiones, matching, snapshots, esquema y errores concretos revisados; autorización del contrato local registrada el 25/11; revisar matching y esquema antes de persistir |
+| 4 | Preparar consumidores | Contrato canónico ampliado localmente y validado, revisión inmutable publicada cuando se autorice, FE/BE fijados a la misma revisión y DTO generados |
 | 5 | Núcleo y configuración | Horarios propios precargados una vez, vigencias, excepciones, margen y previsualización/reproceso; dominio probado con ejemplos |
 | 6 | Persistencia y auditoría | Migración aditiva revisada, idempotencia y revisiones originales; transacciones/versionado comprobados en base de prueba |
 | 7 | Adaptador y casos de uso | Lectura Clock, autenticación backend, importación atómica, preservación de ajustes y fallos que conservan snapshot |
@@ -32,8 +32,9 @@ Conservar cambios ajenos, ramas y revisión según instrucciones de cada repo. N
 - AC02–AC06: horarios/vigencias/precarga única/excepciones y confirmación retroactiva.
 - AC07–AC11: candidatos, emparejamiento único, reemplazo de faltante y originales inmutables.
 - AC12–AC19: estados temporales, cálculo con minutos, parciales, pausas y justificaciones.
+- AC25–AC28: acceso por vínculo, habilitación sin recarga, horario pendiente y revalidación con historial.
 - AC20–AC24: egreso inclusivo, inactivas, consulta/error, seguridad y carreras reales.
 
 La autorización de preparar estas especificaciones no prueba ni publica un contrato nuevo. Resolver la revisión técnica sobre los archivos concretos, sin repetir discovery funcional.
 
-Prioridad indicada por Maxi el 23/11: cerrar primero [vínculo persistente y secuencias de empleados](../../technical/softwareclock-employee-mapping.md); luego consultar marcas por documento guardado, sin redescubrimiento mensual. Investigar turnos Clock por separado para evaluar su utilidad, manteniendo el horario propio de KUME hasta acuerdo posterior.
+Prioridad indicada por Maxi el 23/11: cerrar primero [vínculo persistente y secuencias de empleados](../../technical/softwareclock-employee-mapping.md); luego consultar marcas por documento guardado, sin redescubrimiento mensual. La decisión posterior de CU2 fija el workshift estructurado en KUME como origen de la propuesta inicial editable. El horario confirmado es independiente.
