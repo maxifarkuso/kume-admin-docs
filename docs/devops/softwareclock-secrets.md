@@ -18,3 +18,9 @@
 4. Si falla la rotación, recuperar el archivo previo únicamente si la credencial sigue vigente y es segura. Si fue revocada o comprometida, emitir una nueva. Limpiar copias temporales y verificar disponibilidad de KUME. El token se recupera por Basic a demanda y permanece en memoria.
 
 [Caso de uso](../functional/softwareclock/autenticacion.md) · [Diseño técnico](../specs/011-softwareclock-auth/technical-spec.md)
+
+## Habilitación de CU2 por cédula en Oracle
+
+Con el backend que incluye la consulta por cédula y el secreto de CU0 ya instalado, agregar a `shared/runtime.env` la variable `CLOCK_EMPLOYEE_LOOKUP_EVIDENCE`. Para la conexión por defecto, usar `CLOCK_EMPLOYEE_LOOKUP_EVIDENCE=primary:decision-2026-11-25`. Si se configuró `CLOCK_WORKSHIFT_CONNECTION_ID`, usar ese identificador como prefijo. Mantener los permisos privados del archivo.
+
+Aplicar el despliegue de backend mediante el flujo vigente de Oracle. Desde una ficha activa autorizada, comprobar que aparece «Sincronizar empleado con Clock» y abrir una vista previa con una cédula existente. Abrir la vista previa alcanza para comprobar la lectura de Clock. Cancelarla si la prueba no requiere persistir un vínculo.

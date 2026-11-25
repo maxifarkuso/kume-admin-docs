@@ -14,6 +14,7 @@
 - [x] Registrar las decisiones de GrillMe y editar el contrato OpenAPI.
 - [x] Integrar acción, vista previa, confirmación y horario pendiente en la ficha.
 - [x] Persistir revisiones y auditoría del vínculo con resincro y revalidación de la misma identidad.
-- [ ] Verificar estabilidad del ID con la empresa de Clock antes de habilitar la consulta por cédula.
+- [x] Registrar que Maxi adopta la estabilidad del ID como supuesto operativo.
+- [ ] Desplegar y habilitar la consulta por cédula en Oracle. Verificar la vista previa desde una ficha autorizada.
 - [ ] Publicar la revisión documental y actualizar las referencias fijadas de FE y BE antes de integrar.
 - [ ] Verificar concurrencia y migración en el entorno PostgreSQL autorizado.
