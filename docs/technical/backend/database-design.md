@@ -346,3 +346,11 @@ La restricción de roles de `staff_member` admite además `administrative`. La m
 ## Vínculo de empleado con Clock
 
 [CU2 propone](../../specs/013-softwareclock-employee/technical-spec.md#persistencia-versiones-y-auditoría) separar identidad versionada, turno observado y origen histórico del horario personal, con confirmación transaccional y auditoría. El primer hito incorpora una migración aditiva verificada localmente sobre PGlite. Su ejecución operativa requiere autorización.
+
+## Persistencia propuesta de CU3
+
+La [especificación de Registro de horas](../../specs/010-time-records/technical-spec.md#persistencia-propuesta)
+describe revisiones de horario y margen, eventos originales, diarios, auditoría
+e importaciones. Este diseño requiere una migración aditiva revisada
+y comprobar sus restricciones y carreras con PostgreSQL. El contrato local
+no acredita tablas ni rutas implementadas.

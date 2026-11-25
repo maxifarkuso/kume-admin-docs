@@ -312,3 +312,14 @@ Las rutas de horario propio, marcas, revisión y margen provienen de la [propues
 ### Vinculación de empleado con Clock
 
 El [contrato aprobado del primer hito de CU2](../specs/013-softwareclock-employee/technical-spec.md#contrato-del-primer-hito-aprobado) incorpora lectura, vista previa y confirmación sobre una ficha en OpenAPI. El segundo hito amplía el contrato para la propuesta inicial de horario.
+
+## Registro de horas (CU3)
+
+El contrato de Registro de horas está en [OpenAPI](../../openapi.yaml), con
+el comportamiento y las secuencias en [010](../specs/010-time-records/technical-spec.md).
+La lectura mensual e histórica consulta el estado persistido. La actualización
+es un comando autenticado que conserva el último éxito ante fallos del
+proveedor. Las previsualizaciones ligan los cambios retroactivos a versiones
+observadas. Las revisiones diarias usan versiones de ficha, diario, horario
+y margen. La API aplica el mismo acceso administrativo existente. Ver
+[tareas](../specs/010-time-records/tasks.md) para el estado de implementación.

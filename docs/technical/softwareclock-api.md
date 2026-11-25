@@ -207,3 +207,13 @@ El `code: 0` de los ejemplos generados de Swagger aparece tanto en el 200 como e
 ## Consulta de empleado por cédula — 25/11/2026
 
 Maxi comprobó `GET /api/Employees/employee-by-rut?document=…`. La coincidencia devuelve un objeto con `document` textual y `id` y `code` numéricos en el ejemplo. La ausencia devuelve el JSON `{"message":"Empleado no encontrado.","code":404}`. El estado HTTP de la ausencia no figura en la evidencia aportada. Maxi confirma la unicidad de cédula por empresa. La estabilidad del identificador sigue pendiente de verificación.
+
+
+## Asistencias de CU3 — 25/11/2026
+
+El ID de empleado se usa como identidad estable por supuesto operativo
+aprobado para CU2. CU3 obtiene el documento exacto desde el vínculo y
+no redescubre al empleado. El transporte local se probó con un doble de
+red para confirmar el envío de `document`, `start` y `end` por GET.
+El filtro real, el alcance y la identidad de cada marca permanecen en
+[V01–V07](../specs/010-time-records/tasks.md#validación-externa-de-clock).
