@@ -124,7 +124,7 @@ sequenceDiagram
     A->>F: Abrir ficha
     F->>B: GET clock-link
     alt Sin vínculo confirmado
-        F-->>A: Registro de horas deshabilitado; indicación en Datos
+        F-->>A: Registro de horas deshabilitado e indicación en Datos
         A->>F: Confirmar vínculo desde Datos
         F->>B: POST confirmation
         B-->>F: Observación confirmada y versión de ficha

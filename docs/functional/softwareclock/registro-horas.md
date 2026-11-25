@@ -52,7 +52,7 @@ sequenceDiagram
         C-->>BE: Respuesta
         alt Respuesta válida y cobertura comprobada
             BE->>DB: Revalidar vínculo y aplicar con decisiones actuales
-            Note over BE,DB: Red fuera de transacción; aplicación atómica
+            Note over BE,DB: Consulta fuera de la transacción y aplicación atómica
             DB-->>BE: Nuevo snapshot e historial
             BE-->>UI: Marcas, cálculos y último éxito
         else Error o respuesta no confiable
