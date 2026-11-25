@@ -203,3 +203,9 @@ Maxi aprueba que CU2 use el workshift asignado en Clock y su definición estruct
 - Maxi aprueba incorporar a OpenAPI la consulta del vínculo, la preparación y la confirmación del primer hito. La consulta respeta el acceso a la ficha. Preparar y confirmar requieren administración y ficha activa. La confirmación verifica versiones y guarda vínculo y auditoría en una transacción. El contrato de horario editable corresponde al segundo hito.
 - El token de CU0 determina la empresa. KUME usa una conexión lógica estable y no ofrece seleccionar ni cambiar de empresa en CU2.
 - La vista previa vence a los 15 minutos. Cambios de ficha, vínculo o conexión requieren una vista nueva. La repetición de una confirmación aplicada recupera su resultado sin duplicar la auditoría.
+
+### CU2 · Consulta por cédula — 25 de noviembre de 2026
+
+Maxi confirma que la cédula es única por empresa en Clock y aprueba que CU2 consulte `GET /api/Employees/employee-by-rut?document=…` mediante CU0. Esta decisión sustituye la consulta del listado y la exigencia de verificar su cobertura, paginación y duplicados. Se conserva la validación de estabilidad del ID, la confirmación administrativa y la habilitación explícita por conexión.
+
+Maxi acepta como supuesto operativo que el ID de Clock se conserva al corregir la cédula. La empresa dispone únicamente del entorno productivo de Clock. Se mantiene la revisión ante discrepancias y no se requiere corregir una cédula productiva para probar el supuesto. El supuesto queda registrado sin comprobación experimental.

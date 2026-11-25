@@ -14,11 +14,11 @@ sequenceDiagram
     participant W as Catálogo CU1
     A->>UI: Sincronizar empleado con Clock
     UI->>BE: Preparar con versión de ficha
-    BE->>C: Consultar empleados
-    C->>P: GET /api/Employees/employees
+    BE->>C: Consultar empleado por cédula
+    C->>P: GET /api/Employees/employee-by-rut por document
     P-->>C: Respuesta
-    C-->>BE: Listado
-    BE->>BE: Validar cobertura, documento e identidad
+    C-->>BE: Empleado o ausencia
+    BE->>BE: Validar documento e identidad
     alt Coincidencia única apta
         BE->>W: Resolver el turno en la misma conexión
         W-->>BE: Referencia y definición versionada o motivo pendiente
@@ -76,8 +76,8 @@ sequenceDiagram
     participant DB as Base KUME
     A->>UI: Sincronizar empleado con Clock
     UI->>BE: Preparar
-    BE->>C: Consultar empleados
-    C-->>BE: Listado
+    BE->>C: Consultar empleado por cédula
+    C-->>BE: Empleado o ausencia
     BE->>DB: Leer vínculo y horario propio
     alt Identidad y documento siguen aptos
         BE-->>UI: Metadata externa revisable, sin propuesta de horario

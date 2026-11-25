@@ -203,3 +203,7 @@ El `code: 0` de los ejemplos generados de Swagger aparece tanto en el 200 como e
 ## Uso de referencias en CU2 — 24/11/2026
 
 [CU2](../functional/softwareclock/sincronizar-empleado.md) propone el horario inicial desde la definición estructurada que KUME asocia con el workshift asignado. La evidencia del proveedor se limita a la asignación y al catálogo descriptivo. La cobertura del listado de empleados, identidad estable y eficacia del filtro de asistencias por documento siguen pendientes de validación.
+
+## Consulta de empleado por cédula — 25/11/2026
+
+Maxi comprobó `GET /api/Employees/employee-by-rut?document=…`. La coincidencia devuelve un objeto con `document` textual y `id` y `code` numéricos en el ejemplo. La ausencia devuelve el JSON `{"message":"Empleado no encontrado.","code":404}`. El estado HTTP de la ausencia no figura en la evidencia aportada. Maxi confirma la unicidad de cédula por empresa. La estabilidad del identificador sigue pendiente de verificación.

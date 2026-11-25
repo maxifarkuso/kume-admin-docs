@@ -12,7 +12,7 @@ En Datos de la ficha activa, mostrar el botón «Sincronizar empleado con Clock�
 | Horario inicial disponible | Editor con días, bloques, pausas y vigencia. Permitir confirmar identidad sola o guardar también el horario validado. |
 | Horario pendiente de configurar/vincular | Mostrar el motivo y acceso a Horarios laborales. Permitir confirmar solo la identidad y volver a la preparación cuando el catálogo esté listo. |
 | Horario propio definido | Mostrar el turno actual y el origen histórico del horario como datos distintos. Omitir el editor inicial. |
-| Requiere revisión | Explicar ausencia, duplicados, cambios de identidad/documento o cobertura no comprobada. Guardado bloqueado. |
+| Requiere revisión | Explicar ausencia, cambios de identidad o discrepancias de documento. Guardado bloqueado. |
 | Error o conflicto | Conservar registro previo y borrador local para revisión. Ofrecer preparar una vista nueva con confirmación explícita. |
 
 Diálogo con foco inicial, navegación por teclado, mensajes asociados a campos y retorno del foco al botón. Los estados se expresan con texto además del color.
@@ -20,7 +20,7 @@ Diálogo con foco inicial, navegación por teclado, mensajes asociados a campos 
 | ID | Criterio |
 | --- | --- |
 | CU2-01 | Una lectura completa, documento único y confirmación persisten el vínculo. Formatos equivalentes conservan el documento externo exacto, incluidos ceros. |
-| CU2-02 | Sin coincidencia, con duplicados, documento inválido o listado insuficiente, se indica revisión. La similitud del nombre y la coincidencia del código de asistencia carecen de efecto. |
+| CU2-02 | Sin coincidencia o con documento inválido o discrepante, se indica revisión. La similitud del nombre y la coincidencia del código de asistencia carecen de efecto. |
 | CU2-03 | Una asignación inequívoca y una definición completa precargan una sola vez. Editar apertura o pausa y confirmar una fecha guarda exactamente la versión validada y su procedencia. Cancelar descarta las escrituras. |
 | CU2-04 | Turno faltante, ambiguo, código vacío sin resolución fiable o solo un par de horas dejan pendiente el horario. Identidad y referencia externa pueden guardarse. El acceso al catálogo indica la acción siguiente. |
 | CU2-05 | Una vez resuelto el catálogo, administración puede iniciar otra preparación para la ficha vinculada sin horario. Solo la acción explícita puede crear la primera vigencia. |
