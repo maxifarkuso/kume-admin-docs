@@ -6,11 +6,13 @@ Fecha: 23/11/2026. Actor: administración. Nombre del caso de uso: registro de h
 
 Ficha → Registro de horas, mes y tabla diaria, originales, intervalos confirmados, previstos, adicional, faltante, saldo neto e incidencias. Solo informativo, sin pagos, recargos, aprobación de pago o cierre mensual.
 
-Fuente propietaria completa: [reglas funcionales Q1–Q31](../registro-horas.md). [Iniciativa 010](../../specs/010-time-records/spec.md): AC01–AC24, propuesta técnica, plan y tareas. No duplicar ni reemplazar esas reglas en nuevas sesiones; este documento delimita el caso respecto de CU1/CU2.
+Fuente propietaria completa: [reglas funcionales Q1–Q31](../registro-horas.md). [Iniciativa 010](../../specs/010-time-records/spec.md): AC01–AC28, propuesta técnica, plan y tareas. No duplicar ni reemplazar esas reglas en nuevas sesiones; este documento delimita el caso respecto de CU1/CU2.
 
 ## Dependencias y datos externos
 
-CU2 aporta vínculo validado y documento externo. CU3 no llama Employees para redescubrir al empleado. Consulta Bearer GET `/api/Attendance/getAttendances?document=...&start=...&end=...` sobre Portal del Empleado; lectura por fechas probada por Maxi, filtro document pendiente. Autenticación compartida con CU1/CU2 en backend.
+La pestaña se habilita al confirmar el vínculo en Datos, sin recarga manual ni apertura automática. El horario pendiente permite consultar marcas, con el cálculo correspondiente pendiente. Durante una revalidación, la pestaña conserva la consulta y revisión del historial ya importado, indica el paso en Datos y bloquea nuevas importaciones. Para fichas inactivas se mantiene la revisión histórica y el corte inclusivo de egreso.
+
+CU2 aporta vínculo validado y el documento exacto. El ID del empleado se considera estable según el supuesto operativo aprobado para CU2; este supuesto no establece la identidad de los eventos de asistencia. CU3 no llama Employees para redescubrir al empleado. Consulta Bearer GET `/api/Attendance/getAttendances?document=...&start=...&end=...` sobre Portal del Empleado; lectura por fechas probada por Maxi, filtro document pendiente. Autenticación compartida con CU1/CU2 en backend.
 
 Muestra de marca: code, external_id nulo, document, full_name, group, device, issued, created, created_by y metadata de validación. No se observó campo de dirección entrada/salida. code de asistencia no equivale al code del empleado. issued/created sin offset y estabilidad de evento deben validarse antes de normalizar/importar. Conservar original íntegro, sin exponer segundos en UI.
 
@@ -43,13 +45,13 @@ sequenceDiagram
     DB-->>BE: Snapshot o primer uso
     BE-->>UI: Datos locales y estado de consulta
     UI->>BE: Solicitar actualización del mes
-    BE->>DB: Leer vínculo CU2
+    BE->>DB: Leer vínculo CU2 y capturar versión
     DB-->>BE: Vínculo/documento externo
     alt Vínculo válido
         BE->>C: GET /api/Attendance/getAttendances con documento y fechas
         C-->>BE: Respuesta
         alt Respuesta válida y cobertura comprobada
-            BE->>DB: Importar y reconciliar con decisiones actuales
+            BE->>DB: Revalidar vínculo y aplicar con decisiones actuales
             Note over BE,DB: Red fuera de transacción; aplicación atómica
             DB-->>BE: Nuevo snapshot e historial
             BE-->>UI: Marcas, cálculos y último éxito
@@ -65,8 +67,8 @@ sequenceDiagram
 
 MagicPath: proyecto `473074895715196928`, componente `473074931341623296`, revisión inicial aprobada `473077607060094976`. [Maqueta y capturas](../../ui/maquetas/registro-horas/README.md). La maqueta usa datos simulados y no refleja automáticamente todas las ampliaciones de Q1–Q31; no copiar su almacenamiento en memoria ni lógica predefinida al producto.
 
-Pendientes técnicos: V01–V07 de [tareas](../../specs/010-time-records/tasks.md), identidad temporal/externa, cobertura, protocolo de renovación y errores; revisar fórmula/matching, esquema, transacciones y contrato interno antes de desarrollar. OpenAPI todavía no incluye estas rutas. Originales modificados/omitidos por proveedor no justifican pérdida de historia ni borrado por omisión.
+Pendientes técnicos: V01–V07 de [tareas](../../specs/010-time-records/tasks.md), identidad temporal/externa, cobertura, protocolo de renovación y errores; revisar fórmula/matching, esquema, transacciones y contrato interno antes de desarrollar. Las rutas se incorporaron al OpenAPI local autorizado el 25/11 y su implementación HTTP sigue pendiente. Originales modificados/omitidos por proveedor no justifican pérdida de historia ni borrado por omisión.
 
-Criterios de salida: AC01–AC24 verificables, ejemplos de cálculo correctos, lectura real por documento validada, originales inmutables, ajustes/versiones sin pérdidas bajo concurrencia, pruebas reales de PostgreSQL separadas del simulador y comportamiento de error integrado. No declarar integración real por pasar unitarias.
+Criterios de salida: AC01–AC28 verificables, ejemplos de cálculo correctos, lectura real por documento validada, originales inmutables, ajustes/versiones sin pérdidas bajo concurrencia, pruebas reales de PostgreSQL separadas del simulador y comportamiento de error integrado. No declarar integración real por pasar unitarias.
 
 [Prompt de esta sesión](../../general/prompts/softwareclock/03-registro-horas.md). [Índice y dependencias](README.md).

@@ -54,6 +54,10 @@ Se incluyen horario laboral propio con vigencias, excepciones por fecha, importa
 | AC22 | Consulta al abrir/cambiar mes y Actualizar; última consulta visible; error conserva última lectura exitosa como desactualizada, sin inferir ausencia | Reglas iniciales |
 | AC23 | Ninguna operación escribe en Clock; credenciales/token solo backend; cada operación exige sesión y respeta protección de escritura existente | Alcance y arquitectura |
 | AC24 | Edición concurrente no sobrescribe trabajo ajeno; error conserva borrador; horarios, excepciones, revisión e importación mantienen coherencia | Control optimista vigente |
+| AC25 | Para una maestra sin vínculo confirmado, Registro de horas está deshabilitado y remite a «Sincronizar empleado con Clock» en Datos | Continuación CU3 |
+| AC26 | Tras confirmar CU2, la pestaña se habilita en la misma ficha sin recarga manual y abre al seleccionarla | Continuación CU3 |
+| AC27 | Con vínculo confirmado y horario pendiente, permite abrir y consultar marcas; el cálculo que requiere horario queda pendiente | Continuación CU3 |
+| AC28 | Un vínculo existente en revalidación conserva acceso al historial disponible, explica cómo revalidar en Datos y bloquea nuevas importaciones; se conserva la revisión histórica de inactivas | Continuación CU3 |
 
 ## Ejemplos obligatorios de cálculo
 
