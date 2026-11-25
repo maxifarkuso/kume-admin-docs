@@ -27,6 +27,7 @@ tags:
   - name: Categories
   - name: Expenses
   - name: Staff members
+  - name: Time records
   - name: Assignments
   - name: Courses
   - name: Workshops
@@ -693,6 +694,321 @@ paths:
           $ref: "#/components/responses/Conflict"
         "422":
           $ref: "#/components/responses/ValidationError"
+
+  /api/v1/staff-members/{staffMemberId}/time-records:
+    parameters:
+    - $ref: '#/components/parameters/StaffMemberId'
+    get:
+      tags:
+      - Time records
+      operationId: getStaffTimeRecords
+      parameters:
+      - name: month
+        in: query
+        required: true
+        schema:
+          $ref: '#/components/schemas/TimeRecordMonth'
+      responses:
+        '200':
+          description: Resultado de Registro de horas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeRecordSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/staff-members/{staffMemberId}/time-record-imports:
+    parameters:
+    - $ref: '#/components/parameters/StaffMemberId'
+    post:
+      tags:
+      - Time records
+      operationId: importStaffTimeRecords
+      parameters:
+      - $ref: '#/components/parameters/KumeRequest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeRecordImport'
+      responses:
+        '200':
+          description: Resultado de Registro de horas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeRecordSnapshot'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '502':
+          description: Respuesta de Clock inválida o cobertura insuficiente
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '503':
+          description: Actualización no disponible
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '504':
+          description: Tiempo de espera de Clock agotado
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /api/v1/staff-members/{staffMemberId}/time-records/{date}:
+    parameters:
+    - $ref: '#/components/parameters/StaffMemberId'
+    - name: date
+      in: path
+      required: true
+      schema:
+        type: string
+        format: date
+    put:
+      tags:
+      - Time records
+      operationId: reviewStaffTimeRecord
+      parameters:
+      - $ref: '#/components/parameters/KumeRequest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeRecordReview'
+      responses:
+        '200':
+          description: Resultado de Registro de horas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeRecordDay'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /api/v1/staff-members/{staffMemberId}/time-records/{date}/history:
+    parameters:
+    - $ref: '#/components/parameters/StaffMemberId'
+    - name: date
+      in: path
+      required: true
+      schema:
+        type: string
+        format: date
+    get:
+      tags:
+      - Time records
+      operationId: getStaffTimeRecordHistory
+      responses:
+        '200':
+          description: Resultado de Registro de horas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeRecordHistory'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/staff-members/{staffMemberId}/labor-schedules:
+    parameters:
+    - $ref: '#/components/parameters/StaffMemberId'
+    get:
+      tags:
+      - Time records
+      operationId: getStaffLaborSchedules
+      responses:
+        '200':
+          description: Resultado de Registro de horas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LaborScheduleConfiguration'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/staff-members/{staffMemberId}/labor-schedule-previews:
+    parameters:
+    - $ref: '#/components/parameters/StaffMemberId'
+    post:
+      tags:
+      - Time records
+      operationId: previewStaffLaborSchedule
+      parameters:
+      - $ref: '#/components/parameters/KumeRequest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LaborScheduleDraft'
+      responses:
+        '201':
+          description: Resultado de Registro de horas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeRecordChangePreview'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /api/v1/staff-members/{staffMemberId}/labor-schedule-changes:
+    parameters:
+    - $ref: '#/components/parameters/StaffMemberId'
+    post:
+      tags:
+      - Time records
+      operationId: confirmStaffLaborSchedule
+      parameters:
+      - $ref: '#/components/parameters/KumeRequest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeRecordChangeConfirmation'
+      responses:
+        '200':
+          description: Resultado de Registro de horas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LaborScheduleConfiguration'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /api/v1/time-record-policies:
+    get:
+      tags:
+      - Time records
+      operationId: getTimeRecordPolicy
+      responses:
+        '200':
+          description: Resultado de Registro de horas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeRecordPolicy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/time-record-policy-previews:
+    post:
+      tags:
+      - Time records
+      operationId: previewTimeRecordPolicy
+      parameters:
+      - $ref: '#/components/parameters/KumeRequest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeRecordPolicyDraft'
+      responses:
+        '201':
+          description: Resultado de Registro de horas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeRecordChangePreview'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /api/v1/time-record-policy-changes:
+    post:
+      tags:
+      - Time records
+      operationId: confirmTimeRecordPolicy
+      parameters:
+      - $ref: '#/components/parameters/KumeRequest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeRecordChangeConfirmation'
+      responses:
+        '200':
+          description: Resultado de Registro de horas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeRecordPolicy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
 
   /api/v1/staff-members/{staffMemberId}/clock-link:
     parameters:
@@ -1846,6 +2162,537 @@ components:
             format: binary
 
   schemas:
+    TimeRecordMonth:
+      type: string
+      pattern: ^[0-9]{4}-(0[1-9]|1[0-2])$
+    TimeRecordImport:
+      type: object
+      additionalProperties: false
+      required:
+      - month
+      properties:
+        month:
+          $ref: '#/components/schemas/TimeRecordMonth'
+    TimeRecordBlock:
+      type: object
+      additionalProperties: false
+      required:
+      - start
+      - end
+      properties:
+        start:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        end:
+          type: string
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+    TimeRecordContext:
+      type: object
+      additionalProperties: false
+      required:
+      - staffVersion
+      - dayVersion
+      - scheduleVersion
+      - policyVersion
+      properties:
+        staffVersion:
+          type: integer
+          minimum: 1
+        dayVersion:
+          type: integer
+          minimum: 0
+        scheduleVersion:
+          type: integer
+          minimum: 0
+        policyVersion:
+          type: integer
+          minimum: 1
+    TimeRecordDay:
+      type: object
+      additionalProperties: false
+      required:
+      - date
+      - context
+      - state
+      - planned
+      - confirmed
+      - marks
+      - decisions
+      - confirmedMinutes
+      - plannedMinutes
+      - differences
+      properties:
+        date:
+          type: string
+          format: date
+        context:
+          $ref: '#/components/schemas/TimeRecordContext'
+        state:
+          type: string
+          enum:
+          - future
+          - inProgress
+          - resolved
+          - needsReview
+          - noSchedule
+          - noWork
+          - afterTermination
+        planned:
+          anyOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/TimeRecordBlock'
+          - type: 'null'
+        confirmed:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeRecordBlock'
+        marks:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - id
+            - time
+            properties:
+              id:
+                type: string
+                format: uuid
+              time:
+                type: string
+                pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        decisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeRecordDecision'
+        confirmedMinutes:
+          type: integer
+          minimum: 0
+        plannedMinutes:
+          anyOf:
+          - type: integer
+            minimum: 0
+          - type: 'null'
+        differences:
+          anyOf:
+          - $ref: '#/components/schemas/TimeRecordDifferences'
+          - type: 'null'
+    TimeRecordDifferences:
+      type: object
+      additionalProperties: false
+      required:
+      - additionalMinutes
+      - missingMinutes
+      - balanceMinutes
+      properties:
+        additionalMinutes:
+          type: integer
+          minimum: 0
+        missingMinutes:
+          type: integer
+          minimum: 0
+        balanceMinutes:
+          type: integer
+    TimeRecordDecision:
+      oneOf:
+      - type: object
+        additionalProperties: false
+        required:
+        - kind
+        - position
+        - eventId
+        properties:
+          kind:
+            const: assign
+          position:
+            type: integer
+            minimum: 0
+            description: Índice base cero. Cada bloque aporta entrada y salida en orden.
+          eventId:
+            type: string
+            format: uuid
+      - type: object
+        additionalProperties: false
+        required:
+        - kind
+        - position
+        - time
+        properties:
+          kind:
+            const: manual
+          position:
+            type: integer
+            minimum: 0
+            description: Índice base cero. Cada bloque aporta entrada y salida en orden.
+          time:
+            type: string
+            pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+      - type: object
+        additionalProperties: false
+        required:
+        - kind
+        - startEventId
+        - endEventId
+        properties:
+          kind:
+            const: workedThroughBreak
+          startEventId:
+            type: string
+            format: uuid
+          endEventId:
+            type: string
+            format: uuid
+      - type: object
+        additionalProperties: false
+        required:
+        - kind
+        - reason
+        properties:
+          kind:
+            const: noWork
+          reason:
+            type: string
+            enum:
+            - leave
+            - illness
+            - other
+    TimeRecordReview:
+      type: object
+      additionalProperties: false
+      required:
+      - context
+      - decisions
+      properties:
+        context:
+          $ref: '#/components/schemas/TimeRecordContext'
+        decisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeRecordDecision'
+        reason:
+          type: string
+          maxLength: 500
+    TimeRecordHistory:
+      type: object
+      additionalProperties: false
+      required:
+      - entries
+      properties:
+        entries:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - id
+            - actor
+            - time
+            - operation
+            - reason
+            - before
+            - after
+            properties:
+              id:
+                type: string
+                format: uuid
+              actor:
+                type: string
+              time:
+                type: string
+                pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]$
+                description: Fecha y minuto civil de America/Montevideo.
+              operation:
+                type: string
+                enum:
+                - import
+                - review
+                - reprocess
+              reason:
+                anyOf:
+                - type: string
+                  maxLength: 500
+                - type: 'null'
+              before:
+                anyOf:
+                - $ref: '#/components/schemas/TimeRecordDay'
+                - type: 'null'
+              after:
+                $ref: '#/components/schemas/TimeRecordDay'
+    TimeRecordSnapshot:
+      type: object
+      additionalProperties: false
+      required:
+      - month
+      - importState
+      - freshness
+      - lastSuccessfulImport
+      - days
+      - summary
+      properties:
+        month:
+          $ref: '#/components/schemas/TimeRecordMonth'
+        importState:
+          type: string
+          enum:
+          - eligible
+          - needsRevalidation
+          - inactive
+          - unavailable
+        freshness:
+          type: string
+          enum:
+          - neverImported
+          - current
+          - stale
+        lastSuccessfulImport:
+          anyOf:
+          - type: string
+            pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}T([01][0-9]|2[0-3]):[0-5][0-9]$
+            description: Fecha y minuto civil de America/Montevideo.
+          - type: 'null'
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeRecordDay'
+        summary:
+          type: object
+          additionalProperties: false
+          required:
+          - confirmedMinutes
+          - plannedMinutes
+          - differences
+          - pendingDayCount
+          - isPartial
+          properties:
+            confirmedMinutes:
+              type: integer
+              minimum: 0
+            plannedMinutes:
+              type: integer
+              minimum: 0
+            differences:
+              $ref: '#/components/schemas/TimeRecordDifferences'
+            pendingDayCount:
+              type: integer
+              minimum: 0
+            isPartial:
+              type: boolean
+    LaborScheduleWeek:
+      type: object
+      additionalProperties: false
+      required:
+      - days
+      properties:
+        days:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - weekday
+            - blocks
+            properties:
+              weekday:
+                type: integer
+                minimum: 1
+                maximum: 7
+                description: Día ISO de semana, lunes 1.
+              blocks:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimeRecordBlock'
+    LaborScheduleException:
+      type: object
+      additionalProperties: false
+      required:
+      - date
+      - reference
+      - cause
+      properties:
+        date:
+          type: string
+          format: date
+        reference:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            required:
+            - kind
+            - blocks
+            properties:
+              kind:
+                const: specialDay
+              blocks:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimeRecordBlock'
+          - type: object
+            additionalProperties: false
+            required:
+            - kind
+            - reason
+            properties:
+              kind:
+                const: justifiedAbsence
+              reason:
+                type: string
+                enum:
+                - leave
+                - illness
+                - holiday
+                - other
+        cause:
+          anyOf:
+          - type: string
+            maxLength: 500
+          - type: 'null'
+    LaborScheduleConfiguration:
+      type: object
+      additionalProperties: false
+      required:
+      - version
+      - revisions
+      - exceptions
+      properties:
+        version:
+          type: integer
+          minimum: 0
+        revisions:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - effectiveFrom
+            - week
+            properties:
+              effectiveFrom:
+                type: string
+                format: date
+              week:
+                $ref: '#/components/schemas/LaborScheduleWeek'
+        exceptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/LaborScheduleException'
+    LaborScheduleDraft:
+      type: object
+      additionalProperties: false
+      required:
+      - version
+      - change
+      properties:
+        version:
+          type: integer
+          minimum: 0
+        change:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            required:
+            - kind
+            - effectiveFrom
+            - week
+            properties:
+              kind:
+                const: weekly
+              effectiveFrom:
+                type: string
+                format: date
+              week:
+                $ref: '#/components/schemas/LaborScheduleWeek'
+          - type: object
+            additionalProperties: false
+            required:
+            - kind
+            - exception
+            properties:
+              kind:
+                const: exception
+              exception:
+                $ref: '#/components/schemas/LaborScheduleException'
+    TimeRecordPolicyRevision:
+      type: object
+      additionalProperties: false
+      required:
+      - effectiveFrom
+      - marginMinutes
+      properties:
+        effectiveFrom:
+          type: string
+          format: date
+        marginMinutes:
+          type: integer
+          minimum: 0
+    TimeRecordPolicy:
+      type: object
+      additionalProperties: false
+      required:
+      - version
+      - revisions
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        revisions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeRecordPolicyRevision'
+    TimeRecordPolicyDraft:
+      type: object
+      additionalProperties: false
+      required:
+      - version
+      - revision
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        revision:
+          $ref: '#/components/schemas/TimeRecordPolicyRevision'
+    TimeRecordChangePreview:
+      type: object
+      additionalProperties: false
+      required:
+      - previewId
+      - expiresAt
+      - affected
+      properties:
+        previewId:
+          type: string
+          format: uuid
+        expiresAt:
+          type: string
+          format: date-time
+        affected:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - staffMemberId
+            - date
+            - needsReview
+            properties:
+              staffMemberId:
+                type: string
+                format: uuid
+              date:
+                type: string
+                format: date
+              needsReview:
+                type: boolean
+    TimeRecordChangeConfirmation:
+      type: object
+      additionalProperties: false
+      required:
+      - previewId
+      properties:
+        previewId:
+          type: string
+          format: uuid
+
     WorkshiftObservation:
       type: object
       additionalProperties: false

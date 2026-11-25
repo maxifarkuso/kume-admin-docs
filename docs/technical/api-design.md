@@ -277,10 +277,11 @@ Maxi dio conformidad a las rutas de importación propuestas. El detalle de DTO, 
 | Método | Ruta | Propósito |
 | --- | --- | --- |
 | GET | `/api/v1/workshift-references` | Listar referencias locales con UUID, etiqueta, horas locales opcionales, metadatos de origen y versión. Disponible aunque el origen esté desconectado. |
+| PATCH | `/api/v1/workshift-references/{referenceId}` | Guardar el par local de inicio y fin con la versión observada. |
 | POST | `/api/v1/workshift-import-previews` | Leer el origen configurado y preparar una vista previa con filas, coincidencias, ambigüedades y vencimiento. |
 | POST | `/api/v1/workshift-import-previews/{previewId}/confirmation` | Confirmar altas o vinculaciones explícitas sobre la vista revisada. Devuelve el resultado de importación y admite el reenvío de decisiones idénticas. |
 
-El inicio y fin son datos opcionales de KUME y se conservan al reimportar. La operación para editar ese par por separado y su DTO aún deben definirse. La importación actualiza referencias de catálogo. El horario de una maestra se guarda con su propio flujo.
+El inicio y fin son datos opcionales de KUME y se conservan al reimportar. La edición del par usa `PATCH /api/v1/workshift-references/{referenceId}`, con ambas horas y la versión observada. La importación actualiza referencias de catálogo. El horario de una maestra se guarda con su propio flujo.
 
 ### Horario propio de una maestra
 
@@ -307,8 +308,19 @@ El inicio y fin son datos opcionales de KUME y se conservan al reimportar. La op
 | POST | `/api/v1/time-record-policy-previews` | Preparar un cambio de margen y mostrar el alcance de un eventual reproceso. |
 | POST | `/api/v1/time-record-policy-changes` | Confirmar la vigencia y el reproceso revisado, cuando corresponda. |
 
-Las rutas de horario propio, marcas, revisión y margen provienen de la [propuesta técnica de registro de horas](../specs/010-time-records/technical-spec.md#contrato-interno-propuesto-aún-fuera-de-openapi). El [índice de casos](../functional/softwareclock/README.md) describe las dependencias con autenticación y vinculación de empleados. Este apartado documenta el diseño. Para llevarlo al contrato público queda reconciliar esquemas, códigos de error y versiones en `openapi.yaml`.
+Las rutas de horario propio, marcas, revisión y margen se detallan en el [contrato HTTP de CU3](../specs/010-time-records/technical-spec.md#contrato-http-incorporado-al-openapi-local). El [índice de casos](../functional/softwareclock/README.md) describe las dependencias con autenticación y vinculación de empleados.
 
 ### Vinculación de empleado con Clock
 
 El [contrato aprobado del primer hito de CU2](../specs/013-softwareclock-employee/technical-spec.md#contrato-del-primer-hito-aprobado) incorpora lectura, vista previa y confirmación sobre una ficha en OpenAPI. El segundo hito amplía el contrato para la propuesta inicial de horario.
+
+## Registro de horas (CU3)
+
+El contrato de Registro de horas está en [OpenAPI](../../openapi.yaml), con
+el comportamiento y las secuencias en [010](../specs/010-time-records/technical-spec.md).
+La lectura mensual e histórica consulta el estado persistido. La actualización
+es un comando autenticado que conserva el último éxito ante fallos del
+proveedor. Las previsualizaciones ligan los cambios retroactivos a versiones
+observadas. Las revisiones diarias usan versiones de ficha, diario, horario
+y margen. La API aplica el mismo acceso administrativo existente. Ver
+[tareas](../specs/010-time-records/tasks.md) para el estado de implementación.

@@ -1,12 +1,12 @@
 # Registro de horas — Diseño técnico propuesto
 
-Fecha: 23 de noviembre de 2026. **Propuesta para revisión**, basada en [spec.md](spec.md) y Q1–Q31 aprobados. No se modificó el contrato canónico ni el esquema de base; no se instalaron dependencias ni se conectó el producto con Clock. Los nombres de tablas, recursos y errores siguientes todavía no son contrato publicado.
+Fecha: 23 de noviembre de 2026. Diseño basado en [spec.md](spec.md) y Q1–Q31 aprobados. El 25/11 se autorizó ampliar el contrato local. El esquema de persistencia y el algoritmo de asignación quedan sujetos a revisión. La modificación local de OpenAPI requiere publicación de una revisión inmutable antes de fijar consumidores.
 
 ## Arquitectura y unidades
 
 Conservar React/TypeScript/Vite, Fastify, PostgreSQL y Prisma. Backend: módulo `time-records` con dominio puro para horarios, intervalos e interpretación; aplicación para casos de uso; puertos de proveedor, almacenamiento, reloj y transacción; adaptadores Clock/Prisma; HTTP con TypeBox. Composición inyecta todo. Dominio y aplicación no importan HTTP, ORM ni variables de entorno.
 
-Personal expone lectura de identidad/documento, estado/egreso y asignaciones por un contrato de aplicación; no consultar sus tablas desde HTTP ni crear ciclos. La lectura mensual usa el horario propio vigente. La propuesta inicial en CU2 proviene del workshift y su definición estructurada. Módulo propio en frontend `features/time-records`, integrado en la ficha mediante composición y componentes compartidos.
+Personal aporta rol y estado/egreso por un contrato de aplicación; CU2 aporta la identidad vinculada y el documento externo exacto; no consultar sus tablas desde HTTP ni crear ciclos. La lectura mensual usa el horario propio vigente. La propuesta inicial en CU2 proviene del workshift y su definición estructurada. Módulo propio en frontend `features/time-records`, integrado en la ficha mediante composición y componentes compartidos.
 
 ## Representación temporal y cálculo
 
@@ -33,7 +33,7 @@ Cambio que afecte fechas anteriores: crear propuesta y vista previa con fechas/p
 
 Generar candidatos para cada posición esperada según margen vigente, fecha y orden. Cada evento puede ocupar una sola posición. Respetar asignaciones administrativas explícitas y eventos posteriores al egreso excluidos. No puntuar por cercanía para romper empates.
 
-Formalización propuesta: considerar emparejamientos parciales ordenados de máxima cardinalidad entre candidatos elegibles; una posición solo se asigna automáticamente si tiene el mismo evento en todos esos emparejamientos. Posiciones sin evento común permanecen pendientes. Esta formalización requiere revisión mediante AC07 y ejemplos antes de adoptarse: no es una nueva decisión funcional aprobada. No resolver por orden de llegada ni por identificador.
+Formalización propuesta: considerar emparejamientos parciales ordenados de máxima cardinalidad entre candidatos elegibles; una posición solo se asigna automáticamente si tiene el mismo evento en todos esos emparejamientos. Posiciones sin evento común permanecen pendientes. La formalización se aisló en dominio y se prueba con ejemplos AC07. Sigue pendiente su revisión antes de cablearla a la importación. No resolver por orden de llegada ni por identificador.
 
 La revisión admite referencias a originales existentes, horas manuales solo en posiciones sin marca, confirmación de intervalos continuos sin pausa y clasificación de no trabajo. Motivo/causa opcional, incluido vacío. Validar en backend originales pertenecientes a maestra/día, orden, no reutilización y coherencia de confirmaciones. No incluir campos editables `issued` o `created` en comandos administrativos.
 
@@ -62,7 +62,7 @@ Migración aditiva revisada antes de ejecución; no cambiar tablas de cursos par
 
 - Diario con versión propia; horario de la maestra con versión de configuración; margen global con versión propia. Formularios capturan versiones al abrir; una consulta en segundo plano no renueva silenciosamente el borrador.
 - Revisión de día verifica también revisiones de horario/margen y versión relevante de ficha/egreso. 409 conserva trabajo; jamás reintentar con una versión nueva automáticamente.
-- Importación hace red fuera de transacción. Al aplicar, releer decisiones administrativas y política actuales bajo bloqueo/versión del diario; no grabar un snapshot calculado antes de una edición concurrente.
+- Importación hace red fuera de transacción. Al aplicar, validar la revisión de vínculo capturada y releer decisiones administrativas, egreso y política actuales bajo bloqueo/versión del diario. Si una consulta iniciada después ya se aplicó para la misma ficha y mes, la consulta anterior no reemplaza el snapshot ni cambia su frescura. Un fallo actual modifica el estado de actualización sin borrar el último éxito.
 - Orden estable de bloqueos: política/configuración implicada, fichas ordenadas por UUID y diarios por ficha/fecha. Diseñar coordinación real con operaciones de Personal antes de ejecutar SQL; comprobar con PostgreSQL, no solo mocks.
 - Un import repetido sin novedades no altera revisiones administrativas; sí puede actualizar última consulta exitosa. Cada transición material y comando administrativo aceptado compara/incrementa su versión y produce auditoría en la misma transacción.
 - Lectura mensual consistente con una revisión de snapshot; no sumar filas de generaciones distintas durante un refresco. Cambiar de mes cancela/ignora respuesta anterior.
@@ -77,11 +77,11 @@ Consulta mensual por documento, tras validar filtro y límites. Adaptador recibe
 
 GET interno lee lo persistido sin hacer mutaciones ocultas; frontend dispara comando explícito de actualización al abrir/cambiar mes o con Actualizar. Ese comando puede dispararse automáticamente por la UI, pero no se reintenta ciegamente. Compartir consulta en curso por ficha/mes para evitar duplicados. No hay tarea programada ni POST al proveedor. Sin internet en intranet conserva lectura local y error de actualización visible.
 
-## Contrato interno propuesto, aún fuera de OpenAPI
+## Contrato HTTP incorporado al OpenAPI local
 
 Prefijo `/api/v1`. Todas las rutas exigen sesión; comandos además Origin y `X-Kume-Request` vigentes.
 
-| Método | Ruta propuesta | Intención |
+| Método | Ruta | Intención |
 | --- | --- | --- |
 | GET | `/staff-members/{staffMemberId}/time-records?month=YYYY-MM` | Snapshot mensual, versiones, horarios, originales visibles HH:mm, estados, totales, parcialidad y última consulta |
 | POST | `/staff-members/{staffMemberId}/time-record-imports` | Actualizar mes `{month}` desde Clock; responder nuevo snapshot o error conservando último |
@@ -94,9 +94,9 @@ Prefijo `/api/v1`. Todas las rutas exigen sesión; comandos además Origin y `X-
 | POST | `/time-record-policy-previews` | Vista previa de cambio/reproceso global |
 | POST | `/time-record-policy-changes` | Confirmar vigencia/reproceso, con revisión de afectados |
 
-La sugerencia inicial puede acompañar la lectura de configuración mientras no exista horario, nunca un GET que guarde automáticamente. Snapshot distingue horario desconocido de día conocido sin jornada. Campos de resumen propuestos: `confirmedMinutes`, `plannedMinutes`, `additionalMinutes`, `missingMinutes`, `balanceMinutes`, `pendingDayCount`, `isPartial`; diferencias de día incompleto son null, no cero. Egreso/no referencia/justificación se identifican por razón, sin ambigüedad de estados.
+La sugerencia inicial puede acompañar la lectura de configuración mientras no exista horario, nunca un GET que guarde automáticamente. Snapshot distingue horario desconocido de día conocido sin jornada. El resumen mensual agrupa las diferencias en `differences` y contiene `confirmedMinutes`, `plannedMinutes`, `pendingDayCount` e `isPartial`; diferencias de día incompleto son null, no cero. Egreso/no referencia/justificación se identifican por razón, sin ambigüedad de estados.
 
-Errores propuestos: 409 `VERSION_CONFLICT` / `PREVIEW_STALE`, 422 para revisión/horario inválido, 502 para respuesta externa inválida y 503 para indisponibilidad/no configuración. No usar 401 KUME para un token de Clock vencido, pues no invalida la sesión de la usuaria. Códigos y schemas deben reconciliarse y aprobarse en OpenAPI antes de generar DTO y desarrollar HTTP.
+Errores propuestos: 409 `VERSION_CONFLICT` / `PREVIEW_STALE`, 422 para revisión/horario inválido, 502 para respuesta externa inválida y 503 para indisponibilidad/no configuración. El 401 corresponde a la sesión de KUME. El contrato local define códigos HTTP y esquemas. Las claves de problema específicas y la traducción de fallos externos deberán verificarse al implementar los manejadores.
 
 ## Frontend y pruebas
 
@@ -108,8 +108,46 @@ No declarar probado un comportamiento de Clock mediante un servidor simulado; la
 
 ## Prioridad de investigación de endpoints y vínculo persistente
 
-Por indicación de Maxi, cerrar primero el [mapeo KUME–Clock y sus secuencias](../../technical/softwareclock-employee-mapping.md). El vínculo persistido evita volver a descubrir empleados al consultar el mes. `document` es el filtro documentado de asistencias; `id`/`code` del empleado no habilitan por sí mismos un filtro alternativo. El workshift es la fuente de la propuesta inicial de CU2 cuando existe una definición local inequívoca. El horario ya confirmado se mantiene independiente. Sin migración/contrato nuevo por este diseño.
+Por indicación de Maxi, cerrar primero el [mapeo KUME–Clock y sus secuencias](../../technical/softwareclock-employee-mapping.md). El vínculo persistido evita volver a descubrir empleados al consultar el mes. `document` es el filtro documentado de asistencias; `id`/`code` del empleado no habilitan por sí mismos un filtro alternativo. El workshift es la fuente de la propuesta inicial de CU2 cuando existe una definición local inequívoca. El horario ya confirmado se mantiene independiente. El contrato de CU2 permanece compatible con el primer hito de vínculo sin horario.
 
 ## Ampliación posterior: catálogo administrativo Clock
 
 La muestra de getWorkShifts contiene solo code/name/type y códigos vacíos repetidos. Maxi solicita importación administrativa de horarios y botón de sincronización de empleado. [Diseño extendido y diagrama](../../technical/softwareclock-employee-mapping.md). Antes de crear tablas/rutas, revisar identidad local, correspondencias ambiguas, reimportación y estados de configuración. La respuesta actual no habilita generar bloques desde nombres ni actualizar horarios de maestras por herencia viva. Posible uso como plantillas queda como propuesta explícita pendiente.
+
+## Entrada a la ficha y transición de CU2
+
+```mermaid
+sequenceDiagram
+    actor A as Administración
+    participant F as Ficha KUME
+    participant B as Backend KUME
+    A->>F: Abrir ficha
+    F->>B: GET clock-link
+    alt Sin vínculo confirmado
+        F-->>A: Registro de horas deshabilitado e indicación en Datos
+        A->>F: Confirmar vínculo desde Datos
+        F->>B: POST confirmation
+        B-->>F: Observación confirmada y versión de ficha
+        F->>F: Actualizar caché del vínculo e invalidar ficha
+    else Vínculo a revalidar
+        F-->>A: Acceso histórico con indicación para revalidar
+    end
+    A->>F: Seleccionar Registro de horas
+    F->>B: Leer snapshot local del mes
+    alt Vínculo apto para importar
+        F->>B: Solicitar actualización del mes
+    else Vínculo suspendido
+        F-->>A: Mostrar historial local
+    end
+```
+
+La navegación usa el estado y la observación publicados por CU2. Un fallo
+transitorio de lectura del vínculo no equivale a un vínculo inexistente.
+El permiso de consultar el historial se evalúa independientemente de la
+aptitud para importar. La API comprueba el rol, la ficha y la aptitud
+del vínculo al comenzar una importación y vuelve a verificar su revisión,
+la revisión de cédula y el contexto de egreso antes de aplicar la respuesta.
+Si la identidad dejó de ser apta durante la consulta, se descarta el resultado
+y se mantiene el último snapshot. El horario desconocido afecta el cálculo
+y no la lectura. El supuesto de estabilidad del ID de empleado de CU2 no
+resuelve V03, que corresponde a los eventos de asistencia.
