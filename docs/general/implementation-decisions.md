@@ -209,3 +209,11 @@ Maxi aprueba que CU2 use el workshift asignado en Clock y su definición estruct
 Maxi confirma que la cédula es única por empresa en Clock y aprueba que CU2 consulte `GET /api/Employees/employee-by-rut?document=…` mediante CU0. Esta decisión sustituye la consulta del listado y la exigencia de verificar su cobertura, paginación y duplicados. Se conserva la validación de estabilidad del ID, la confirmación administrativa y la habilitación explícita por conexión.
 
 Maxi acepta como supuesto operativo que el ID de Clock se conserva al corregir la cédula. La empresa dispone únicamente del entorno productivo de Clock. Se mantiene la revisión ante discrepancias y no se requiere corregir una cédula productiva para probar el supuesto. El supuesto queda registrado sin comprobación experimental.
+
+## Cupos de asignaciones — 26 de noviembre de 2026
+
+Se aprueba un cupo principal compartido por maestra y encargada de sala y otro
+para auxiliar de sala por cada turno de un curso o taller. La corrección local
+afecta al backend, la migración de PostgreSQL y la ficha que muestra el
+frontend ante un conflicto. Quedan pendientes la publicación y el despliegue.
+Ver [Asignaciones](../functional/alcance-prototipo.md#asignaciones).

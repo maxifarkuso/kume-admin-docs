@@ -225,7 +225,7 @@ Datos iniciales: Música los lunes, Arte los martes y Gimnasia los miércoles; t
 | `created_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | — |
 | `updated_at` | `TIMESTAMPTZ` | No | `CURRENT_TIMESTAMP` | Actualizado por trigger |
 
-Exactamente uno entre `course_id` y `workshop_id` debe estar informado. Los índices únicos parciales `(course_id, shift)` y `(workshop_id, shift)` garantizan una sola persona por destino y turno. Retirar una asignación elimina la fila; no se conserva historial.
+Exactamente uno entre `course_id` y `workshop_id` debe estar informado. Los índices únicos parciales incluyen destino, persona y turno para evitar filas duplicadas. La aplicación comprueba el cupo del rol por destino y turno bajo el bloqueo del destino al asignar, transferir o cambiar el rol de una ficha. Retirar una asignación elimina la fila; no se conserva historial.
 
 ### `staff_document`
 
@@ -264,7 +264,7 @@ Las migraciones deberán incluir:
 - `expense.amount > 0` y formato de tres letras mayúsculas para `expense.currency`.
 - Coherencia entre `staff_member.is_active` y `end_date`.
 - Exclusión lógica entre `assignment.course_id` y `assignment.workshop_id`.
-- Índices únicos parciales por destino y turno en `assignment`.
+- Índices únicos parciales por destino, persona y turno en `assignment`.
 - Arrays `days` y `shifts` con al menos un elemento y sin valores repetidos; la API valida sus valores.
 - MIME permitido, rango de tamaño y hash SHA-256 para ambas tablas de archivos.
 - `ON DELETE RESTRICT` en todas las claves foráneas; no hay borrados en cascada.

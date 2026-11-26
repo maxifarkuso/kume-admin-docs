@@ -96,6 +96,11 @@ Una ficha inactiva es de solo lectura: se puede consultar y descargar sus archiv
 
 Cada asignación contiene `staffMemberId`, `targetType`, `targetId` y `shift`. `targetType` admite `course` o `workshop`. El rol es informativo y no limita el tipo de destino.
 
+`ASSIGNMENT_OCCUPIED` indica que el cupo del rol ya está ocupado en el curso o
+taller y turno solicitados. Maestra y encargada de sala comparten el cupo
+principal. Auxiliar de sala tiene un cupo propio. La comprobación se aplica
+también al transferir asignaciones o al editar el rol del personal.
+
 ### Cursos y talleres
 
 Ambos recursos permiten listar, crear, consultar, editar, desactivar y reactivar mediante:
