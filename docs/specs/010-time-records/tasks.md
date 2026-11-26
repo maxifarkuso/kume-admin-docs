@@ -114,3 +114,54 @@ local de CU3 se validó por separado con Swagger Parser y generó tipos de
 prueba con openapi-typescript; sus diez rutas son aditivas y las 36
 existentes conservan su definición. También se revisaron los enlaces
 relativos y cercas de los documentos editados.
+
+## Evidencia de asistencias y decisiones del 26/11/2026
+
+- V01: dos consultas por documento devolvieron muestras con el documento
+  solicitado. La lectura de CU3 usa el valor exacto guardado en CU2 y rechaza
+  toda la respuesta si incluye una marca de otro documento.
+- V02: se acordó usar `issued` como hora civil de Clock, sin conversión de
+  huso horario. La muestra usa segundos en cero. Se conserva el texto
+  original y se deriva el minuto para cálculo y presentación.
+- V03: `code` se repite entre marcas de una persona y `external_id` llegó
+  nulo. KUME conserva una marca por conexión, documento exacto e `issued`
+  original. Si varias filas comparten la clave, el lector toma la primera
+  válida aunque la metadata difiera. La reimportación conservará la fila
+  ya guardada.
+- V04: se comprobó el extremo final inclusivo para una consulta y el conteo
+  total del 1 al 26 de noviembre coincidió con Clock para una persona.
+  Cobertura de otros rangos y paginación siguen abiertas.
+- V05/V06: se observó HTTP 500 y, tras renovar el token, éxito en el mismo
+  rango. El 500 por sí solo no identifica expiración. Se observó el
+  envoltorio de éxito con `message` y `attendances`. Quedan pendientes
+  la señal confiable de expiración y los demás resultados del proveedor.
+- V07: continúa pendiente una muestra controlada de corrección o marca
+  tardía. La ausencia en una reconsulta no borra originales.
+
+La evidencia describe las pruebas de Maxi y omite los datos personales.
+La validación de una respuesta en el adaptador no demuestra por sí sola
+cobertura completa. La importación real sigue deshabilitada.
+
+## Implementación local de la actualización desde Clock
+
+- El backend resuelve el vínculo confirmado de CU2 antes de consultar y
+  vuelve a comprobar la ficha y el vínculo bajo bloqueo al aplicar el
+  resultado. En el mes actual solicita hasta el día civil de Montevideo.
+- La migración agrega una restricción única sobre conexión, documento
+  exacto e `issued`. Una reimportación conserva el primer original
+  guardado, incluso si cambia la metadata. Las columnas admiten valores
+  nulos para conservar filas anteriores sin inferir su identidad.
+- Un error actualiza el estado del mes y mantiene sus marcas y último
+  éxito. La ficha intenta actualizar al abrir o cambiar a un mes apto y
+  permite reintentar desde la acción manual.
+- Se aplicó la migración únicamente en PostgreSQL aislado y se probó
+  Fastify con un doble de Clock. Se verificaron sesión, filtro exacto,
+  reimportación sin duplicados, conservación ante HTTP 500 y cambio
+  concurrente de cédula durante la consulta.
+
+La aplicación mantiene deshabilitada la importación real por defecto.
+`CLOCK_ATTENDANCE_IMPORT_EVIDENCE` se configura para la conexión validada
+cuando exista autorización operativa y evidencia suficiente de V01–V07.
+Un 500 genérico conserva el último éxito; no dispara renovación por
+sí solo. La reconciliación de correcciones y las validaciones externas
+pendientes siguen abiertas.
