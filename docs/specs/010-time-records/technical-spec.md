@@ -10,7 +10,7 @@ Personal aporta rol y estado/egreso por un contrato de aplicación; CU2 aporta l
 
 ## Representación temporal y cálculo
 
-- Fechas de negocio civiles y mes en America/Montevideo; interpretar `issued` del proveedor solo después de confirmar su zona. No usar la zona del proceso ni asumir UTC.
+- Fechas de negocio civiles y mes en America/Montevideo; usar `issued` directamente como hora civil, según decisión del 26/11. No aplicar conversiones de zona ni usar `created` para el cálculo.
 - Persistir el timestamp original y su interpretación validada. Derivar minuto local por truncamiento de segundos de cada evento; no modificar el original. Horas manuales en HH:mm y fechas YYYY-MM-DD.
 - Bloques e intervalos como rangos semiabiertos `[startMinute, endMinute)`. Validar inicio menor que fin y bloques sin superposición. Si dos originales distintos se truncan al mismo minuto, conservar ambos; no deduplicar por hora ni formar intervalos de duración cero como trabajo confirmado.
 - Normalizar uniones de intervalos antes de comparar. Sea P la unión de bloques previstos aplicables, A la unión de intervalos reales confirmados: trabajo = longitud(A), adicional = longitud(A menos P), faltante = longitud(P menos A), saldo = adicional − faltante. A no se recorta a P.
@@ -54,7 +54,7 @@ Al llegar original para un faltante completado manualmente: evaluar con contexto
 
 FK restrictivas y checks de fechas/minutos/versiones positivas; vínculos originales→asignaciones no se borran en cascada. No introducir tabla de usuarios: actor de la sesión existente se captura como identidad de auditoría. Resultados derivados pueden almacenarse como snapshot con revisiones aplicadas, nunca como una segunda autoridad independiente del núcleo.
 
-La clave externa queda bloqueada hasta verificar estabilidad y alcance de `code`: no usar `(document, issued)` ni el timestamp truncado, que eliminarían eventos distintos válidos. Si Clock cambia/elimina un evento, conservar versiones y marcar revisión; la ausencia de una marca en una respuesta no demuestra borrado. No implementar borrado por omisión sin contrato del proveedor validado.
+La clave de reimportación acordada el 26/11 es `(connection, document, issued)` con el documento exacto y el texto original de `issued`. KUME conserva una marca por clave. Si Clock devuelve varias filas con la misma clave, se toma la primera válida en el orden de la respuesta aunque la metadata difiera. En una reimportación se conserva la fila ya guardada. `code` se conserva como metadata de origen. Si Clock cambia/elimina un evento, conservar versiones y marcar revisión; la ausencia de una marca en una respuesta no demuestra borrado. No implementar borrado por omisión sin contrato del proveedor validado.
 
 Migración aditiva revisada antes de ejecución; no cambiar tablas de cursos para mantener herencia viva. Adaptar el flujo de egreso/cambio de documento con el módulo de horas: el control de versión de la ficha y recalculación deben evitar que una sesión antigua revierta el corte inclusivo. No bloquear toda la ficha en cada refresco si no cambian sus datos.
 
