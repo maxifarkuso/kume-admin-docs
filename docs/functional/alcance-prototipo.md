@@ -211,7 +211,7 @@ La baja será lógica: se conserva la ficha y sus documentos. Al inactivar a una
 
 - Una persona puede registrarse sin asignaciones y recibirlas más adelante.
 - Puede tener varias asignaciones a cursos o talleres.
-- Cada combinación de curso o taller y turno admite una sola persona activa a cargo.
+- Cada curso o taller y turno admite una persona a cargo (maestra o encargada de sala) y una auxiliar de sala. Se pueden asignar en cualquier orden. Los demás roles conservan el cupo de la persona a cargo.
 - Se mantiene únicamente la asignación actual, sin historial de responsables.
 - Se puede retirar o cambiar una asignación.
 
