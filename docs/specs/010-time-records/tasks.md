@@ -165,3 +165,24 @@ cuando exista autorización operativa y evidencia suficiente de V01–V07.
 Un 500 genérico conserva el último éxito; no dispara renovación por
 sí solo. La reconciliación de correcciones y las validaciones externas
 pendientes siguen abiertas.
+
+## Validación real y continuación del 27/11/2026
+
+Maxi confirmó que la importación desplegada trajo marcaciones de octubre.
+La observación verifica ese recorrido real. No se recopilaron documentos
+ni marcas originales en el repositorio.
+
+La continuación local agrega edición semanal del horario personal desde la
+ficha, con vigencia y confirmación de una vista previa de las fechas con
+marcas guardadas cuya referencia cambia. Antes de confirmar se releen
+ficha, horarios, excepciones y marcas bajo bloqueo. La consulta mensual
+recalcula sobre originales inmutables y la nueva referencia, sin reimportar.
+Se verificó en PostgreSQL aislado y Fastify con datos ficticios.
+
+La vista mensual se reorganizó tomando como referencia mensual.png:
+controles del mes, tarjetas, estados de día, filtro y detalle diario
+de consulta. Se conserva la columna de marcas originales. El contrato
+actual devuelve tramos completos en orden; los huecos de la maqueta no
+se asignan visualmente a bloques concretos sin evidencia de esa relación.
+Quedan pendientes edición de excepciones y margen, propuesta inicial
+por workshift, y revisión administrativa y auditoría de las marcas.
