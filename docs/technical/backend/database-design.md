@@ -12,11 +12,18 @@ erDiagram
     COURSE o|--o{ ASSIGNMENT : targets
     WORKSHOP o|--o{ ASSIGNMENT : targets
     STAFF_MEMBER ||--o{ STAFF_DOCUMENT : owns
+    STAFF_MEMBER ||--o| STAFF_CLOCK_LINK : has
+    STAFF_CLOCK_LINK ||--o{ STAFF_CLOCK_LINK_REVISION : versions
+    STAFF_CLOCK_LINK_REVISION ||--o{ CLOCK_ATTENDANCE_EVENT : identifies
+    STAFF_MEMBER ||--o{ TIME_RECORD_MONTH : tracks
+    STAFF_MEMBER ||--o{ LABOR_SCHEDULE_REVISION : defines
+    STAFF_MEMBER ||--o{ LABOR_SCHEDULE_EXCEPTION : defines
 
     CATEGORY {
         UUID id PK
         VARCHAR name UK
         BOOLEAN is_active
+        INTEGER version
         TIMESTAMPTZ created_at
         TIMESTAMPTZ updated_at
     }
@@ -25,11 +32,13 @@ erDiagram
         UUID id PK
         UUID category_id FK
         DATE payment_date
+        DATE due_date
         NUMERIC amount
         CHAR currency
         VARCHAR payee
         VARCHAR description
         BOOLEAN is_cancelled
+        INTEGER version
         TIMESTAMPTZ created_at
         TIMESTAMPTZ updated_at
     }
@@ -51,6 +60,7 @@ erDiagram
         VARCHAR first_name
         VARCHAR last_name
         VARCHAR nic UK
+        INTEGER nic_revision
         VARCHAR phone
         DATE birth_date
         VARCHAR email
@@ -59,6 +69,7 @@ erDiagram
         VARCHAR role
         BOOLEAN is_active
         DATE end_date
+        INTEGER version
         TIMESTAMPTZ created_at
         TIMESTAMPTZ updated_at
     }
@@ -71,6 +82,7 @@ erDiagram
         TEXT_ARRAY days
         TEXT_ARRAY shifts
         BOOLEAN is_active
+        INTEGER version
         TIMESTAMPTZ created_at
         TIMESTAMPTZ updated_at
     }
@@ -81,6 +93,7 @@ erDiagram
         TEXT_ARRAY days
         TEXT_ARRAY shifts
         BOOLEAN is_active
+        INTEGER version
         TIMESTAMPTZ created_at
         TIMESTAMPTZ updated_at
     }
@@ -106,6 +119,101 @@ erDiagram
         CHAR sha256
         TIMESTAMPTZ created_at
         TIMESTAMPTZ updated_at
+    }
+
+    WORKSHIFT_REFERENCE {
+        UUID id PK
+        VARCHAR connection
+        VARCHAR label
+        JSONB observation
+        TEXT observation_key
+        TIME local_start_time
+        TIME local_end_time
+        INTEGER version
+    }
+
+    WORKSHIFT_IMPORT_PREVIEW {
+        UUID id PK
+        VARCHAR connection
+        VARCHAR owner
+        TEXT revision
+        JSONB preview
+        TEXT decisions
+        JSONB result
+        TIMESTAMPTZ purge_at
+    }
+
+    WORKSHIFT_IMPORT_AUDIT {
+        UUID preview_id PK
+        VARCHAR connection
+        VARCHAR owner
+        TIMESTAMPTZ confirmed_at
+        JSONB changes
+    }
+
+    STAFF_CLOCK_LINK {
+        UUID staff_id PK, FK
+        VARCHAR connection
+        VARCHAR employee_id
+        INTEGER version
+    }
+
+    STAFF_CLOCK_LINK_REVISION {
+        UUID staff_id PK, FK
+        INTEGER version PK
+        INTEGER staff_version
+        INTEGER nic_revision
+        UUID preview_id UK
+        TEXT actor
+        TEXT event
+        TEXT document
+        TEXT normalized_document
+        TEXT code
+        TEXT workshift_code
+        TEXT workshift_name
+        TIMESTAMPTZ observed_at
+        TIMESTAMPTZ recorded_at
+    }
+
+    CLOCK_ATTENDANCE_EVENT {
+        UUID id PK
+        UUID staff_id FK
+        INTEGER link_version FK
+        DATE local_date
+        INTEGER local_minute
+        VARCHAR connection
+        TEXT document
+        VARCHAR issued
+        JSONB original
+        TIMESTAMPTZ observed_at
+    }
+
+    TIME_RECORD_MONTH {
+        UUID staff_id PK, FK
+        DATE month PK
+        TIMESTAMPTZ last_successful_import
+        TIMESTAMPTZ last_failed_import
+    }
+
+    LABOR_SCHEDULE_REVISION {
+        UUID staff_id PK, FK
+        INTEGER version PK
+        DATE effective_from
+        JSONB week
+    }
+
+    LABOR_SCHEDULE_EXCEPTION {
+        UUID staff_id PK, FK
+        DATE date PK
+        INTEGER version
+        JSONB blocks
+        TEXT reason
+    }
+
+    INTERPRETATION_POLICY_REVISION {
+        INTEGER version PK
+        DATE effective_from UK
+        INTEGER margin_minutes
     }
 ```
 
@@ -347,10 +455,25 @@ La restricción de roles de `staff_member` admite además `administrative`. La m
 
 [CU2 propone](../../specs/013-softwareclock-employee/technical-spec.md#persistencia-versiones-y-auditoría) separar identidad versionada, turno observado y origen histórico del horario personal, con confirmación transaccional y auditoría. El primer hito incorpora una migración aditiva verificada localmente sobre PGlite. Su ejecución operativa requiere autorización.
 
-## Persistencia propuesta de CU3
+## Persistencia implementada de CU1, CU2 y CU3
 
-La [especificación de Registro de horas](../../specs/010-time-records/technical-spec.md#persistencia-propuesta)
-describe revisiones de horario y margen, eventos originales, diarios, auditoría
-e importaciones. Este diseño requiere una migración aditiva revisada
-y comprobar sus restricciones y carreras con PostgreSQL. El contrato local
-no acredita tablas ni rutas implementadas.
+| Tabla | Contenido y claves relevantes |
+| --- | --- |
+| `workshift_reference` | Catálogo de turnos de Clock y par opcional de horas locales. Clave única `(connection, observation_key)`. |
+| `workshift_import_preview` y `workshift_import_audit` | Vista previa y auditoría de importación del catálogo. La auditoría conserva el identificador de la vista como clave primaria, sin FK a la vista temporal. |
+| `staff_clock_link` | Vínculo por ficha de Personal, con clave única `(connection, employee_id)`. |
+| `staff_clock_link_revision` | Historial del vínculo. Clave primaria `(staff_id, version)` y documento exacto de Clock para cada revisión. |
+| `clock_attendance_event` | Marca original inmutable. La FK compuesta `(staff_id, link_version)` referencia `staff_clock_link_revision(staff_id, version)`. Clave de reimportación `(connection, document, issued)`. |
+| `time_record_month` | Último éxito y fallo de importación, por ficha y mes civil. Su clave primaria es `(staff_id, month)`; el mes se guarda con el primer día. |
+| `labor_schedule_revision` | Horario personal con bloques semanales en `week`. Clave primaria `(staff_id, version)` y clave única `(staff_id, effective_from)`. El cálculo toma la última vigencia que aplica al día. |
+| `labor_schedule_exception` | Referencia excepcional para una fecha. Clave primaria `(staff_id, date)`. |
+| `interpretation_policy_revision` | Margen general de interpretación, versionado y con fecha de vigencia única. Valor inicial de 60 minutos. |
+
+El horario que se define en la ficha queda en `labor_schedule_revision`.
+El catálogo de Administración queda en `workshift_reference`. En el esquema
+actual no hay FK entre ambos ni entre el turno observado de CU2 y el catálogo.
+Las marcas se consultan por su fecha civil y conservan la revisión de vínculo
+usada al guardarse; el estado mensual no es la tabla de marcas.
+
+La persistencia de ajustes diarios y su auditoría siguen en el
+[diseño de CU3](../../specs/010-time-records/technical-spec.md#persistencia-propuesta).
