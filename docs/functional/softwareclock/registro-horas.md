@@ -1,6 +1,6 @@
 # CU3 — Registro de horas por empleado
 
-Fecha: 23/11/2026. Actor: administración. Nombre del caso de uso: registro de horas por empleado; alcance funcional aprobado inicialmente para maestras, no ampliado automáticamente a todos los roles. Discovery Q1–Q31 cerrado por Maxi. Interfaz inicial MagicPath aprobada; producto aún no implementado por estos documentos.
+Fecha: 23/11/2026. Actor: administración. Nombre del caso de uso: registro de horas por empleado; alcance inicialmente aprobado para maestras y ampliado expresamente el 27/11/2026 a todos los roles de Personal. La pestaña se habilita mediante el vínculo confirmado con Clock. Discovery Q1–Q31 cerrado por Maxi. Interfaz inicial MagicPath aprobada; producto aún no implementado por estos documentos.
 
 ## Objetivo y ubicación
 
