@@ -186,3 +186,16 @@ actual devuelve tramos completos en orden; los huecos de la maqueta no
 se asignan visualmente a bloques concretos sin evidencia de esa relación.
 Quedan pendientes edición de excepciones y margen, propuesta inicial
 por workshift, y revisión administrativa y auditoría de las marcas.
+
+## Revisión diaria implementada en local
+
+El panel lateral usa la maqueta de revisión como referencia. Presenta
+horario previsto, originales de Clock, selección de marcas por posición,
+hora manual para faltantes, confirmación de pausa trabajada o ausencia
+y motivo opcional. El historial muestra autor, fecha, motivo y cambios.
+
+Los ajustes agregan revisiones auditables y actualizan el cálculo del día
+y del mes sin escribir en Clock. El guardado rechaza versiones anteriores,
+marcas de otra jornada, reutilización y horas fuera de orden. Se verificó
+la migración y el recorrido HTTP con PostgreSQL aislado y datos ficticios.
+El entorno habitual queda pendiente de instalación y verificación.
