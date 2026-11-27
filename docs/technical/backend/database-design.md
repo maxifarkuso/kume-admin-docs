@@ -16,6 +16,7 @@ erDiagram
     STAFF_CLOCK_LINK ||--o{ STAFF_CLOCK_LINK_REVISION : versions
     STAFF_CLOCK_LINK_REVISION ||--o{ CLOCK_ATTENDANCE_EVENT : identifies
     STAFF_MEMBER ||--o{ TIME_RECORD_MONTH : tracks
+    STAFF_MEMBER ||--o{ TIME_RECORD_REVIEW_REVISION : reviews
     STAFF_MEMBER ||--o{ LABOR_SCHEDULE_REVISION : defines
     STAFF_MEMBER ||--o{ LABOR_SCHEDULE_EXCEPTION : defines
 
@@ -193,6 +194,20 @@ erDiagram
         DATE month PK
         TIMESTAMPTZ last_successful_import
         TIMESTAMPTZ last_failed_import
+    }
+
+    TIME_RECORD_REVIEW_REVISION {
+        UUID id PK
+        UUID staff_id FK
+        DATE date
+        INTEGER version
+        INTEGER mark_count
+        TEXT actor
+        VARCHAR reason
+        TIMESTAMPTZ recorded_at
+        JSONB decisions
+        JSONB before
+        JSONB after
     }
 
     LABOR_SCHEDULE_REVISION {
@@ -475,5 +490,10 @@ actual no hay FK entre ambos ni entre el turno observado de CU2 y el catálogo.
 Las marcas se consultan por su fecha civil y conservan la revisión de vínculo
 usada al guardarse; el estado mensual no es la tabla de marcas.
 
-La persistencia de ajustes diarios y su auditoría siguen en el
-[diseño de CU3](../../specs/010-time-records/technical-spec.md#persistencia-propuesta).
+La migración de revisión diaria agrega `time_record_review_revision`.
+Cada ajuste agrega una fila con clave única `(staff_id, date, version)`,
+actor, instante, motivo opcional, decisiones y snapshots anterior y posterior.
+La aplicación compara el contexto de ficha, día, horario y margen bajo el
+mismo bloqueo de Personal que usa la importación. La proyección mensual
+usa la última revisión de cada día. Las marcas originales permanecen
+en `clock_attendance_event`.
