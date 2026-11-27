@@ -199,3 +199,11 @@ y del mes sin escribir en Clock. El guardado rechaza versiones anteriores,
 marcas de otra jornada, reutilización y horas fuera de orden. Se verificó
 la migración y el recorrido HTTP con PostgreSQL aislado y datos ficticios.
 El entorno habitual queda pendiente de instalación y verificación.
+
+### Política global y llegada tarde
+
+- [x] Completar consulta, vista previa y confirmación de vigencias de margen y tolerancia.
+- [x] Migrar revisiones existentes y proyectar AC06a a partir de las entradas confirmadas.
+- [x] Verificar el límite, las vigencias, la falta de entrada y la configuración desde administración.
+
+Verificado en PostgreSQL local con una vigencia preexistente y mediante Fastify con datos ficticios. Una confirmación obsoleta devuelve 409. Los casos de aplicación y de la interfaz cubren el límite de 10 minutos, la vigencia y el guardado.

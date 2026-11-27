@@ -38,3 +38,5 @@ Conservar cambios ajenos, ramas y revisión según instrucciones de cada repo. N
 La autorización de preparar estas especificaciones no prueba ni publica un contrato nuevo. Resolver la revisión técnica sobre los archivos concretos, sin repetir discovery funcional.
 
 Prioridad indicada por Maxi el 23/11: cerrar primero [vínculo persistente y secuencias de empleados](../../technical/softwareclock-employee-mapping.md); luego consultar marcas por documento guardado, sin redescubrimiento mensual. La decisión posterior de CU2 fija el workshift estructurado en KUME como origen de la propuesta inicial editable. El horario confirmado es independiente.
+
+La ampliación AC06a completa el flujo global de consulta, vista previa y confirmación, incorpora la tolerancia al contrato y a la migración, y verifica la proyección diaria y su presentación mensual.

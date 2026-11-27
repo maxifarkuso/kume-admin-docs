@@ -482,7 +482,7 @@ La restricción de roles de `staff_member` admite además `administrative`. La m
 | `time_record_month` | Último éxito y fallo de importación, por ficha y mes civil. Su clave primaria es `(staff_id, month)`; el mes se guarda con el primer día. |
 | `labor_schedule_revision` | Horario personal con bloques semanales en `week`. Clave primaria `(staff_id, version)` y clave única `(staff_id, effective_from)`. El cálculo toma la última vigencia que aplica al día. |
 | `labor_schedule_exception` | Referencia excepcional para una fecha. Clave primaria `(staff_id, date)`. |
-| `interpretation_policy_revision` | Margen general de interpretación, versionado y con fecha de vigencia única. Valor inicial de 60 minutos. |
+| `interpretation_policy_revision` | Margen de asociación y tolerancia de llegada tarde, versionados juntos con fecha de vigencia única. Valores iniciales de 60 y 10 minutos respectivamente. La ampliación inicializa en 10 minutos las revisiones existentes y conserva su margen y fecha. Las nuevas revisiones registran actor y fecha de confirmación. |
 
 El horario que se define en la ficha queda en `labor_schedule_revision`.
 El catálogo de Administración queda en `workshift_reference`. En el esquema

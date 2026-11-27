@@ -39,6 +39,7 @@ Desde el 27/11/2026 el acceso a CU3 se aplica a todos los roles de Personal. Se 
 | AC05 | Cambio retroactivo de horario muestra afectados y exige confirmación; conserva originales e historial y deja ajustes incompatibles por revisar | Q7 |
 | AC06 | Margen general inicial 60 minutos con vigencias; reproceso histórico exige vista previa y confirmación; no define puntualidad | Q27–Q28 |
 | AC07 | Proponer asignación solo con una única combinación válida en orden y sin reutilizar eventos; varias candidatas quedan sin resolver; no elegir por cercanía | Q26 |
+| AC06a | Tolerancia general de llegada tarde inicial de 10 minutos con vigencias. Una entrada confirmada que supera estrictamente su tolerancia muestra «Llegada tarde» en rojo junto al estado diario. Sin una entrada correspondiente confirmada, no se señala. | Ampliación aprobada |
 | AC08 | Administración puede asignar originales fuera del margen, en orden y sin reutilizarlos; nunca editar su fecha/hora | Q6, Q23 |
 | AC09 | Completar posiciones sin marca con horas manuales y motivo opcional; conservar actor, instante y antes/después | Q3, Q5 y regla administrativa |
 | AC10 | Una marca nueva inequívoca para ese faltante sustituye la hora manual usada, con historial; con varias candidatas conservar manual e incidencia | Q3, Q5 |

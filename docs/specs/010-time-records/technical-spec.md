@@ -23,6 +23,8 @@ Límites de la primera implementación propuestos: bloques dentro de una fecha c
 
 ## Vigencias y edición retroactiva
 
+Cada revisión global conserva margen y tolerancia. La tolerancia se resuelve por fecha junto al margen y se compara en minutos por posición de entrada confirmada, incluidas las decisiones válidas. El indicador no cambia las horas ni los saldos.
+
 Horario laboral por maestra: revisiones semanales con `effectiveFrom`; resolver la última vigente para cada fecha, más excepción específica. No editar una revisión usada destruyendo su historia. Margen general de KUME igualmente versionado por vigencia; valor inicial 60. Validar entero no negativo; el límite superior se define con contrato, sin copiar 180 de la maqueta.
 
 La [carga inicial de CU2](../../functional/softwareclock/sincronizar-empleado.md) propone la definición estructurada del workshift y permite editar y guardar una copia con vigencia explícita. Validar los bloques editados antes de guardar.
@@ -90,7 +92,8 @@ Prefijo `/api/v1`. Todas las rutas exigen sesión; comandos además Origin y `X-
 | GET | `/staff-members/{staffMemberId}/labor-schedules` | Vigencias y excepciones propias |
 | POST | `/staff-members/{staffMemberId}/labor-schedule-previews` | Validar borrador, devolver afectados y token de confirmación ligado al contenido/versiones |
 | POST | `/staff-members/{staffMemberId}/labor-schedule-changes` | Confirmar carga, vigencia o excepción conforme vista previa válida |
-| GET | `/time-record-policies` | Vigencias de margen general |
+| GET | `/time-record-policies` | Vigencias de margen y tolerancia |
+| POST | `/time-record-policy-previews` | Preparar una vigencia global y revisar días afectados |
 | POST | `/time-record-policy-previews` | Vista previa de cambio/reproceso global |
 | POST | `/time-record-policy-changes` | Confirmar vigencia/reproceso, con revisión de afectados |
 

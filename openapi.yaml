@@ -2237,6 +2237,9 @@ components:
           - noSchedule
           - noWork
           - afterTermination
+        isLateArrival:
+          type: boolean
+          description: Una entrada confirmada supera estrictamente la tolerancia de su posición prevista.
         planned:
           anyOf:
           - type: array
@@ -2618,6 +2621,7 @@ components:
       required:
       - effectiveFrom
       - marginMinutes
+      - lateArrivalToleranceMinutes
       properties:
         effectiveFrom:
           type: string
@@ -2625,6 +2629,11 @@ components:
         marginMinutes:
           type: integer
           minimum: 0
+          maximum: 2147483647
+        lateArrivalToleranceMinutes:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
     TimeRecordPolicy:
       type: object
       additionalProperties: false
