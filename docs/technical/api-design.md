@@ -309,9 +309,11 @@ El inicio y fin son datos opcionales de KUME y se conservan al reimportar. La ed
 
 | Método | Ruta propuesta | Propósito |
 | --- | --- | --- |
-| GET | `/api/v1/time-record-policies` | Consultar el margen general y sus vigencias. |
+| GET | `/api/v1/time-record-policies` | Consultar el margen de asociación, la tolerancia de llegada tarde y sus vigencias. |
 | POST | `/api/v1/time-record-policy-previews` | Preparar un cambio de margen y mostrar el alcance de un eventual reproceso. |
 | POST | `/api/v1/time-record-policy-changes` | Confirmar la vigencia y el reproceso revisado, cuando corresponda. |
+
+La vista previa usa la versión consultada y devuelve los días observados cuya interpretación cambia. La confirmación vuelve a verificar las versiones y agrega una vigencia. El indicador `isLateArrival` se emite en las nuevas proyecciones diarias y puede faltar en instantáneas de auditoría guardadas antes de la ampliación.
 
 Las rutas de horario propio, marcas, revisión y margen se detallan en el [contrato HTTP de CU3](../specs/010-time-records/technical-spec.md#contrato-http-incorporado-al-openapi-local). El [índice de casos](../functional/softwareclock/README.md) describe las dependencias con autenticación y vinculación de empleados.
 
