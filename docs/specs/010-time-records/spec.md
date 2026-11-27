@@ -8,9 +8,9 @@ No acredita implementación ni integración productiva. La interfaz inicial fue 
 
 ## Objetivo, actores y alcance
 
-Administración revisa asistencia de cada maestra, resuelve faltantes y compara tiempo trabajado con previsto. Ubicación: ficha → Registro de horas. Sin selector de maestra ni nuevo destino principal. Maxi y Vicky conservan sus permisos administrativos; las maestras no son nuevas cuentas del sistema.
+Administración revisa la asistencia del personal, resuelve faltantes y compara tiempo trabajado con previsto. El acceso está en Registro de horas dentro de cada ficha. Maxi y Vicky conservan sus permisos administrativos. El acceso por rol de Personal no crea cuentas nuevas.
 
-Se incluyen horario laboral propio con vigencias, excepciones por fecha, importación de Clock, interpretación, revisión, auditoría y comparación informativa. Se excluyen liquidación, recargos, aprobación de pago, cierre mensual, escritura en Clock, sincronización programada y extensión automática a otros roles.
+Se incluyen horario laboral propio con vigencias, excepciones por fecha, importación de Clock, interpretación, revisión, auditoría y comparación informativa. Se excluyen liquidación, recargos, aprobación de pago, cierre mensual, escritura en Clock y sincronización programada.
 
 ## Vocabulario de la funcionalidad
 
@@ -27,6 +27,8 @@ Se incluyen horario laboral propio con vigencias, excepciones por fecha, importa
 | Saldo | Adicional menos faltante; indica dirección, no importe ni autorización de pago |
 
 ## Criterios de aceptación
+
+Desde el 27/11/2026 el acceso a CU3 se aplica a todos los roles de Personal. Se mantienen las condiciones de vínculo confirmado, revalidación y egreso.
 
 | ID | Comportamiento verificable | Discovery |
 | --- | --- | --- |
@@ -54,7 +56,7 @@ Se incluyen horario laboral propio con vigencias, excepciones por fecha, importa
 | AC22 | Consulta al abrir/cambiar mes y Actualizar; última consulta visible; error conserva última lectura exitosa como desactualizada, sin inferir ausencia | Reglas iniciales |
 | AC23 | Ninguna operación escribe en Clock; credenciales/token solo backend; cada operación exige sesión y respeta protección de escritura existente | Alcance y arquitectura |
 | AC24 | Edición concurrente no sobrescribe trabajo ajeno; error conserva borrador; horarios, excepciones, revisión e importación mantienen coherencia | Control optimista vigente |
-| AC25 | Para una maestra sin vínculo confirmado, Registro de horas está deshabilitado y remite a «Sincronizar empleado con Clock» en Datos | Continuación CU3 |
+| AC25 | Para una ficha de Personal sin vínculo confirmado, Registro de horas está deshabilitado y remite a «Sincronizar empleado con Clock» en Datos | Continuación CU3 |
 | AC26 | Tras confirmar CU2, la pestaña se habilita en la misma ficha sin recarga manual y abre al seleccionarla | Continuación CU3 |
 | AC27 | Con vínculo confirmado y horario pendiente, permite abrir y consultar marcas; el cálculo que requiere horario queda pendiente | Continuación CU3 |
 | AC28 | Un vínculo existente en revalidación conserva acceso al historial disponible, explica cómo revalidar en Datos y bloquea nuevas importaciones; se conserva la revisión histórica de inactivas | Continuación CU3 |
